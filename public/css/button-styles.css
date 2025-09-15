@@ -1,0 +1,143 @@
+/* ========================================
+   버튼 스타일 통합
+   생성일: 2025-01-08
+   목적: 모든 페이지의 버튼 색상 통일
+   ======================================== */
+
+/* 미소핀 색상 변수 */
+:root {
+    --misopin-primary: #9F988C;    /* 메인 브랜드 색상 */
+    --misopin-secondary: #87857E;  /* 보조 색상 */
+    --misopin-accent: #EFEDE5;     /* 강조 색상 */
+}
+
+/* 이벤트 버튼 (헤더) */
+.event {
+    background-color: var(--misopin-primary) !important;
+    border: 1px solid var(--misopin-primary) !important;
+    color: #fff !important;
+    padding: 8px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.event:hover {
+    background-color: var(--misopin-secondary) !important;
+    border-color: var(--misopin-secondary) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 상담신청 버튼 (푸터) */
+.send_btn button {
+    background-color: #D4CFC6 !important;  /* 연한 베이지 색상 */
+    border: 1px solid #D4CFC6 !important;
+    color: #555555 !important;  /* 진한 그레이 텍스트 */
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.send_btn button:hover {
+    background-color: var(--misopin-primary) !important;  /* 호버 시 브라운 */
+    border-color: var(--misopin-primary) !important;
+    color: #fff !important;  /* 호버 시 흰색 텍스트 */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 더보기 버튼 */
+.more_btn, .inc01_lnk {
+    background-color: var(--misopin-primary) !important;
+    border: 1px solid var(--misopin-primary) !important;
+    color: #fff !important;
+}
+
+.more_btn:hover, .inc01_lnk:hover {
+    background-color: var(--misopin-secondary) !important;
+    border-color: var(--misopin-secondary) !important;
+}
+
+/* ========================================
+   푸터 스타일 (브라운 배경)
+   ======================================== */
+
+/* 푸터 전체 배경색 */
+#sh_ft {
+    background-color: var(--misopin-primary) !important;
+    color: #fff !important;
+}
+
+/* 푸터 내부 요소들 */
+#sh_ft_wrapper {
+    background-color: transparent !important;
+}
+
+#sh_ft .contact {
+    background-color: transparent !important;
+}
+
+#sh_ft .copy {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 푸터 링크 색상 */
+#sh_ft a {
+    color: #fff !important;
+}
+
+#sh_ft a:hover {
+    color: var(--misopin-accent) !important;
+}
+
+/* 푸터 하단 회사 정보 텍스트 - 흰색으로 변경 */
+#sh_ft .copy .main_info {
+    color: #fff !important;
+    opacity: 0.9;
+}
+
+#sh_ft .copy .bottom p {
+    color: #fff !important;
+    opacity: 0.9;
+}
+
+/* ========================================
+   헤더 드롭다운 메뉴 스타일 (브라운 배경)
+   ======================================== */
+
+/* 드롭다운 메뉴 배경색 - 브라운 */
+#top_nav li ul,
+#top_nav .sub_ul1,
+#top_nav .sub_ul2,
+#top_nav .sub_ul3,
+#top_nav .sub_ul4,
+#top_nav .sub_ul5,
+#top_nav .sub_ul6,
+#top_nav .sub_ul7 {
+    background-color: var(--misopin-primary) !important;
+    border: none !important;
+}
+
+/* 드롭다운 메뉴 아이템 */
+#top_nav li ul li {
+    background-color: transparent !important;
+}
+
+/* 드롭다운 메뉴 링크 */
+#top_nav li ul li a {
+    color: #fff !important;
+    background-color: transparent !important;
+}
+
+/* 드롭다운 메뉴 호버 */
+#top_nav li ul li a:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--misopin-accent) !important;
+}

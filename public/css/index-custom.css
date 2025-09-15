@@ -1,0 +1,289 @@
+/* index-custom.css - CSS 충돌 해결 및 통합 스타일 */
+
+/* clinic 헤더/푸터와 Misopin 콘텐츠 통합을 위한 CSS */
+
+/* 1. 헤더 스타일 조정 */
+#sh_hd {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#sh_hd_wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* 2. 메인 콘텐츠 상단 패딩 조정 (헤더 높이만큼) */
+.main_content {
+    margin-top: 80px; /* 헤더 높이에 맞춰 조정 */
+}
+
+/* 3. 히어로 섹션 조정 */
+.hero_section {
+    margin-top: 0; /* 헤더가 fixed이므로 마진 제거 */
+    position: relative;
+}
+
+/* 4. 푸터 스타일 조정 */
+#sh_ft {
+    background: #2c2c2c;
+    color: #fff;
+    margin-top: 0;
+    width: 100%;
+}
+
+#sh_ft_wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* 5. Misopin 콘텐츠와 clinic 템플릿 간 여백 조정 */
+.main_section {
+    padding-top: 0;
+}
+
+/* 6. 반응형 조정 */
+@media (max-width: 768px) {
+    .main_content {
+        margin-top: 60px; /* 모바일에서 헤더 높이 조정 */
+    }
+    
+    #sh_hd_wrapper {
+        padding: 0 15px;
+    }
+    
+    #sh_ft_wrapper {
+        padding: 30px 15px;
+    }
+}
+
+/* 7. 스크롤 시 헤더 스타일 조정 */
+#sh_hd.scrolled {
+    background: rgba(255, 255, 255, 0.98);
+}
+
+/* 8. 네비게이션 메뉴 z-index 조정 */
+#r_menu .sub_ul1,
+#r_menu .sub_ul2,
+#r_menu .sub_ul3,
+#r_menu .sub_ul4,
+#r_menu .sub_ul5,
+#r_menu .sub_ul6,
+#r_menu .sub_ul7 {
+    z-index: 10000;
+}
+
+/* 9. 푸터 내 form 스타일 보정 */
+#sh_ft .sh_input {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+#sh_ft .sh_input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* 10. 푸터 아이콘 및 텍스트 정렬 수정 */
+#sh_ft .same_as li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#sh_ft .same_as li i[data-feather] {
+    min-width: 24px;
+    margin-right: 10px;
+}
+
+#sh_ft .same_as li .cate {
+    min-width: 80px;
+    margin-right: 10px;
+    font-weight: 600;
+}
+
+#sh_ft .same_as li address,
+#sh_ft .same_as li a {
+    flex: 1;
+}
+
+/* 11. 푸터 info_box 정렬 */
+#sh_ft .info_box > li {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+#sh_ft .info_box > li > i[data-feather] {
+    min-width: 24px;
+    margin-right: 10px;
+    margin-top: 2px;
+}
+
+#sh_ft .info_box > li > .cate {
+    min-width: 80px;
+    margin-right: 10px;
+    font-weight: 600;
+}
+
+/* 12. 충돌 방지를 위한 명시적 스타일 */
+.main_section * {
+    box-sizing: border-box;
+}
+
+/* 13. 미소핀 로고 스타일 조정 */
+#top_logo img {
+    height: 50px;
+    width: auto;
+}
+
+/* 14. 푸터 하단 레이아웃 개선 */
+#sh_ft .copy {
+    background: #1a1a1a;
+    padding: 40px 0;
+    width: 100%;
+}
+
+#sh_ft .copy .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1440px;  /* 더 넓은 화면에서 여유롭게 */
+    margin: 0 auto;
+    padding: 0 40px;  /* 너비 증가에 따른 패딩 증가 */
+    margin-bottom: 30px;
+}
+
+#sh_ft .copy .ft_logo {
+    height: 60px !important;  /* 로고 크기 증가 */
+    filter: brightness(0) invert(1);
+    margin-right: 40px;
+}
+
+#sh_ft .copy .top > div {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+#sh_ft .copy .top > div a {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#sh_ft .copy .top > div a:hover {
+    color: #ffffff !important;
+}
+
+/* 사업자 정보 레이아웃 개선 */
+#sh_ft .copy .main_info {
+    max-width: 1440px;  /* 더 넓은 화면에서 여유롭게 */
+    margin: 0 auto;
+    padding: 30px 40px;  /* 너비 증가에 따른 패딩 증가 */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));  /* 미니멀 너비 증가 */
+    gap: 24px;  /* 간격 증가 */
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+#sh_ft .copy .main_info .info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#sh_ft .copy .main_info .info-label {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 400;
+}
+
+#sh_ft .copy .main_info .info-value {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Copyright 영역 */
+#sh_ft .copy .bottom {
+    max-width: 1440px;  /* 더 넓은 화면에서 여유롭게 */
+    margin: 0 auto;
+    padding: 20px 40px 0;  /* 너비 증가에 따른 패딩 증가 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#sh_ft .copy .bottom p {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 12px;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+#sh_ft .copy .bottom .adm {
+    display: flex;
+    gap: 20px;
+}
+
+#sh_ft .copy .bottom .adm a {
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-size: 11px;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+}
+
+#sh_ft .copy .bottom .adm a:hover {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    #sh_ft .copy .top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 0 15px;  /* 모바일에서 패딩 감소 */
+    }
+    
+    #sh_ft .copy .ft_logo {
+        height: 50px !important;
+        margin-right: 0;
+    }
+    
+    #sh_ft .copy .top > div {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    #sh_ft .copy .main_info {
+        grid-template-columns: 1fr;
+        text-align: left;
+        gap: 10px;
+        padding: 30px 15px;
+    }
+    
+    #sh_ft .copy .bottom {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        padding: 20px 15px 0;
+    }
+}

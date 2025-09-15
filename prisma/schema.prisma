@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 사용자 모델
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      UserRole @default(EDITOR)
+  isActive  Boolean  @default(true)
+  lastLogin DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// 페이지 모델
+model Page {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  content     Json     // 구조화된 섹션 데이터
+  metadata    Json?    // SEO 메타데이터
+  isPublished Boolean  @default(false)
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("pages")
+}
+
+// 예약 모델
+model Reservation {
+  id            String            @id @default(cuid())
+  patientName   String
+  phone         String
+  email         String?
+  service       String
+  preferredDate DateTime
+  preferredTime String
+  status        ReservationStatus @default(PENDING)
+  notes         String?
+  adminNotes    String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@map("reservations")
+}
+
+// 팝업 모델
+model Popup {
+  id          String    @id @default(cuid())
+  title       String
+  content     String
+  imageUrl    String?
+  linkUrl     String?
+  isActive    Boolean   @default(false)
+  startDate   DateTime
+  endDate     DateTime
+  position    Json      // {x, y, width, height}
+  showOnPages String[]  // 표시할 페이지들
+  displayType PopupType @default(MODAL)
+  priority    Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("popups")
+}
+
+// 게시글 모델
+model BoardPost {
+  id          String    @id @default(cuid())
+  boardType   BoardType
+  title       String
+  content     String    @db.Text
+  excerpt     String?
+  author      String
+  isPublished Boolean   @default(false)
+  isPinned    Boolean   @default(false)
+  viewCount   Int       @default(0)
+  tags        String[]
+  imageUrl    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+
+  @@map("board_posts")
+}
+
+// 열거형 정의
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PopupType {
+  MODAL
+  BANNER
+  SLIDE_IN
+}
+
+enum BoardType {
+  NOTICE
+  EVENT
+  FAQ
+  NEWS
+}

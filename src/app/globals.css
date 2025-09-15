@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+/* 미소핀 기존 디자인 시스템 변수 */
+:root {
+  /* 기존 CSS 시스템에서 참조한 색상 */
+  --primary: #38b0c9;
+  --primary-dark: #2a8599;
+  --brown-theme: #9F988C;
+  --k-font: 'Freesentation';
+
+  /* Next.js 기본 변수 */
+  --background: #ffffff;
+  --foreground: #171717;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  /* Tailwind v4 테마 설정 - 미소핀 디자인 시스템 반영 */
+  --color-primary-50: #ecfcff;
+  --color-primary-100: #cff6ff;
+  --color-primary-200: #a5edff;
+  --color-primary-500: #38b0c9;
+  --color-primary-600: #2a8599;
+  --color-primary-900: #164e63;
+
+  --color-brown-50: #faf9f7;
+  --color-brown-100: #f4f1ed;
+  --color-brown-500: #9F988C;
+  --color-brown-600: #6b5d4f;
+  --color-brown-900: #3c2f26;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+
+  /* 기존 미소핀 폰트 시스템 */
+  --font-korean: var(--k-font), 'Malgun Gothic', sans-serif;
+  --font-sans: 'Malgun Gothic', Arial, Helvetica, sans-serif;
+
+  /* 기존 1450px 그리드 시스템 대응 */
+  --container-max-width: 1450px;
+  --container-padding-mobile: 15px;
+  --container-padding-tablet: 20px;
+  --container-padding-desktop: 30px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --border: #334155;
+  }
+}
+
+/* 기존 미소핀 기본 스타일 유지 */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 0.81em; /* 기존 user.css에서 설정된 값 */
+}
+
+/* 기존 1450px 컨테이너 시스템 호환 */
+.container-1450 {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding-desktop);
+}
+
+@media (max-width: 767px) {
+  .container-1450 {
+    padding: 0 var(--container-padding-mobile);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .container-1450 {
+    padding: 0 var(--container-padding-tablet);
+  }
+}

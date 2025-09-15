@@ -1,0 +1,6 @@
+@charset "utf-8";
+
+#shSnb ul{display:flex;justify-content:center;align-items:center;transform:skew(-0.1deg);height:80px}
+#shSnb ul li+li:before{display:inline-block;content:"";width:1px;height:13px;margin:0 20px;background:#d4d4d4}
+#shSnb ul li a{font-size:16px;font-weight:500;color:#999}
+#shSnb ul li.on a{position:relative;color:#111}
