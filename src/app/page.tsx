@@ -27,10 +27,10 @@ export default function HomePage() {
         <div className="space-y-4">
           <div>
             <a
-              href="/admin"
+              href="/login"
               className="inline-block bg-primary-500 text-white px-8 py-4 rounded-lg hover:bg-primary-600 transition-colors font-medium text-lg"
             >
-              🔧 관리자 패널 접속
+              🔧 관리자 로그인
             </a>
           </div>
 
