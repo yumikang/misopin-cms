@@ -18,12 +18,12 @@ import {
 } from "lucide-react";
 
 interface BoardPostListProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     boardType?: string;
     published?: string;
     search?: string;
-  };
+  }>;
 }
 
 async function getBoardPosts(params: any) {
@@ -65,7 +65,8 @@ function getBoardTypeColor(boardType: string) {
 }
 
 export async function BoardPostList({ searchParams }: BoardPostListProps) {
-  const data = await getBoardPosts(searchParams);
+  const resolvedSearchParams = await searchParams;
+  const data = await getBoardPosts(resolvedSearchParams);
   const { posts, pagination } = data;
 
   if (!posts || posts.length === 0) {

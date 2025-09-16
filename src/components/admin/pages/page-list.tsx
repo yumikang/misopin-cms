@@ -15,11 +15,11 @@ import {
 } from "lucide-react";
 
 interface PageListProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     published?: string;
     search?: string;
-  };
+  }>;
 }
 
 async function getPages(params: any) {
@@ -44,7 +44,8 @@ async function getPages(params: any) {
 }
 
 export async function PageList({ searchParams }: PageListProps) {
-  const data = await getPages(searchParams);
+  const resolvedSearchParams = await searchParams;
+  const data = await getPages(resolvedSearchParams);
   const { pages, pagination } = data;
 
   if (!pages || pages.length === 0) {

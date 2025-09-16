@@ -6,12 +6,12 @@ import { BoardFilters } from "@/components/admin/board/board-filters";
 import { Plus } from "lucide-react";
 
 interface BoardPageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     boardType?: string;
     published?: string;
     search?: string;
-  };
+  }>;
 }
 
 export default function BoardPage({ searchParams }: BoardPageProps) {

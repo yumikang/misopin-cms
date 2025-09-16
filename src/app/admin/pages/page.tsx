@@ -6,11 +6,11 @@ import { PageFilters } from "@/components/admin/pages/page-filters";
 import { PageList } from "@/components/admin/pages/page-list";
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     published?: string;
     search?: string;
-  };
+  }>;
 }
 
 export default function PagesPage({ searchParams }: PageProps) {

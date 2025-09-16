@@ -6,11 +6,11 @@ import { PopupFilters } from "@/components/admin/popups/popup-filters";
 import { Plus } from "lucide-react";
 
 interface PopupsPageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     active?: string;
     search?: string;
-  };
+  }>;
 }
 
 export default function PopupsPage({ searchParams }: PopupsPageProps) {

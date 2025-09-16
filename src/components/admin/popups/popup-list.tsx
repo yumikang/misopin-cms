@@ -17,11 +17,11 @@ import {
 } from "lucide-react";
 
 interface PopupListProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     active?: string;
     search?: string;
-  };
+  }>;
 }
 
 async function getPopups(params: any) {
@@ -64,7 +64,8 @@ function getDisplayTypeIcon(displayType: string) {
 }
 
 export async function PopupList({ searchParams }: PopupListProps) {
-  const data = await getPopups(searchParams);
+  const resolvedSearchParams = await searchParams;
+  const data = await getPopups(resolvedSearchParams);
   const { popups, pagination } = data;
 
   if (!popups || popups.length === 0) {
