@@ -135,3 +135,15 @@ enum TreatmentType {
   FIRST_VISIT     // 초진
   FOLLOW_UP       // 재진
 }
+
+// 시스템 설정 모델
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  category  String   // general, email, security, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}

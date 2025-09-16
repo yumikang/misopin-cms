@@ -423,6 +423,81 @@ async function main() {
     });
   }
 
+  // Create system settings - matching the types/settings.ts structure
+  const systemSettings = [
+    // General Settings
+    { key: "siteName", value: "미소핀의원", category: "general" },
+    { key: "logoUrl", value: "/images/logo.png", category: "general" },
+    { key: "contactEmail", value: "info@misopin.com", category: "general" },
+    { key: "contactPhone", value: "02-1234-5678", category: "general" },
+    { key: "address", value: "서울특별시 강남구 테헤란로 123, 미소빌딩 3층", category: "general" },
+    {
+      key: "operatingHours",
+      value: {
+        weekdays: "09:00 - 18:00",
+        weekends: "09:00 - 15:00"
+      },
+      category: "general"
+    },
+    { key: "timezone", value: "Asia/Seoul", category: "general" },
+    { key: "language", value: "ko", category: "general" },
+
+    // Email Settings
+    { key: "smtpHost", value: "smtp.gmail.com", category: "email" },
+    { key: "smtpPort", value: 587, category: "email" },
+    { key: "smtpUser", value: "", category: "email" },
+    { key: "smtpPassword", value: "", category: "email" },
+    { key: "smtpSecure", value: true, category: "email" },
+    { key: "fromEmail", value: "noreply@misopin.com", category: "email" },
+    { key: "fromName", value: "미소핀의원", category: "email" },
+    { key: "replyToEmail", value: "info@misopin.com", category: "email" },
+    {
+      key: "emailTemplates",
+      value: {
+        reservationConfirmation: "안녕하세요. 미소핀의원입니다.\n\n예약이 확정되었습니다.\n\n예약 정보를 확인해 주시고, 예약 시간에 맞춰 방문해 주시기 바랍니다.\n\n감사합니다.",
+        reservationReminder: "안녕하세요. 미소핀의원입니다.\n\n내일 예약된 진료 일정을 알려드립니다.\n\n예약 시간을 확인하시고 준시에 방문해 주시기 바랍니다.\n\n감사합니다.",
+        cancelNotification: "안녕하세요. 미소핀의원입니다.\n\n예약이 취소되었습니다.\n\n다시 예약을 원하시면 언제든지 연락 주시기 바랍니다.\n\n감사합니다."
+      },
+      category: "email"
+    },
+
+    // Security Settings
+    { key: "sessionTimeout", value: 60, category: "security" },
+    { key: "passwordMinLength", value: 8, category: "security" },
+    { key: "passwordRequireSpecialChar", value: true, category: "security" },
+    { key: "passwordRequireNumber", value: true, category: "security" },
+    { key: "passwordRequireUppercase", value: true, category: "security" },
+    { key: "maxLoginAttempts", value: 5, category: "security" },
+    { key: "lockoutDuration", value: 15, category: "security" },
+    { key: "enableTwoFactor", value: false, category: "security" },
+    { key: "jwtExpiresIn", value: "7d", category: "security" },
+
+    // Upload Settings
+    { key: "maxFileSize", value: 10, category: "upload" },
+    { key: "allowedImageTypes", value: ["jpg", "jpeg", "png", "gif", "webp"], category: "upload" },
+    { key: "allowedDocumentTypes", value: ["pdf", "doc", "docx", "xls", "xlsx"], category: "upload" },
+    { key: "uploadPath", value: "/uploads", category: "upload" },
+    { key: "enableImageCompression", value: true, category: "upload" },
+    { key: "imageQuality", value: 80, category: "upload" },
+    {
+      key: "thumbnailSizes",
+      value: [
+        { name: "small", width: 150, height: 150 },
+        { name: "medium", width: 300, height: 300 },
+        { name: "large", width: 600, height: 600 }
+      ],
+      category: "upload"
+    },
+  ];
+
+  for (const setting of systemSettings) {
+    await prisma.systemSetting.upsert({
+      where: { key: setting.key },
+      update: { value: setting.value, category: setting.category },
+      create: setting,
+    });
+  }
+
   console.log("✅ Seed data created successfully!");
   console.log({
     users: {
@@ -434,6 +509,7 @@ async function main() {
     popups: `${samplePopups.length} sample popups created`,
     boardPosts: `${sampleBoardPosts.length} sample board posts created`,
     pages: `${samplePages.length} sample pages created`,
+    systemSettings: `${systemSettings.length} system settings created`,
   });
 }
 
