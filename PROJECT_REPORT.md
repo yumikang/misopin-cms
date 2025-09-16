@@ -3,7 +3,7 @@
 ## 📋 프로젝트 개요
 
 **프로젝트명**: 미소핀의원 종합 콘텐츠 관리 시스템 (CMS)
-**개발 기간**: 2024년 1월
+**개발 기간**: 2024년 1월 - 2025년 9월
 **개발자**: Claude Code AI Assistant
 **목적**: 병원 운영을 위한 종합 관리 시스템 구축
 
@@ -96,6 +96,25 @@ interface PageContent {
 }
 ```
 
+### 6. ⚙️ 시스템 설정 관리 (CRUD 완료)
+**API Endpoints**: `/api/settings`, `/api/settings/key`
+- ✅ 일반 설정 (사이트명, 로고, 연락처, 운영시간)
+- ✅ 이메일 설정 (SMTP 서버, 인증, 템플릿)
+- ✅ 보안 설정 (세션, 비밀번호 정책, 2FA)
+- ✅ 업로드 설정 (파일 크기, 허용 형식, 압축)
+- ✅ Key-Value 기반 유연한 구조
+- ✅ 권한 기반 접근 (ADMIN 조회, SUPER_ADMIN 수정)
+
+**주요 특징**:
+```typescript
+interface SystemSetting {
+  key: string;      // 설정 키
+  value: Json;      // JSON 형식의 값
+  category: string; // general, email, security, upload
+}
+// 33개 기본 설정 항목 제공
+```
+
 ## 🗄️ 데이터베이스 구조 최적화
 
 ### 주요 수정사항
@@ -111,6 +130,7 @@ interface PageContent {
    - 팝업 데이터 4건
    - 게시글 데이터 5건
    - 페이지 데이터 4건 (병원소개, 진료안내, 오시는길, 개인정보처리방침)
+   - 시스템 설정 33건 (4개 카테고리)
 
 ## 🎨 UI/UX 디자인 시스템
 

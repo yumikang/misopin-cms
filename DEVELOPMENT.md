@@ -167,14 +167,19 @@ src/
 - 정적 페이지 구조와 일치하도록 조정
 - 샘플 데이터 추가 (사용자, 예약, 팝업, 게시글, 페이지)
 
-### 🔄 진행 중인 기능
-
 #### 7. 시스템 설정 관리
-- **예정 기능**:
-  - 사이트 기본 설정
-  - SMTP 설정
-  - 파일 업로드 설정
-  - 보안 설정
+- **API**: `/api/settings`, `/api/settings/key` (완전한 CRUD 지원)
+- **기능**:
+  - 사이트 기본 설정 (이름, 로고, 연락처, 주소, 운영시간)
+  - SMTP 이메일 설정 (서버, 포트, 인증, 템플릿)
+  - 파일 업로드 설정 (크기 제한, 허용 형식, 압축)
+  - 보안 설정 (세션, 비밀번호 정책, 2FA)
+  - Key-Value 기반 유연한 설정 구조
+  - 카테고리별 탭 인터페이스
+- **UI**: React Hook Form 통합, 실시간 검증, 변경사항 감지
+- **권한**: ADMIN 조회, SUPER_ADMIN 수정
+
+### 🔄 진행 중인 기능
 
 ## 주요 특징
 
@@ -224,12 +229,15 @@ npx prisma db seed
 
 # 개발 서버 실행
 npm run dev
+
+# Podman/Docker로 PostgreSQL 실행
+podman run --name postgres-misopin -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
 ```
 
 ### 3. 환경 변수
 ```env
 DATABASE_URL="postgresql://username:password@localhost:5432/misopin_cms"
-NEXTAUTH_URL="http://localhost:3003"
+NEXTAUTH_URL="http://localhost:3001"
 NEXTAUTH_SECRET="your-secret-key"
 ```
 
@@ -364,6 +372,6 @@ chore: 빌드 관련 변경
 
 ---
 
-**문서 버전**: 1.0
-**최종 업데이트**: 2024년 1월
+**문서 버전**: 1.1
+**최종 업데이트**: 2025년 9월 16일
 **작성자**: Claude Code AI Assistant
