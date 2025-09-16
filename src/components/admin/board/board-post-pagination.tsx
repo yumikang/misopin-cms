@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -85,14 +86,18 @@ export function BoardPostPagination({ pagination }: BoardPostPaginationProps) {
           const pageNumber = pageNum as number;
           const isCurrentPage = pageNumber === page;
 
-          return isCurrentPage ? (
-            <Button key={pageNumber} variant="default" size="sm" disabled>
-              {pageNumber}
-            </Button>
-          ) : (
-            <Button key={pageNumber} asChild variant="outline" size="sm">
-              <Link href={createPageUrl(pageNumber)}>{pageNumber}</Link>
-            </Button>
+          return (
+            <React.Fragment key={pageNumber}>
+              {isCurrentPage ? (
+                <Button variant="default" size="sm" disabled>
+                  {pageNumber}
+                </Button>
+              ) : (
+                <Button asChild variant="outline" size="sm">
+                  <Link href={createPageUrl(pageNumber)}>{pageNumber}</Link>
+                </Button>
+              )}
+            </React.Fragment>
           );
         })}
 
