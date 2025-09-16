@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,29 +21,6 @@ interface ReservationListProps {
   };
 }
 
-async function getReservations(params: any) {
-  const searchParams = new URLSearchParams();
-
-  if (params.page) searchParams.set("page", params.page);
-  if (params.status) searchParams.set("status", params.status);
-  if (params.search) searchParams.set("search", params.search);
-  if (params.startDate) searchParams.set("startDate", params.startDate);
-  if (params.endDate) searchParams.set("endDate", params.endDate);
-
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL || "http://localhost:3003"}/api/reservations?${searchParams.toString()}`,
-    {
-      cache: "no-store",
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("예약 데이터를 불러오는데 실패했습니다.");
-  }
-
-  return response.json();
-}
-
 function getGenderLabel(gender: string) {
   return gender === "MALE" ? "남" : "여";
 }
@@ -49,9 +29,67 @@ function getTreatmentTypeLabel(treatmentType: string) {
   return treatmentType === "FIRST_VISIT" ? "초진" : "재진";
 }
 
-export async function ReservationList({ searchParams }: ReservationListProps) {
-  const data = await getReservations(searchParams);
-  const { reservations, pagination } = data;
+export function ReservationList({ searchParams }: ReservationListProps) {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchReservations() {
+      try {
+        setLoading(true);
+        const params = new URLSearchParams();
+
+        if (searchParams.page) params.set("page", searchParams.page);
+        if (searchParams.status) params.set("status", searchParams.status);
+        if (searchParams.search) params.set("search", searchParams.search);
+        if (searchParams.startDate) params.set("startDate", searchParams.startDate);
+        if (searchParams.endDate) params.set("endDate", searchParams.endDate);
+
+        const response = await fetch(`/api/reservations?${params.toString()}`);
+
+        if (!response.ok) {
+          throw new Error("예약 데이터를 불러오는데 실패했습니다.");
+        }
+
+        const result = await response.json();
+        setData(result);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchReservations();
+  }, [searchParams]);
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="py-8">
+          <div className="text-center text-muted-foreground">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4" />
+            <p>예약 데이터를 불러오는 중...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="py-8">
+          <div className="text-center text-muted-foreground">
+            <p className="text-red-500">오류: {error}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { reservations, pagination } = data || { reservations: [], pagination: null };
 
   if (!reservations || reservations.length === 0) {
     return (

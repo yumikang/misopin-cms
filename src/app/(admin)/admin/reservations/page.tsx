@@ -3,16 +3,17 @@ import { ReservationList } from "@/components/admin/reservations/reservation-lis
 import { ReservationFilters } from "@/components/admin/reservations/reservation-filters";
 
 interface ReservationsPageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string;
     status?: string;
     search?: string;
     startDate?: string;
     endDate?: string;
-  };
+  }>;
 }
 
-export default function ReservationsPage({ searchParams }: ReservationsPageProps) {
+export default async function ReservationsPage({ searchParams }: ReservationsPageProps) {
+  const params = await searchParams;
   return (
     <div className="space-y-6">
       <div>
@@ -25,7 +26,7 @@ export default function ReservationsPage({ searchParams }: ReservationsPageProps
       <ReservationFilters />
 
       <Suspense fallback={<ReservationListSkeleton />}>
-        <ReservationList searchParams={searchParams} />
+        <ReservationList searchParams={params} />
       </Suspense>
     </div>
   );

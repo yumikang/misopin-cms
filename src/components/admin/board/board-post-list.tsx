@@ -35,7 +35,7 @@ async function getBoardPosts(params: any) {
   if (params.search) searchParams.set("search", params.search);
 
   const response = await fetch(
-    `${process.env.NEXTAUTH_URL || "http://localhost:3003"}/api/board-posts?${searchParams.toString()}`,
+    `${process.env.NEXTAUTH_URL || "http://localhost:3001"}/api/board-posts?${searchParams.toString()}`,
     {
       cache: "no-store",
     }

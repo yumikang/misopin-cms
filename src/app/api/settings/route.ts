@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 });
     }
 
-    // SUPER_ADMIN만 설정 조회 가능
-    if (session.user.role !== UserRole.SUPER_ADMIN) {
+    // ADMIN 이상만 설정 조회 가능
+    if (session.user.role === UserRole.EDITOR) {
       return NextResponse.json(
         { error: '시스템 설정 조회 권한이 없습니다.' },
         { status: 403 }

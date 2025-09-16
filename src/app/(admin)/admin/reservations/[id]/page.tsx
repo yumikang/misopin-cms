@@ -13,7 +13,7 @@ interface ReservationDetailPageProps {
 
 async function getReservation(id: string) {
   const response = await fetch(
-    `${process.env.NEXTAUTH_URL || "http://localhost:3003"}/api/reservations/${id}`,
+    `${process.env.NEXTAUTH_URL || "http://localhost:3001"}/api/reservations/${id}`,
     {
       cache: "no-store",
     }

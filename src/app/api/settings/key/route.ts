@@ -5,17 +5,11 @@ import { UserRole } from '@prisma/client';
 import { getSetting, updateSetting, deleteSetting } from '@/lib/settings';
 import { SettingUpdateRequest } from '@/types/settings';
 
-interface RouteParams {
-  params: {
-    key: string;
-  };
-}
-
 /**
- * 개별 시스템 설정 조회
- * GET /api/settings/[key]
+ * 개별 시스템 설정 조회/업데이트/삭제
+ * GET/PUT/DELETE /api/settings/key?key={key}
  */
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -23,21 +17,36 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: '인증이 필요합니다.' }, { status: 401 });
     }
 
-    // SUPER_ADMIN만 설정 조회 가능
-    if (session.user.role !== UserRole.SUPER_ADMIN) {
+    // ADMIN 이상만 설정 조회 가능
+    if (session.user.role === UserRole.EDITOR) {
       return NextResponse.json(
         { error: '시스템 설정 조회 권한이 없습니다.' },
         { status: 403 }
       );
     }
 
-    const { key } = params;
+    const { searchParams } = new URL(request.url);
+    const key = searchParams.get('key');
+
+    if (!key) {
+      return NextResponse.json(
+        { error: '설정 키가 필요합니다.' },
+        { status: 400 }
+      );
+    }
+
     const value = await getSetting(key);
+
+    // 민감한 정보 마스킹
+    let maskedValue = value;
+    if (key === 'smtpPassword' && value) {
+      maskedValue = '********';
+    }
 
     return NextResponse.json({
       success: true,
       key,
-      value,
+      value: maskedValue,
     });
   } catch (error) {
     console.error('개별 설정 조회 오류:', error);
@@ -54,9 +63,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 /**
  * 개별 시스템 설정 업데이트
- * PUT /api/settings/[key]
+ * PATCH /api/settings/key
  */
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PATCH(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -72,14 +81,13 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const { key } = params;
     const body: SettingUpdateRequest = await request.json();
 
-    if (body.key !== key) {
+    if (!body.key || body.value === undefined || !body.category) {
       return NextResponse.json(
         {
           success: false,
-          error: 'URL의 키와 요청 데이터의 키가 일치하지 않습니다.',
+          error: '필수 필드가 누락되었습니다.',
         },
         { status: 400 }
       );
@@ -88,12 +96,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     await updateSetting(body.key, body.value, body.category);
 
     // 업데이트된 값 반환
-    const updatedValue = await getSetting(key);
+    const updatedValue = await getSetting(body.key);
 
     return NextResponse.json({
       success: true,
       message: '설정이 성공적으로 업데이트되었습니다.',
-      key,
+      key: body.key,
       value: updatedValue,
     });
   } catch (error) {
@@ -111,9 +119,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
 /**
  * 개별 시스템 설정 삭제 (기본값으로 리셋)
- * DELETE /api/settings/[key]
+ * DELETE /api/settings/key?key={key}
  */
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -129,7 +137,15 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const { key } = params;
+    const { searchParams } = new URL(request.url);
+    const key = searchParams.get('key');
+
+    if (!key) {
+      return NextResponse.json(
+        { error: '설정 키가 필요합니다.' },
+        { status: 400 }
+      );
+    }
 
     await deleteSetting(key);
 

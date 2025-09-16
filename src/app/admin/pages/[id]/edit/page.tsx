@@ -3,7 +3,7 @@ import { PageForm } from "@/components/admin/pages/page-form";
 
 async function getPage(id: string) {
   const response = await fetch(
-    `${process.env.NEXTAUTH_URL || "http://localhost:3003"}/api/pages/${id}`,
+    `${process.env.NEXTAUTH_URL || "http://localhost:3001"}/api/pages/${id}`,
     {
       cache: "no-store",
     }
