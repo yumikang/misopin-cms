@@ -7,7 +7,7 @@ import { SettingUpdateRequest } from '@/types/settings';
 
 /**
  * 개별 시스템 설정 조회/업데이트/삭제
- * GET/PUT/DELETE /api/settings/key?key={key}
+ * GET/PUT/DELETE /api/settings/individual?key={key}
  */
 export async function GET(request: NextRequest) {
   try {
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 
 /**
  * 개별 시스템 설정 업데이트
- * PATCH /api/settings/key
+ * PATCH /api/settings/individual
  */
 export async function PATCH(request: NextRequest) {
   try {
@@ -119,7 +119,7 @@ export async function PATCH(request: NextRequest) {
 
 /**
  * 개별 시스템 설정 삭제 (기본값으로 리셋)
- * DELETE /api/settings/key?key={key}
+ * DELETE /api/settings/individual?key={key}
  */
 export async function DELETE(request: NextRequest) {
   try {
