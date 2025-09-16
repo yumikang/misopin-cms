@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { prisma } from "@/lib/db";
+import { authOptions } from "@/lib/auth";
+import { db } from "@/lib/db";
 
 export async function GET(
   request: NextRequest,
@@ -13,7 +13,7 @@ export async function GET(
   }
 
   try {
-    const page = await prisma.page.findUnique({
+    const page = await db.page.findUnique({
       where: { id: params.id },
     });
 
@@ -48,7 +48,7 @@ export async function PUT(
     const { slug, title, content, metadata, isPublished } = body;
 
     // 현재 페이지 찾기
-    const currentPage = await prisma.page.findUnique({
+    const currentPage = await db.page.findUnique({
       where: { id: params.id },
     });
 
@@ -61,7 +61,7 @@ export async function PUT(
 
     // 슬러그가 변경된 경우 중복 체크
     if (slug && slug !== currentPage.slug) {
-      const existingPage = await prisma.page.findUnique({
+      const existingPage = await db.page.findUnique({
         where: { slug },
       });
 
@@ -73,7 +73,7 @@ export async function PUT(
       }
     }
 
-    const updatedPage = await prisma.page.update({
+    const updatedPage = await db.page.update({
       where: { id: params.id },
       data: {
         ...(slug !== undefined && { slug }),
@@ -105,7 +105,7 @@ export async function DELETE(
   }
 
   try {
-    const page = await prisma.page.findUnique({
+    const page = await db.page.findUnique({
       where: { id: params.id },
     });
 
@@ -116,7 +116,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.page.delete({
+    await db.page.delete({
       where: { id: params.id },
     });
 

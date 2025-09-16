@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { prisma } from "@/lib/db";
+import { authOptions } from "@/lib/auth";
+import { db } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     };
 
     const [pages, total] = await Promise.all([
-      prisma.page.findMany({
+      db.page.findMany({
         where,
         skip,
         take: limit,
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
           updatedAt: true,
         },
       }),
-      prisma.page.count({ where }),
+      db.page.count({ where }),
     ]);
 
     const pagination = {
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     const { slug, title, content, metadata, isPublished } = body;
 
     // 슬러그 중복 체크
-    const existingPage = await prisma.page.findUnique({
+    const existingPage = await db.page.findUnique({
       where: { slug },
     });
 
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const page = await prisma.page.create({
+    const page = await db.page.create({
       data: {
         slug,
         title,
