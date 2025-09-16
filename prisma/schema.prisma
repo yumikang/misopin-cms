@@ -46,7 +46,10 @@ model Reservation {
   patientName   String
   phone         String
   email         String?
-  service       String
+  birthDate     DateTime
+  gender        Gender
+  treatmentType TreatmentType
+  service       String            // 원하는 진료 내용
   preferredDate DateTime
   preferredTime String
   status        ReservationStatus @default(PENDING)
@@ -121,6 +124,14 @@ enum PopupType {
 enum BoardType {
   NOTICE
   EVENT
-  FAQ
-  NEWS
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum TreatmentType {
+  FIRST_VISIT     // 초진
+  FOLLOW_UP       // 재진
 }

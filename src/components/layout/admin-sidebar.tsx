@@ -28,6 +28,7 @@ import {
   X,
   Bell,
   ChevronDown,
+  Globe,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -46,7 +47,7 @@ const navigation = [
     name: "예약 관리",
     href: "/admin/reservations",
     icon: Calendar,
-    roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"],
+    roles: ["SUPER_ADMIN", "ADMIN"],
   },
   {
     name: "팝업 관리",
@@ -56,14 +57,14 @@ const navigation = [
   },
   {
     name: "게시판 관리",
-    href: "/admin/boards",
+    href: "/admin/board",
     icon: FileText,
     roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"],
   },
   {
     name: "페이지 관리",
     href: "/admin/pages",
-    icon: FileText,
+    icon: Globe,
     roles: ["SUPER_ADMIN", "ADMIN"],
   },
   {
