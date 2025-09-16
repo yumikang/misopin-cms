@@ -161,9 +161,9 @@ export function ReservationDetail({ reservation }: ReservationDetailProps) {
             <Separator />
 
             <div className="text-xs text-muted-foreground">
-              <p>접수일: {format(parseISO(reservation.createdAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}</p>
+              <p>접수일: {format(reservation.createdAt, "yyyy년 MM월 dd일 HH:mm", { locale: ko })}</p>
               {reservation.updatedAt !== reservation.createdAt && (
-                <p>수정일: {format(parseISO(reservation.updatedAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}</p>
+                <p>수정일: {format(reservation.updatedAt, "yyyy년 MM월 dd일 HH:mm", { locale: ko })}</p>
               )}
             </div>
           </CardContent>

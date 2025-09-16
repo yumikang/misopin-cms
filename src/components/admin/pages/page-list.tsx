@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -171,7 +171,7 @@ export async function PageList({ searchParams }: PageListProps) {
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <span>
-                        {format(parseISO(page.updatedAt), "MM월 dd일", { locale: ko })}
+                        {format(page.updatedAt, "MM월 dd일", { locale: ko })}
                       </span>
                     </div>
                   </div>
@@ -179,11 +179,11 @@ export async function PageList({ searchParams }: PageListProps) {
                   {/* 생성일 */}
                   <div className="pt-2 border-t text-xs text-muted-foreground">
                     <p>
-                      생성일: {format(parseISO(page.createdAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
+                      생성일: {format(page.createdAt, "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
                     </p>
                     {page.updatedAt !== page.createdAt && (
                       <p>
-                        수정일: {format(parseISO(page.updatedAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
+                        수정일: {format(page.updatedAt, "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
                       </p>
                     )}
                   </div>

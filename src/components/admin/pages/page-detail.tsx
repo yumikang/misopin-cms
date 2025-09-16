@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -213,7 +213,7 @@ export function PageDetail({ page }: PageDetailProps) {
               <div className="flex items-center space-x-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  {format(parseISO(page.createdAt), "yyyy년 MM월 dd일", { locale: ko })}
+                  {format(page.createdAt, "yyyy년 MM월 dd일", { locale: ko })}
                 </span>
               </div>
             </CardContent>
@@ -227,14 +227,14 @@ export function PageDetail({ page }: PageDetailProps) {
               <div>
                 <p className="font-medium">생성일</p>
                 <p className="text-muted-foreground">
-                  {format(parseISO(page.createdAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
+                  {format(page.createdAt, "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
                 </p>
               </div>
               {page.updatedAt !== page.createdAt && (
                 <div>
                   <p className="font-medium">최종 수정일</p>
                   <p className="text-muted-foreground">
-                    {format(parseISO(page.updatedAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
+                    {format(page.updatedAt, "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
                   </p>
                 </div>
               )}

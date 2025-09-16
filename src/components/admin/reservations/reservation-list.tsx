@@ -182,7 +182,7 @@ export function ReservationList({ searchParams }: ReservationListProps) {
 
               <div className="mt-3 pt-2 border-t text-xs text-muted-foreground">
                 <p>
-                  접수일: {format(parseISO(reservation.createdAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
+                  접수일: {format(reservation.createdAt, "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
                 </p>
               </div>
             </CardContent>
