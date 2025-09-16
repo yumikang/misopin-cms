@@ -86,18 +86,14 @@ export function BoardPostPagination({ pagination }: BoardPostPaginationProps) {
           const pageNumber = pageNum as number;
           const isCurrentPage = pageNumber === page;
 
-          return (
-            <React.Fragment key={pageNumber}>
-              {isCurrentPage ? (
-                <Button variant="default" size="sm" disabled>
-                  {pageNumber}
-                </Button>
-              ) : (
-                <Button asChild variant="outline" size="sm">
-                  <Link href={createPageUrl(pageNumber)}>{pageNumber}</Link>
-                </Button>
-              )}
-            </React.Fragment>
+          return isCurrentPage ? (
+            <Button key={pageNumber} variant="default" size="sm" disabled>
+              {pageNumber}
+            </Button>
+          ) : (
+            <Button key={pageNumber} asChild variant="outline" size="sm">
+              <Link href={createPageUrl(pageNumber)}>{pageNumber}</Link>
+            </Button>
           );
         })}
 
