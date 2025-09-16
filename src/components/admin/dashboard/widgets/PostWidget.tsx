@@ -219,3 +219,5 @@ export const PostWidget: React.FC = React.memo(() => {
     </Card>
   );
 });
+
+PostWidget.displayName = 'PostWidget';

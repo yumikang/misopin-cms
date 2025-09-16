@@ -1,49 +1,8 @@
 import { db } from '@/lib/db';
 import { ReservationStatus, BoardType } from '@prisma/client';
 import { startOfDay, startOfWeek, startOfMonth, endOfDay, endOfWeek, endOfMonth } from 'date-fns';
+import type { DashboardStats, ChartData } from '@/types/dashboard';
 
-export interface DashboardStats {
-  reservations: {
-    today: number;
-    thisWeek: number;
-    thisMonth: number;
-    pending: number;
-    confirmed: number;
-    completed: number;
-    cancelled: number;
-    recentList: any[];
-  };
-  posts: {
-    total: number;
-    published: number;
-    draft: number;
-    notice: number;
-    event: number;
-    recentList: any[];
-  };
-  popups: {
-    total: number;
-    active: number;
-    scheduled: number;
-    expired: number;
-  };
-  files: {
-    total: number;
-    totalSize: number;
-    images: number;
-    documents: number;
-    recentUploads: any[];
-  };
-  users: {
-    total: number;
-    activeToday: number;
-    admins: number;
-    editors: number;
-  };
-  activities: {
-    recent: any[];
-  };
-}
 
 export interface ChartData {
   reservationTrend: Array<{
@@ -62,7 +21,7 @@ export interface ChartData {
 
 // 캐시 저장소
 interface CacheEntry {
-  data: any;
+  data: DashboardStats | ChartData | Record<string, unknown>;
   timestamp: number;
 }
 
@@ -73,7 +32,7 @@ class DashboardService {
   /**
    * 캐시 확인 및 가져오기
    */
-  private getCached(key: string): any | null {
+  private getCached(key: string): DashboardStats | ChartData | Record<string, unknown> | null {
     const cached = this.cache.get(key);
     if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
       return cached.data;
@@ -85,7 +44,7 @@ class DashboardService {
   /**
    * 캐시 저장
    */
-  private setCache(key: string, data: any): void {
+  private setCache(key: string, data: DashboardStats | ChartData | Record<string, unknown>): void {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
@@ -207,7 +166,7 @@ class DashboardService {
     ]);
 
     // 상태별 카운트 정리
-    const statusMap: any = {
+    const statusMap: Record<ReservationStatus, string> = {
       pending: 0,
       confirmed: 0,
       completed: 0,
@@ -274,7 +233,7 @@ class DashboardService {
     ]);
 
     // 카테고리별 카운트 정리
-    const categoryMap: any = {
+    const categoryMap: Record<BoardType, string> = {
       notice: 0,
       event: 0,
     };
@@ -485,7 +444,7 @@ class DashboardService {
     ]);
 
     // 활동 로그 조합 및 정렬
-    const activities: any[] = [];
+    const activities: Array<{ type: 'reservation' | 'post' | 'upload'; message: string; timestamp: Date }> = [];
 
     recentReservations.forEach((item) => {
       activities.push({

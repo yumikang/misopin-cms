@@ -183,3 +183,5 @@ export const RecentActivityWidget: React.FC = React.memo(() => {
     </Card>
   );
 });
+
+RecentActivityWidget.displayName = 'RecentActivityWidget';

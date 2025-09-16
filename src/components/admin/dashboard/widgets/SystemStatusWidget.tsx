@@ -249,3 +249,5 @@ export const SystemStatusWidget: React.FC = React.memo(() => {
     </Card>
   );
 });
+
+SystemStatusWidget.displayName = 'SystemStatusWidget';

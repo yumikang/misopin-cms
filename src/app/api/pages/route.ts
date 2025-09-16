@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { PagesResponse, PageWhereInput, CreatePageRequest, PageCreate } from "@/types/api";
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -18,11 +19,11 @@ export async function GET(request: NextRequest) {
   const skip = (page - 1) * limit;
 
   try {
-    const where = {
+    const where: PageWhereInput = {
       ...(search && {
         OR: [
-          { title: { contains: search, mode: "insensitive" as const } },
-          { slug: { contains: search, mode: "insensitive" as const } },
+          { title: { contains: search, mode: "insensitive" } },
+          { slug: { contains: search, mode: "insensitive" } },
         ],
       }),
       ...(published !== null && published !== undefined && published !== "all" && {
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json();
+    const body: CreatePageRequest = await request.json();
     const { slug, title, content, metadata, isPublished } = body;
 
     // 슬러그 중복 체크

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { UserRole } from "@prisma/client";
+import { BoardPostsResponse, BoardPostWhereInput, CreateBoardPostRequest } from "@/types/api";
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // 필터링 조건 구성
-    const where: any = {};
+    const where: BoardPostWhereInput = {};
 
     if (boardType && boardType !== "all") {
       where.boardType = boardType;
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
       db.boardPost.count({ where }),
     ]);
 
-    return NextResponse.json({
+    const response: BoardPostsResponse = {
       posts,
       pagination: {
         page,
@@ -63,7 +64,9 @@ export async function GET(request: NextRequest) {
         total,
         pages: Math.ceil(total / limit),
       },
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error("게시글 목록 조회 오류:", error);
     return NextResponse.json(
@@ -81,7 +84,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body: CreateBoardPostRequest = await request.json();
     const {
       boardType,
       title,

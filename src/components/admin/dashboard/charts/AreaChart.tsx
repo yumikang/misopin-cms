@@ -12,12 +12,14 @@ import {
   Legend,
 } from 'recharts';
 
+interface AreaChartData {
+  date: string;
+  value: number;
+  [key: string]: string | number;
+}
+
 interface AreaChartProps {
-  data: Array<{
-    date: string;
-    value: number;
-    [key: string]: any;
-  }>;
+  data: AreaChartData[];
   dataKeys?: string[];
   title?: string;
   height?: number;
@@ -27,7 +29,7 @@ interface AreaChartProps {
   stacked?: boolean;
 }
 
-export const AreaChart: React.FC<AreaChartProps> = React.memo(({
+const AreaChartComponent: React.FC<AreaChartProps> = ({
   data,
   dataKeys = ['value'],
   title,
@@ -66,12 +68,22 @@ export const AreaChart: React.FC<AreaChartProps> = React.memo(({
   }, [colors]);
 
   // 커스텀 툴팁
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  interface TooltipProps {
+    active?: boolean;
+    payload?: Array<{
+      name: string;
+      value: number;
+      color: string;
+    }>;
+    label?: string;
+  }
+
+  const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 border rounded-lg shadow-lg">
           <p className="font-medium mb-1">{label}</p>
-          {payload.map((item: any, index: number) => (
+          {payload.map((item, index) => (
             <p key={index} className="text-sm" style={{ color: item.color }}>
               {`${item.name}: ${item.value}`}
             </p>
@@ -125,4 +137,8 @@ export const AreaChart: React.FC<AreaChartProps> = React.memo(({
       </ResponsiveContainer>
     </div>
   );
-});
+};
+
+AreaChartComponent.displayName = 'AreaChart';
+
+export const AreaChart = React.memo(AreaChartComponent);

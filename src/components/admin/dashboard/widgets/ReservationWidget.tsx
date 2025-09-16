@@ -217,3 +217,5 @@ export const ReservationWidget: React.FC = React.memo(() => {
     </Card>
   );
 });
+
+ReservationWidget.displayName = 'ReservationWidget';

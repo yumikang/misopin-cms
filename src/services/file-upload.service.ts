@@ -271,7 +271,7 @@ export class FileUploadService {
   ): Promise<{ files: FileUpload[]; total: number }> {
     const { category, userId, page = 1, limit = 20 } = options;
 
-    const where: any = {};
+    const where: { category?: string; uploadedBy?: string } = {};
 
     if (category) {
       where.category = category;

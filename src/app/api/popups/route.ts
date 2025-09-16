@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { UserRole } from "@prisma/client";
+import { PopupsResponse, PopupWhereInput, CreatePopupRequest } from "@/types/api";
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // 필터링 조건 구성
-    const where: any = {};
+    const where: PopupWhereInput = {};
 
     if (active && active !== "all") {
       where.isActive = active === "true";
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
       db.popup.count({ where }),
     ]);
 
-    return NextResponse.json({
+    const response: PopupsResponse = {
       popups,
       pagination: {
         page,
@@ -56,7 +57,9 @@ export async function GET(request: NextRequest) {
         total,
         pages: Math.ceil(total / limit),
       },
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error("팝업 목록 조회 오류:", error);
     return NextResponse.json(
@@ -82,7 +85,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body: CreatePopupRequest = await request.json();
     const {
       title,
       content,

@@ -10,12 +10,14 @@ import {
   Legend,
 } from 'recharts';
 
+interface PieChartData {
+  status: string;
+  count: number;
+  [key: string]: string | number;
+}
+
 interface PieChartProps {
-  data: Array<{
-    status: string;
-    count: number;
-    [key: string]: any;
-  }>;
+  data: PieChartData[];
   dataKey?: string;
   nameKey?: string;
   title?: string;
@@ -58,6 +60,16 @@ export const PieChart: React.FC<PieChartProps> = React.memo(({
   }, [data, dataKey, total]);
 
   // 커스텀 라벨
+  interface LabelProps {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    innerRadius: number;
+    outerRadius: number;
+    percentage: number;
+    index: number;
+  }
+
   const renderCustomizedLabel = ({
     cx,
     cy,
@@ -66,7 +78,7 @@ export const PieChart: React.FC<PieChartProps> = React.memo(({
     outerRadius,
     percentage,
     index,
-  }: any) => {
+  }: LabelProps) => {
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -87,7 +99,14 @@ export const PieChart: React.FC<PieChartProps> = React.memo(({
   };
 
   // 커스텀 툴팁
-  const CustomTooltip = ({ active, payload }: any) => {
+  interface TooltipProps {
+    active?: boolean;
+    payload?: Array<{
+      payload: PieChartData & { percentage: string };
+    }>;
+  }
+
+  const CustomTooltip = ({ active, payload }: TooltipProps) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -103,11 +122,19 @@ export const PieChart: React.FC<PieChartProps> = React.memo(({
   };
 
   // 커스텀 레전드
-  const renderLegend = (props: any) => {
+  interface LegendProps {
+    payload: Array<{
+      value: string;
+      color: string;
+      payload: PieChartData;
+    }>;
+  }
+
+  const renderLegend = (props: LegendProps) => {
     const { payload } = props;
     return (
       <ul className="flex flex-wrap justify-center gap-3 mt-4">
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <li key={`item-${index}`} className="flex items-center gap-1">
             <span
               className="w-3 h-3 rounded-sm"
@@ -154,3 +181,5 @@ export const PieChart: React.FC<PieChartProps> = React.memo(({
     </div>
   );
 });
+
+PieChart.displayName = 'PieChart';

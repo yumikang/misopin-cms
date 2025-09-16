@@ -4,11 +4,13 @@ export type SettingCategory = 'general' | 'email' | 'security' | 'upload';
 
 export type SettingValueType = 'string' | 'number' | 'boolean' | 'json';
 
+export type SettingValue = string | number | boolean | Record<string, unknown> | unknown[];
+
 // 기본 설정 인터페이스
 export interface SystemSettingBase {
   id: string;
   key: string;
-  value: any;
+  value: SettingValue;
   category: SettingCategory;
   createdAt: Date;
   updatedAt: Date;
@@ -21,13 +23,13 @@ export interface SettingDefinition {
   label: string;
   description?: string;
   type: SettingValueType;
-  defaultValue: any;
+  defaultValue: SettingValue;
   required?: boolean;
   validation?: {
     min?: number;
     max?: number;
     pattern?: string;
-    options?: Array<{ value: any; label: string }>;
+    options?: Array<{ value: SettingValue; label: string }>;
   };
 }
 
@@ -108,14 +110,14 @@ export interface SettingsResponse {
 
 export interface SettingUpdateRequest {
   key: string;
-  value: any;
+  value: SettingValue;
   category: SettingCategory;
 }
 
 export interface BulkSettingUpdateRequest {
   settings: Array<{
     key: string;
-    value: any;
+    value: SettingValue;
     category: SettingCategory;
   }>;
 }

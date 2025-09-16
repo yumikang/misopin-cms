@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { UserRole, BoardType } from "@prisma/client";
+import { UserRole, BoardType, Prisma } from "@prisma/client";
+import { CreateBoardPostRequest } from "@/types/api";
 
 export async function GET(
   request: NextRequest,
@@ -47,7 +48,7 @@ export async function PATCH(
       return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body: Partial<CreateBoardPostRequest> = await request.json();
     const {
       boardType,
       title,
@@ -73,7 +74,7 @@ export async function PATCH(
     }
 
     // 수정할 데이터 구성
-    const updateData: any = {};
+    const updateData: Prisma.BoardPostUpdateInput = {};
 
     if (boardType && Object.values(BoardType).includes(boardType)) {
       updateData.boardType = boardType;

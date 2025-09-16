@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { CreatePageRequest } from "@/types/api";
 
 export async function GET(
   request: NextRequest,
@@ -44,7 +45,7 @@ export async function PUT(
   }
 
   try {
-    const body = await request.json();
+    const body: CreatePageRequest = await request.json();
     const { slug, title, content, metadata, isPublished } = body;
 
     // 현재 페이지 찾기

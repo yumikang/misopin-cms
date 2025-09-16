@@ -12,12 +12,14 @@ import {
   Legend,
 } from 'recharts';
 
+interface BarChartData {
+  category: string;
+  count: number;
+  [key: string]: string | number;
+}
+
 interface BarChartProps {
-  data: Array<{
-    category: string;
-    count: number;
-    [key: string]: any;
-  }>;
+  data: BarChartData[];
   dataKey?: string;
   title?: string;
   height?: number;
@@ -56,7 +58,17 @@ export const BarChart: React.FC<BarChartProps> = React.memo(({
   }, [data, colors]);
 
   // 커스텀 툴팁
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  interface TooltipProps {
+    active?: boolean;
+    payload?: Array<{
+      name: string;
+      value: number;
+      color: string;
+    }>;
+    label?: string;
+  }
+
+  const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 border rounded-lg shadow-lg">
@@ -124,3 +136,5 @@ export const BarChart: React.FC<BarChartProps> = React.memo(({
     </div>
   );
 });
+
+BarChart.displayName = 'BarChart';

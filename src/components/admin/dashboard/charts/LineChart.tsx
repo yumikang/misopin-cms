@@ -12,12 +12,14 @@ import {
   Legend,
 } from 'recharts';
 
+interface LineChartData {
+  date: string;
+  count: number;
+  [key: string]: string | number;
+}
+
 interface LineChartProps {
-  data: Array<{
-    date: string;
-    count: number;
-    [key: string]: any;
-  }>;
+  data: LineChartData[];
   dataKey?: string;
   title?: string;
   height?: number;
@@ -92,3 +94,5 @@ export const LineChart: React.FC<LineChartProps> = React.memo(({
     </div>
   );
 });
+
+LineChart.displayName = 'LineChart';
