@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { ko } from "date-fns/locale";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { UserRole } from "@prisma/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PopupPagination } from "./popup-pagination";
 import { PopupStatusBadge } from "./popup-status-badge";
+import { DeletePopupButton } from "./delete-popup-button";
 import {
   Eye,
   Calendar,
@@ -13,7 +17,8 @@ import {
   ExternalLink,
   Layers,
   Monitor,
-  Smartphone
+  Smartphone,
+  Edit2
 } from "lucide-react";
 
 interface PopupListProps {
@@ -65,8 +70,12 @@ function getDisplayTypeIcon(displayType: string) {
 
 export async function PopupList({ searchParams }: PopupListProps) {
   const resolvedSearchParams = await searchParams;
-  const data = await getPopups(resolvedSearchParams);
+  const [data, session] = await Promise.all([
+    getPopups(resolvedSearchParams),
+    getServerSession(authOptions)
+  ]);
   const { popups, pagination } = data;
+  const isSuperAdmin = session?.user?.role === UserRole.SUPER_ADMIN;
 
   if (!popups || popups.length === 0) {
     return (
@@ -113,6 +122,16 @@ export async function PopupList({ searchParams }: PopupListProps) {
                         상세
                       </Link>
                     </Button>
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/admin/popups/${popup.id}/edit`}>
+                        <Edit2 className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <DeletePopupButton
+                      popupId={popup.id}
+                      popupTitle={popup.title}
+                      isSuperAdmin={isSuperAdmin}
+                    />
                   </div>
                 </div>
               </CardHeader>
