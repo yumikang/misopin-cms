@@ -29,6 +29,7 @@ import {
   Bell,
   ChevronDown,
   Globe,
+  Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -59,6 +60,12 @@ const navigation = [
     name: "게시판 관리",
     href: "/admin/board",
     icon: FileText,
+    roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"],
+  },
+  {
+    name: "파일 관리",
+    href: "/admin/files",
+    icon: Upload,
     roles: ["SUPER_ADMIN", "ADMIN", "EDITOR"],
   },
   {

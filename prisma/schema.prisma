@@ -22,6 +22,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // 관계
+  uploadedFiles FileUpload[]
+
   @@map("users")
 }
 
@@ -146,4 +149,25 @@ model SystemSetting {
   updatedAt DateTime @updatedAt
 
   @@map("system_settings")
+}
+
+// 파일 업로드 모델
+model FileUpload {
+  id           String   @id @default(cuid())
+  filename     String   // 저장된 파일명 (유니크하게 생성)
+  originalName String   // 원본 파일명
+  mimeType     String   // 파일 MIME 타입
+  size         Int      // 파일 크기 (bytes)
+  path         String   // 저장 경로
+  url          String   // 접근 URL
+  category     String   @default("general") // 파일 카테고리 (image, document, etc.)
+  description  String?  // 파일 설명
+  uploadedById String   // 업로드한 사용자 ID
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  uploadedAt   DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([uploadedById])
+  @@index([category])
+  @@map("file_uploads")
 }
