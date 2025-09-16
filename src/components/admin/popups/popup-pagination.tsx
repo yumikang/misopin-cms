@@ -87,11 +87,11 @@ export function PopupPagination({ pagination }: PopupPaginationProps) {
           const isCurrentPage = pageNumber === page;
 
           return isCurrentPage ? (
-            <Button key={pageNumber} variant="default" size="sm" disabled>
+            <Button key={`page-${pageNumber}-${index}`} variant="default" size="sm" disabled>
               {pageNumber}
             </Button>
           ) : (
-            <Button key={pageNumber} asChild variant="outline" size="sm">
+            <Button key={`page-${pageNumber}-${index}`} asChild variant="outline" size="sm">
               <Link href={createPageUrl(pageNumber)}>{pageNumber}</Link>
             </Button>
           );
