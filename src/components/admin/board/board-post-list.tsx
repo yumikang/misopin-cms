@@ -32,25 +32,61 @@ interface BoardPostListProps {
 }
 
 async function getBoardPosts(params: any) {
-  const searchParams = new URLSearchParams();
+  // Server Component에서 직접 데이터베이스 조회
+  const { db } = await import("@/lib/db");
 
-  if (params.page) searchParams.set("page", params.page);
-  if (params.boardType) searchParams.set("boardType", params.boardType);
-  if (params.published) searchParams.set("published", params.published);
-  if (params.search) searchParams.set("search", params.search);
+  const page = parseInt(params.page || "1");
+  const limit = parseInt(params.limit || "10");
+  const boardType = params.boardType;
+  const published = params.published;
+  const search = params.search;
 
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL || "http://localhost:3001"}/api/board-posts?${searchParams.toString()}`,
-    {
-      cache: "no-store",
-    }
-  );
+  const skip = (page - 1) * limit;
 
-  if (!response.ok) {
-    throw new Error("게시글 데이터를 불러오는데 실패했습니다.");
+  // 필터링 조건 구성
+  const where: any = {};
+
+  if (boardType && boardType !== "all") {
+    where.boardType = boardType.toUpperCase();
   }
 
-  return response.json();
+  if (published && published !== "all") {
+    where.isPublished = published === "true";
+  }
+
+  if (search) {
+    where.OR = [
+      { title: { contains: search, mode: "insensitive" } },
+      { content: { contains: search, mode: "insensitive" } },
+      { author: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  // 게시글 목록 조회
+  const [posts, total] = await Promise.all([
+    db.boardPost.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: [
+        { isPinned: "desc" }, // 고정글 우선
+        { createdAt: "desc" },
+      ],
+    }),
+    db.boardPost.count({ where }),
+  ]);
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    posts,
+    pagination: {
+      currentPage: page,
+      totalPages,
+      totalItems: total,
+      itemsPerPage: limit,
+    },
+  };
 }
 
 function getBoardTypeLabel(boardType: string) {
@@ -156,7 +192,7 @@ export async function BoardPostList({ searchParams }: BoardPostListProps) {
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <span>
-                        {format(parseISO(post.publishedAt), "MM월 dd일", { locale: ko })}
+                        {format(new Date(post.publishedAt), "MM월 dd일", { locale: ko })}
                       </span>
                     </div>
                   )}
@@ -186,11 +222,11 @@ export async function BoardPostList({ searchParams }: BoardPostListProps) {
                 {/* 생성일 */}
                 <div className="pt-2 border-t text-xs text-muted-foreground">
                   <p>
-                    작성일: {format(parseISO(post.createdAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
+                    작성일: {format(new Date(post.createdAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
                   </p>
                   {post.updatedAt !== post.createdAt && (
                     <p>
-                      수정일: {format(parseISO(post.updatedAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
+                      수정일: {format(new Date(post.updatedAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
                     </p>
                   )}
                 </div>

@@ -30,24 +30,55 @@ interface PopupListProps {
 }
 
 async function getPopups(params: any) {
-  const searchParams = new URLSearchParams();
+  // Server Component에서 직접 데이터베이스 조회
+  const { db } = await import("@/lib/db");
 
-  if (params.page) searchParams.set("page", params.page);
-  if (params.active) searchParams.set("active", params.active);
-  if (params.search) searchParams.set("search", params.search);
+  const page = parseInt(params.page || "1");
+  const limit = parseInt(params.limit || "10");
+  const active = params.active;
+  const search = params.search;
 
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL || "http://localhost:3001"}/api/popups?${searchParams.toString()}`,
-    {
-      cache: "no-store",
-    }
-  );
+  const skip = (page - 1) * limit;
 
-  if (!response.ok) {
-    throw new Error("팝업 데이터를 불러오는데 실패했습니다.");
+  // 필터링 조건 구성
+  const where: any = {};
+
+  if (active && active !== "all") {
+    where.isActive = active === "true";
   }
 
-  return response.json();
+  if (search) {
+    where.OR = [
+      { title: { contains: search, mode: "insensitive" } },
+      { content: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  // 팝업 목록 조회
+  const [popups, total] = await Promise.all([
+    db.popup.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: [
+        { priority: "desc" }, // 우선순위 높은 순
+        { createdAt: "desc" },
+      ],
+    }),
+    db.popup.count({ where }),
+  ]);
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    popups,
+    pagination: {
+      currentPage: page,
+      totalPages,
+      totalItems: total,
+      itemsPerPage: limit,
+    },
+  };
 }
 
 function getDisplayTypeLabel(displayType: string) {
@@ -147,7 +178,7 @@ export async function PopupList({ searchParams }: PopupListProps) {
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <span>
-                        {format(parseISO(popup.startDate), "MM/dd", { locale: ko })} - {format(parseISO(popup.endDate), "MM/dd", { locale: ko })}
+                        {format(new Date(popup.startDate), "MM/dd", { locale: ko })} - {format(new Date(popup.endDate), "MM/dd", { locale: ko })}
                       </span>
                     </div>
 
@@ -176,7 +207,7 @@ export async function PopupList({ searchParams }: PopupListProps) {
                   {/* 생성일 */}
                   <div className="pt-2 border-t text-xs text-muted-foreground">
                     <p>
-                      생성일: {format(parseISO(popup.createdAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
+                      생성일: {format(new Date(popup.createdAt), "yyyy년 MM월 dd일 HH:mm", { locale: ko })}
                     </p>
                   </div>
                 </div>
