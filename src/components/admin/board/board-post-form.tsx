@@ -72,7 +72,7 @@ export function BoardPostForm({ mode, initialData, postId }: BoardPostFormProps)
     setIsLoading(true);
     try {
       const url = mode === "create" ? "/api/board-posts" : `/api/board-posts/${postId}`;
-      const method = mode === "create" ? "POST" : "PUT";
+      const method = mode === "create" ? "POST" : "PATCH";
 
       // 태그 문자열을 배열로 변환
       const tagsArray = data.tags

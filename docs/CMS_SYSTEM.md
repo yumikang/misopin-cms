@@ -39,12 +39,18 @@ src/
 ├── app/(admin)/admin/
 │   ├── popups/
 │   │   ├── page.tsx              # 팝업 목록 페이지
-│   │   └── create/
-│   │       └── page.tsx          # 팝업 생성 페이지
+│   │   ├── create/
+│   │   │   └── page.tsx          # 팝업 생성 페이지
+│   │   └── [id]/
+│   │       └── edit/
+│   │           └── page.tsx      # 팝업 수정 페이지
 │   └── board/
 │       ├── page.tsx              # 게시판 목록 페이지
-│       └── create/
-│           └── page.tsx          # 게시글 생성 페이지
+│       ├── create/
+│       │   └── page.tsx          # 게시글 생성 페이지
+│       └── [id]/
+│           └── edit/
+│               └── page.tsx      # 게시글 수정 페이지
 ├── components/admin/
 │   ├── popups/
 │   │   ├── popup-form.tsx       # 팝업 폼 컴포넌트
@@ -237,9 +243,23 @@ const boardPostSchema = z.object({
 3. "새 게시글" 버튼 클릭
 4. 게시글 작성 및 공개 설정
 
+### 3. 팝업 수정
+1. 관리자로 로그인
+2. `/admin/popups` 페이지 접속
+3. 수정할 팝업의 수정 버튼 클릭
+4. `/admin/popups/[id]/edit` 페이지에서 정보 수정
+
+### 4. 게시글 수정
+1. 관리자로 로그인
+2. `/admin/board` 페이지 접속
+3. 수정할 게시글의 수정 버튼 클릭
+4. `/admin/board/[id]/edit` 페이지에서 정보 수정
+
 ## 📝 API 엔드포인트
 
-### POST /api/popups
+### 팝업 관리
+
+#### POST /api/popups
 팝업 생성
 
 **Request Body:**
@@ -264,7 +284,55 @@ const boardPostSchema = z.object({
 - 401 Unauthorized: 인증 필요
 - 500 Internal Server Error: 서버 오류
 
-### POST /api/board-posts
+#### GET /api/popups/[id]
+개별 팝업 조회
+
+**Response:**
+- 200 OK: 팝업 데이터 반환
+- 401 Unauthorized: 인증 필요
+- 404 Not Found: 팝업을 찾을 수 없음
+- 500 Internal Server Error: 서버 오류
+
+#### PATCH /api/popups/[id]
+팝업 수정
+
+**Request Body:**
+```json
+{
+  "title": "string (optional)",
+  "content": "string (optional)",
+  "imageUrl": "string (optional)",
+  "linkUrl": "string (optional)",
+  "isActive": "boolean (optional)",
+  "startDate": "ISO 8601 datetime (optional)",
+  "endDate": "ISO 8601 datetime (optional)",
+  "position": "string (optional)",
+  "displayType": "MODAL | BANNER | SLIDE_IN (optional)",
+  "priority": "number (optional)"
+}
+```
+
+**Response:**
+- 200 OK: 수정된 팝업 반환
+- 400 Bad Request: 검증 실패
+- 401 Unauthorized: 인증 필요
+- 403 Forbidden: 권한 없음 (편집자)
+- 404 Not Found: 팝업을 찾을 수 없음
+- 500 Internal Server Error: 서버 오류
+
+#### DELETE /api/popups/[id]
+팝업 삭제 (슈퍼 관리자만)
+
+**Response:**
+- 200 OK: 삭제 성공
+- 401 Unauthorized: 인증 필요
+- 403 Forbidden: 권한 없음
+- 404 Not Found: 팝업을 찾을 수 없음
+- 500 Internal Server Error: 서버 오류
+
+### 게시판 관리
+
+#### POST /api/board-posts
 게시글 생성
 
 **Request Body:**
@@ -288,6 +356,50 @@ const boardPostSchema = z.object({
 - 401 Unauthorized: 인증 필요
 - 500 Internal Server Error: 서버 오류
 
+#### GET /api/board-posts/[id]
+개별 게시글 조회
+
+**Response:**
+- 200 OK: 게시글 데이터 반환
+- 401 Unauthorized: 인증 필요
+- 404 Not Found: 게시글을 찾을 수 없음
+- 500 Internal Server Error: 서버 오류
+
+#### PATCH /api/board-posts/[id]
+게시글 수정
+
+**Request Body:**
+```json
+{
+  "boardType": "NOTICE | EVENT (optional)",
+  "title": "string (optional)",
+  "content": "string (optional)",
+  "excerpt": "string (optional)",
+  "author": "string (optional)",
+  "imageUrl": "string (optional)",
+  "tags": ["string"] (optional),
+  "isPublished": "boolean (optional)",
+  "isPinned": "boolean (optional)"
+}
+```
+
+**Response:**
+- 200 OK: 수정된 게시글 반환
+- 400 Bad Request: 검증 실패
+- 401 Unauthorized: 인증 필요
+- 404 Not Found: 게시글을 찾을 수 없음
+- 500 Internal Server Error: 서버 오류
+
+#### DELETE /api/board-posts/[id]
+게시글 삭제 (슈퍼 관리자만)
+
+**Response:**
+- 200 OK: 삭제 성공
+- 401 Unauthorized: 인증 필요
+- 403 Forbidden: 권한 없음
+- 404 Not Found: 게시글을 찾을 수 없음
+- 500 Internal Server Error: 서버 오류
+
 ## 🛠️ 개발 과정
 
 ### MCP 도구 활용
@@ -304,6 +416,8 @@ const boardPostSchema = z.object({
 4. ✅ 팝업 타입 및 위치 설정
 5. ✅ API 통합 및 검증
 6. ✅ UI/UX 최적화
+7. ✅ 팝업 수정 페이지 구현
+8. ✅ PATCH 메서드로 API 통합
 
 #### 게시판 시스템
 1. ✅ 게시판 생성 페이지 라우트 구조
@@ -314,18 +428,20 @@ const boardPostSchema = z.object({
 6. ✅ 세션 기반 작성자 자동 설정
 7. ✅ API 통합 및 검증
 8. ✅ 반응형 UI 구현
+9. ✅ 게시글 수정 페이지 구현
+10. ✅ PATCH 메서드로 API 통합
 
 ## 📈 향후 개선 사항
 
 ### 팝업 시스템
-- [ ] 팝업 수정 기능
-- [ ] 팝업 삭제 기능
+- [x] 팝업 수정 기능
+- [ ] 팝업 삭제 기능 (UI 구현 필요)
 - [ ] 팝업 미리보기 기능
 - [ ] 팝업 통계 대시보드
 
 ### 게시판 시스템
-- [ ] 게시글 수정 기능
-- [ ] 게시글 삭제 기능
+- [x] 게시글 수정 기능
+- [ ] 게시글 삭제 기능 (UI 구현 필요)
 - [ ] 조회수 카운팅 기능
 - [ ] 댓글 시스템
 - [ ] 파일 첨부 기능
@@ -349,6 +465,6 @@ CMS 시스템 관련 문의사항이나 버그 리포트는 개발팀에 연락�
 
 ---
 
-*Last Updated: 2025-09-16*
-*Version: 2.0.0*
-*Changes: 게시판 관리 시스템 추가*
+*Last Updated: 2025-09-17*
+*Version: 3.0.0*
+*Changes: 팝업 및 게시판 수정 기능 추가*

@@ -85,7 +85,7 @@ export function PopupForm({ mode, initialData, popupId }: PopupFormProps) {
     setIsLoading(true);
     try {
       const url = mode === "create" ? "/api/popups" : `/api/popups/${popupId}`;
-      const method = mode === "create" ? "POST" : "PUT";
+      const method = mode === "create" ? "POST" : "PATCH";
 
       const response = await fetch(url, {
         method,
