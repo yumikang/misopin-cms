@@ -1,0 +1,34 @@
+@charset "utf-8";
+@import url('https://cdn.jsdelivr.net/gh/fonts-archive/Aggro/subsets/Aggro-dynamic-subset.css');
+#quickList{position:fixed;z-index:8;top:50%;right:1.5%;transform:translateY(-50%)}
+#quickList .pl{white-space:pre-line}
+#quickList .plus_link{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:15px;width:94px;height:159px;background:url(./img01.png) no-repeat center / cover}
+#quickList .plus_link .pl{font-size:15px;font-weight:500;font-family:'Aggro';text-align:center;color:#fff}
+#quickList .plus_link .go{display:flex;align-items:end;font-size:9px;font-weight:300;font-family:'Aggro';color:#fff}
+#quickList .plus_link svg{width:12px;height:12px}
+#quickList .list{display:flex;flex-direction:column;align-items:center;margin-top:10px;margin-bottom:15px;padding:20px 5%;max-width:94px;border-radius:8px;box-shadow:4px 4px 20px rgba(17, 17, 17, 0.3);background-color:#fff;color:#111}
+#quickList .list li{width:100%}
+#quickList .list li a{display:flex;flex-direction:column;align-items:center;gap:5px;margin-bottom:15px;padding-bottom:15px;width:100%;border-bottom:1px solid #e1e1e1}
+#quickList .list li:last-child a{margin-bottom:0px;padding-bottom:0px;border-bottom:0px}
+#quickList .list .kakao{width:23px;height:21px;background:url(./kakao.png) no-repeat center / contain}
+#quickList .list .youtube{width:23px;height:16px;background:url(./youtube.png) no-repeat center / contain}
+#quickList .list .cate{font-size:13px;font-weight:500;transition:all .3s}
+#quickList .list .number{margin-top:5px;font-size:20px;font-weight:700}
+#quickList .list svg{color:#111}
+
+#quickList .progress-wrap{position:relative;margin:0 auto;width:50px;height:50px;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(200,200,200,.5);background:none !important;transition:all .2s;cursor:pointer}
+#quickList .progress-wrap span{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%)}
+#quickList .progress-wrap span svg{width:20px;height:20px;stroke-width:1.5px;color:#999;transition:all .3s}
+#quickList .progress-wrap svg path{fill:none}
+#quickList .progress-wrap svg.progress-circle path{stroke:var(--primary);stroke-width:4;-webkit-transition:all .2s;transition:all .2s}
+
+#quickList .list li a:hover .cate{color:var(--primary)}
+#quickList .progress-wrap:hover span svg{color:var(--primary)}
+
+/* 강제로 투명 배경 설정 */
+#quickList .progress-wrap,
+#quickList .progress-wrap:before,
+#quickList .progress-wrap:after{
+    background:none !important;
+    background-color:transparent !important;
+}

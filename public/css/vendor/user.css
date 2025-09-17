@@ -1,0 +1,153 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/fonts-archive/Freesentation/Freesentation.css');
+/* 초기화 */
+* {-webkit-text-size-adjust:none}
+body{background:#fff;font-size:0.81em;font-family:var(--k-font), var(--e-font)}
+h1, h2, h3, h4, h5, h6, input, button, textarea, select{font-family:var(--k-font), var(--e-font)}
+#device_change{border:1px solid #666;font-size:3.5em;box-shadow:none}
+:root{
+  /* Colors */
+  --primary:#38b0c9;
+  --black:#111;
+  --main-black:#383838;
+
+  /* Fonts */
+  --k-font:'Freesentation';
+  --e-font:'Marcellus';
+
+  /* Sizes */
+  --main-size:1450px;
+
+  /* Typography Scale */
+  --font-xs: 0.75rem;     /* 12px */
+  --font-sm: 0.875rem;    /* 14px */
+  --font-base: 1rem;      /* 16px */
+  --font-lg: 1.125rem;    /* 18px */
+  --font-xl: 1.25rem;     /* 20px */
+  --font-2xl: 1.5rem;     /* 24px */
+  --font-3xl: 1.875rem;   /* 30px */
+  --font-4xl: 2.125rem;   /* 34px */
+  --font-5xl: 3.4375rem;  /* 55px */
+}
+#sh_wrapper *{word-break:keep-all}
+
+/* HEADER */
+#sh_hd{position:relative;width:100%}
+
+/* MAIN  */
+#main_banner{position:relative;width:100%}
+
+/* INDEX */
+#sh_section{position:relative;width:100%;line-height:1.5;font-family:var(--k-font), var(--e-font)}
+#sh_section .pl{white-space:pre-line}
+#sh_section .section_tit{text-align:center}
+#sh_section .section_h2{font-size:var(--font-5xl);font-weight:400;font-family:var(--e-font);color:var(--black)}
+#sh_section .section_h2 span{color:var(--primary)}
+#sh_section .section_p{font-size:var(--font-xl);font-weight:500;color:var(--primary)}
+
+/* CONTENT */
+#sh_container{position:relative;width:100%}
+#sh_container_wrapper{position:relative;width:100%}
+#sh_content{position:relative;width:1200px;min-height:620px;padding:70px 0;margin:0 auto}
+
+/* SNB */
+#sh_aside{position:relative;width:100%;border-bottom:solid 1px #e5e5e5}
+#sh_aside_wrapper{position:relative;width:1200px;margin:0 auto;zoom:1}
+
+/* FOOTER */
+#sh_ft{position:relative;padding:180px 0 40px;width:100%;line-height:1.5;font-family:var(--k-font), var(--e-font);color:#fff;background-color:#282828}
+#sh_ft .top{display:flex;margin:auto;max-width:1450px;width:100%;padding:0 20px}
+#sh_ft .form_area{width:50%}
+#sh_ft .form_area h2{font-size:var(--font-5xl);font-weight:400;font-family:var(--e-font)}
+#sh_ft .form_area p{font-size:var(--font-xl);font-weight:500}
+#sh_ft .form_area form{margin-top:50px;width:80%}
+#sh_ft .form_area .sh_input:focus{outline:none !important;border:none !important;border-bottom:1px solid rgb(255, 255, 255, 0.3) !important;box-shadow:none !important}
+#sh_ft .form_area .sh_input{padding:25px 0;width:100%;font-size:var(--font-base);font-weight:600;border:none;outline:none;box-shadow:none;border-bottom:1px solid rgb(255, 255, 255, 0.3);color:#fff;background-color:transparent}
+#sh_ft .form_area .sh_input::placeholder {color:rgb(255, 255, 255, 0.3)}
+#sh_ft .form_area textarea{padding:25px 0 60px !important}
+#sh_ft .form_area .p_info{display:flex;gap:20px}
+#sh_ft .form_area .p_info ul{width:50%}
+#sh_ft .form_area ul li, #sh_ft .form_area ul input, #sh_ft .form_area ul textarea{width:100%}
+#sh_ft .form_area label{display:none}
+#sh_ft .form_area .prv_area{display:flex;justify-content:space-between;align-items:start;margin-top:20px}
+#sh_ft .form_area .send_btn{display:flex;justify-content:center;align-items:center;width:max-content;padding-top:20px}
+#sh_ft .form_area .send_btn button{width:150px;height:58px;border-radius:29px;font-size:var(--font-lg);font-weight:700;border:2px solid var(--primary);color:#fff;background-color:var(--primary);transition:all .3s}
+#sh_ft .form_area .consent{display:flex;align-items:center;gap:5px}
+#sh_ft .form_area .consent a{font-size:var(--font-xs);font-weight:400;color:rgb(255, 255, 255, 0.6)}
+#sh_ft .form_area .ck_box{cursor:pointer}
+#sh_ft .map_area{overflow:hidden; width:50%;height:400px;border-radius:10px}
+#sh_ft iframe{width:100%;height:100%}
+#sh_ft .bottom{display:flex;margin:100px auto;width:80%}
+#sh_ft .bottom .cate{font-size:var(--font-xl);font-weight:700;color:#fff}
+#sh_ft .info_box{width:50%}
+#sh_ft .info_box{display:flex;flex-direction:column;gap:20px}
+#sh_ft .info_box li{display:flex;gap:32px}
+#sh_ft .info_box li:first-child{align-items:center}
+#sh_ft .info_box li:last-child ul li+li{margin-top:10px}
+#sh_ft .info_box .number{font-size:var(--font-3xl);font-weight:400;font-family:var(--e-font)}
+#sh_ft .info_box .day, #sh_ft .bottom .info_box .time{font-size:var(--font-lg);font-weight:600}
+#sh_ft .info_box .notice{font-size:var(--font-xs);font-weight:600}
+#sh_ft .same_as{width:50%}
+#sh_ft .same_as li{display:flex;align-items:center;gap:32px}
+#sh_ft .same_as li+li{margin-top:20px}
+#sh_ft .same_as address{font-style:unset;font-size:var(--font-xl);font-weight:700}
+#sh_ft .same_as .cate{min-width:65px}
+#sh_ft .same_as .youtube{width:24px;height:17px;background:url(../sh_img/ft/youtube.png) no-repeat center / contain}
+#sh_ft .same_as .kakao{width:22px;height:20px;background:url(../sh_img/ft/kakao.png) no-repeat center / contain}
+#sh_ft .same_as a{font-size:var(--font-lg);font-weight:400;color:#fff;transition:all .3s}
+#sh_ft .copy{padding-top:100px;margin-top:100px;border-top:1px solid #777;font-size:var(--font-sm);font-weight:400;color:#777}
+#sh_ft .copy .top{justify-content:space-between}
+#sh_ft .copy .top a{font-size:var(--font-sm);font-weight:400;color:#777;transition:all .3s}
+#sh_ft .copy .top a+a{margin-left:25px}
+#sh_ft .copy .main_info{margin:140px auto;width:80%}
+#sh_ft .copy .bottom{justify-content:space-between;margin:0 auto;font-family:var(--e-font)}
+#sh_ft .copy .bottom a{font-size:var(--font-xs);color:#777;transition:all .3s}
+#sh_ft .copy .bottom a+a{margin-left:15px}
+
+#sh_ft .form_area .send_btn button:hover{border:2px solid #fff;color:var(--primary);background-color:#fff}
+#sh_ft .same_as a:hover{color:var(--primary)}
+#sh_ft .copy .top a:hover{color:#fff}
+#sh_ft .copy .bottom a:hover{color:#fff}
+
+/* 푸터 반응형 스타일 */
+@media (max-width: 1024px) {
+    #sh_ft .top { flex-direction: column; gap: 40px; }
+    #sh_ft .form_area, #sh_ft .map_area { width: 100%; }
+    #sh_ft .form_area form { width: 100%; }
+    #sh_ft .map_area { height: 350px; }
+    #sh_ft .bottom { flex-direction: column; gap: 40px; width: 100%; }
+    #sh_ft .info_box, #sh_ft .same_as { width: 100%; }
+}
+
+@media (max-width: 768px) {
+    #sh_ft .form_area h2 { font-size: 2.1875rem; }  /* 35px */
+    #sh_ft .form_area p { font-size: var(--font-base); }
+    #sh_ft .form_area .p_info { flex-direction: column; gap: 0; }
+    #sh_ft .form_area .p_info ul { width: 100%; }
+    #sh_ft .map_area { height: 300px; }
+    #sh_ft .info_box .day, #sh_ft .bottom .info_box .time { font-size: var(--font-base); }
+    #sh_ft .same_as address { font-size: var(--font-base); }
+    #sh_ft .copy .top { flex-direction: column; align-items: center; gap: 20px; }
+    #sh_ft .copy .bottom { flex-direction: column; align-items: center; gap: 10px; }
+}
+
+@media (max-width: 480px) {
+    #sh_ft .top { padding: 0 15px; }
+    #sh_ft .form_area h2 { font-size: 1.75rem; }  /* 28px */
+    #sh_ft .form_area .sh_input { font-size: var(--font-sm); padding: 15px 0; }
+    #sh_ft .form_area .send_btn button { width: 120px; height: 48px; font-size: var(--font-sm); }
+    #sh_ft .map_area { height: 250px; }
+    #sh_ft .info_box .number { font-size: var(--font-xl); }
+    #sh_ft .same_as address { font-size: var(--font-sm); }
+}
+
+/* 사이트맵 */
+#sh_site_map {position:relative;width:100%;min-height:500px;height:500px auto;margin:0 auto;font-family:'notokr-regular'}
+.sh_site_map01 {float:left;width:30%;margin-right:3%;min-height:200px;height:200px auto}
+.sh_site_map_title {padding-left:17px;font-size:1.4em;font-weight:normal;font-family:'notokr-medium'}
+.sh_site_map_title a {color:#333}
+.sh_site_map_line {margin:10px 0;border-bottom:2px solid #8b8b8b}
+.sh_site_map_box {width:100%;margin:0 auto;padding:10px;border-bottom:1px solid #ebebeb;border-top:1px solid #ebebeb;min-height:80px;background:#f7f7f7}
+.sh_site_map_txt {padding:5px;font-size:14px;line-height:1.2em}
+.sh_site_map_txt a{color:#666;font-family:notokr-medium}

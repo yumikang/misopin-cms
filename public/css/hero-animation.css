@@ -1,0 +1,172 @@
+/* ========================================
+   MISOPIN CLINIC 히어로 애니메이션
+   생성일: 2025-01-07
+   목적: 메인 페이지 히어로 섹션 GSAP 애니메이션
+   ======================================== */
+
+/* Pretendard 폰트 정의 - 메인 디스플레이 폰트 */
+@font-face {
+    font-family: 'Pretendard';
+    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff') format('woff');
+    font-weight: 700;
+    font-display: swap;
+}
+
+/* 히어로 섹션 기본 설정 */
+#MainVisual {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 배경 이미지 설정 */
+#MainVisual::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/hero-background.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -1;
+    /* 어둡게 처리하여 텍스트 가독성 향상 */
+    filter: brightness(0.6) contrast(1.1);
+}
+
+/* 텍스트 컨테이너 설정 */
+.h1_mst {
+    position: absolute;
+    font-family: 'Pretendard', 'NanumSquare', sans-serif;
+    font-size: 180px;
+    font-weight: 700;
+    line-height: 1;
+    color: #ffffff;
+    letter-spacing: 0.08em;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+/* MISOPIN 위치 */
+.h1_mst01 {
+    left: 50%;
+    top: 42%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+/* CLINIC 위치 */
+.h1_mst02 {
+    left: 50%;
+    top: 55%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+/* 각 글자 스타일 */
+.h1_mst .ltr {
+    opacity: 0;
+    display: inline-block;
+    margin: 0 0.02em;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* 서브타이틀 스타일 */
+.subtitle {
+    position: absolute;
+    left: 50%;
+    top: 65%;
+    transform: translateX(-50%);
+    text-align: center;
+    opacity: 0;
+    z-index: 10;
+}
+
+.subtitle h2 {
+    font-size: 22px;
+    color: #ffffff;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+}
+
+/* 태블릿 반응형 (768px - 1024px) */
+@media (max-width: 1024px) {
+    .h1_mst {
+        font-size: 120px;
+    }
+    
+    .h1_mst01 {
+        top: 40%;
+    }
+    
+    .h1_mst02 {
+        top: 52%;
+    }
+    
+    .subtitle h2 {
+        font-size: 20px;
+    }
+}
+
+/* 모바일 반응형 (768px 이하) */
+@media (max-width: 768px) {
+    #MainVisual {
+        min-height: 500px;
+    }
+    
+    .h1_mst {
+        font-size: 60px;
+        letter-spacing: 0.02em;
+    }
+    
+    .h1_mst01 {
+        top: 38%;
+    }
+    
+    .h1_mst02 {
+        top: 48%;
+    }
+    
+    .subtitle {
+        top: 58%;
+    }
+    
+    .subtitle h2 {
+        font-size: 16px;
+        letter-spacing: 0.1em;
+    }
+}
+
+/* 소형 모바일 (480px 이하) */
+@media (max-width: 480px) {
+    .h1_mst {
+        font-size: 40px;
+    }
+    
+    .h1_mst .ltr {
+        margin: 0 0.01em;
+    }
+    
+    .subtitle h2 {
+        font-size: 14px;
+    }
+}
+
+/* 애니메이션 완료 후 호버 효과 */
+.h1_mst[style*="pointer-events: auto"] .ltr:hover {
+    transform: translateY(-5px) scale(1.05);
+    transition: transform 0.3s ease;
+}

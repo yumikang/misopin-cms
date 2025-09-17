@@ -1,0 +1,61 @@
+{
+  "buildCommand": "npx prisma generate && npm run build",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "regions": ["icn1"],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "build": {
+    "env": {
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  },
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30
+    },
+    "app/(admin)/admin/**/*.tsx": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/api/public/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=300, stale-while-revalidate=600"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/uploads/:path*",
+      "destination": "/api/files/serve?path=:path*"
+    }
+  ]
+}
