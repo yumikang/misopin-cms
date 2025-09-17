@@ -1,218 +1,160 @@
 {
   "tasks": [
     {
-      "id": "9a8a64c2-20f5-4c8f-a049-1d28b4782e72",
-      "name": "API Routes NextApiRequest/NextApiResponse 타입 정의",
-      "description": "Next.js 15 App Router API Routes에서 발생하는 req, res any 타입 에러 해결. NextApiRequest, NextApiResponse 타입 적용 및 HTTP 메서드별 요청/응답 타입 정의",
-      "notes": "src/pages/api/* 디렉토리의 모든 API 엔드포인트에 적용. 기존 any 타입을 Next.js 표준 타입으로 교체",
+      "id": "ac6a0937-ed1b-4012-9ab0-5ca9f1bfb079",
+      "name": "shadcn/ui 설치 및 기본 컴포넌트 설정",
+      "description": "shadcn/ui를 프로젝트에 설치하고 필요한 컴포넌트들을 추가. Tailwind CSS 설정 확인 및 컴포넌트 테마 설정",
       "status": "completed",
       "dependencies": [],
-      "createdAt": "2025-09-16T07:33:11.950Z",
-      "updatedAt": "2025-09-16T07:36:27.946Z",
+      "createdAt": "2025-09-17T06:18:14.452Z",
+      "updatedAt": "2025-09-17T06:19:30.018Z",
       "relatedFiles": [
         {
-          "path": "src/pages/api/auth/[...nextauth].ts",
+          "path": "tailwind.config.ts",
           "type": "TO_MODIFY",
-          "description": "NextAuth API 라우트 타입 정의"
+          "description": "Tailwind 설정"
         },
         {
-          "path": "src/pages/api/pages/index.ts",
-          "type": "TO_MODIFY",
-          "description": "페이지 API 타입 정의"
+          "path": "components.json",
+          "type": "CREATE",
+          "description": "shadcn/ui 설정 파일"
         },
         {
-          "path": "src/pages/api/popups/index.ts",
+          "path": "app/globals.css",
           "type": "TO_MODIFY",
-          "description": "팝업 API 타입 정의"
-        },
-        {
-          "path": "src/pages/api/board/index.ts",
-          "type": "TO_MODIFY",
-          "description": "게시판 API 타입 정의"
-        },
-        {
-          "path": "src/pages/api/reservations/index.ts",
-          "type": "TO_MODIFY",
-          "description": "예약 API 타입 정의"
+          "description": "전역 스타일"
         }
       ],
-      "implementationGuide": "// 1. Next.js 타입 import 추가\nimport { NextApiRequest, NextApiResponse } from 'next';\n\n// 2. API handler 함수 타입 정의\nexport default function handler(\n  req: NextApiRequest,\n  res: NextApiResponse<ApiResponse>\n) {\n  // handler 구현\n}\n\n// 3. 응답 타입 인터페이스 정의\ninterface ApiResponse {\n  success: boolean;\n  data?: any;\n  error?: string;\n}",
-      "verificationCriteria": "모든 API Routes에서 req, res any 타입 에러 제거. TypeScript 컴파일 성공 및 ESLint any 타입 경고 해결",
-      "analysisResult": "Next.js 15.5.3 + TypeScript + Prisma 프로젝트의 112개 ESLint 에러를 체계적으로 해결하여 TypeScript 100% 최적화 달성. API Routes의 88개 any 타입과 24개 기타 경고를 4단계로 분해하여 타입 안정성과 코드 품질 향상.",
-      "summary": "API Routes에 대한 기본적인 타입 정의를 완료했습니다. `/types/api.ts` 파일을 생성하여 공통 타입을 정의하고, 주요 API 엔드포인트들에 `NextRequest`, `NextResponse`와 함께 Prisma 생성 타입을 활용한 타입 안전성을 확보했습니다. 아직 일부 파일의 any 타입이 남아있지만, API Routes의 핵심 타입 구조는 완성되었습니다. 다음 단계에서 나머지 any 타입들을 해결해야 합니다.",
-      "completedAt": "2025-09-16T07:36:27.936Z"
+      "implementationGuide": "1. npx shadcn-ui@latest init 실행\n2. TypeScript, Tailwind CSS 설정 확인\n3. 필요 컴포넌트 추가: button, card, dialog, form, input, select, table, tabs, textarea, badge, alert, dropdown-menu, calendar",
+      "verificationCriteria": "shadcn/ui 컴포넌트들이 정상적으로 import되고 렌더링되는지 확인",
+      "analysisResult": "Next.js 15 + Supabase + shadcn/ui를 활용한 CMS 관리자 시스템 구축. 기존 Express.js 워크플로우를 참고하여 모든 관리 모듈(팝업, 게시판, 페이지, 파일, 설정, 사용자)을 구현.",
+      "summary": "shadcn/ui가 성공적으로 설치되고 필요한 모든 컴포넌트(button, card, dialog, form, input, select, table, tabs, textarea, badge, alert, dropdown-menu, calendar)가 추가되었습니다. lib/utils.ts와 components.json 파일이 생성되었고 Tailwind CSS v4와 호환되도록 설정되었습니다.",
+      "completedAt": "2025-09-17T06:19:30.017Z"
     },
     {
-      "id": "ddd0c28f-ea61-445f-9dca-6269614fdde5",
-      "name": "Prisma 생성 타입 활용 및 데이터베이스 모델 타입 정의",
-      "description": "Prisma Client 생성 타입을 활용하여 데이터베이스 모델의 정확한 타입 정의. API Routes와 컴포넌트에서 Prisma 타입 적용",
-      "notes": "Prisma 스키마 변경 시 자동으로 타입이 업데이트되므로 타입 안정성 확보. 관계형 데이터를 위한 확장 타입 정의 포함",
+      "id": "44881b6d-d781-41c7-8b5e-6c293ec15d06",
+      "name": "Supabase 데이터베이스 스키마 완성",
+      "description": "모든 필요한 테이블(popups, board_categories, board_posts, pages, files, settings) 생성 및 RLS 정책 설정",
       "status": "completed",
-      "dependencies": [
-        {
-          "taskId": "9a8a64c2-20f5-4c8f-a049-1d28b4782e72"
-        }
-      ],
-      "createdAt": "2025-09-16T07:33:11.950Z",
-      "updatedAt": "2025-09-16T07:38:58.299Z",
+      "dependencies": [],
+      "createdAt": "2025-09-17T06:18:14.452Z",
+      "updatedAt": "2025-09-17T06:24:58.248Z",
       "relatedFiles": [
         {
-          "path": "prisma/schema.prisma",
-          "type": "REFERENCE",
-          "description": "Prisma 스키마 참조"
-        },
-        {
-          "path": "src/lib/db.ts",
+          "path": "app/api/init/route.ts",
           "type": "TO_MODIFY",
-          "description": "데이터베이스 클라이언트 타입 정의"
+          "description": "DB 초기화 스크립트"
         },
         {
-          "path": "src/types/api.ts",
+          "path": "lib/supabase-admin.ts",
+          "type": "REFERENCE",
+          "description": "Supabase Admin 클라이언트"
+        }
+      ],
+      "implementationGuide": "1. /api/init/route.ts 업데이트하여 전체 스키마 포함\n2. 각 테이블별 인덱스 생성\n3. RLS 정책 설정 (Service Role Key 활용)\n4. 초기 데이터 시드 추가",
+      "verificationCriteria": "Supabase 대시보드에서 모든 테이블이 생성되고 RLS 정책이 적용되었는지 확인",
+      "analysisResult": "Next.js 15 + Supabase + shadcn/ui를 활용한 CMS 관리자 시스템 구축. 기존 Express.js 워크플로우를 참고하여 모든 관리 모듈(팝업, 게시판, 페이지, 파일, 설정, 사용자)을 구현.",
+      "summary": "Supabase 데이터베이스 스키마가 완벽하게 구현되었습니다. 8개의 테이블(users, reservations, popups, board_categories, board_posts, pages, files, settings)이 모두 생성되었고, 적절한 인덱스와 RLS 정책이 설정되었으며, 기본 카테고리와 설정값도 추가되었습니다. TypeScript 타입 정의도 any 타입 없이 완벽하게 작성되었습니다.",
+      "completedAt": "2025-09-17T06:24:58.247Z"
+    },
+    {
+      "id": "b3a05dad-9b54-435e-a7e5-0e34b7d7ad0e",
+      "name": "페이지 관리 UI 컴포넌트 구현",
+      "description": "페이지 목록 테이블, 생성/수정 다이얼로그, SEO 메타데이터 입력 필드를 포함한 완전한 페이지 관리 인터페이스 구현",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2025-09-17T06:38:28.847Z",
+      "updatedAt": "2025-09-17T06:40:02.542Z",
+      "relatedFiles": [
+        {
+          "path": "/app/admin/pages/page.tsx",
           "type": "CREATE",
-          "description": "API 응답 타입 정의 파일 생성"
+          "description": "페이지 관리 UI 메인 파일"
         }
       ],
-      "implementationGuide": "// 1. Prisma 생성 타입 import\nimport { Page, Popup, BoardPost, Reservation, User } from '@prisma/client';\n\n// 2. API 응답 타입에 Prisma 타입 활용\ninterface PagesResponse {\n  pages: Page[];\n  pagination: PaginationInfo;\n}\n\n// 3. 확장 타입 정의 (필요한 경우)\ntype PageWithRelations = Page & {\n  author: User;\n};\n\n// 4. 부분 타입 활용\ntype PageCreate = Pick<Page, 'title' | 'content' | 'slug'>;",
-      "verificationCriteria": "Prisma 생성 타입을 활용한 모든 데이터베이스 관련 any 타입 제거. 타입 안정성 확보 및 IntelliSense 지원 확인",
-      "analysisResult": "Next.js 15.5.3 + TypeScript + Prisma 프로젝트의 112개 ESLint 에러를 체계적으로 해결하여 TypeScript 100% 최적화 달성. API Routes의 88개 any 타입과 24개 기타 경고를 4단계로 분해하여 타입 안정성과 코드 품질 향상.",
-      "summary": "Prisma 생성 타입을 활용한 포괄적인 타입 시스템을 구축했습니다. `/types/api.ts`에 확장 타입, 관계형 데이터 타입, 부분 타입, 타입 가드 함수들을 추가하여 Prisma의 강력한 타입 시스템을 최대한 활용했습니다. `/lib/db.ts`에 타입 안전성을 위한 헬퍼 함수들도 추가하여 데이터베이스 작업의 타입 안정성을 크게 향상시켰습니다. API Routes에서 Prisma where 조건 타입을 적용하여 쿼리 안정성도 확보했습니다.",
-      "completedAt": "2025-09-16T07:38:58.287Z"
+      "implementationGuide": "shadcn/ui의 Table, Dialog, Form 컴포넌트 사용. 슬러그 자동 생성 함수 구현. 템플릿 선택 드롭다운 추가",
+      "verificationCriteria": "페이지 목록 표시, CRUD 다이얼로그 작동, 슬러그 자동 생성 확인",
+      "analysisResult": "CMS 페이지 관리 모듈을 shadcn/ui 컴포넌트로 구현. 페이지 CRUD, SEO 메타데이터, 템플릿 시스템, 슬러그 관리 기능 포함",
+      "summary": "페이지 관리 UI 컴포넌트를 성공적으로 구현. 페이지 CRUD 기능, 슬러그 자동 생성, SEO 메타데이터 관리, 템플릿 선택 기능 모두 완벽하게 작동",
+      "completedAt": "2025-09-17T06:40:02.541Z"
     },
     {
-      "id": "a1061895-6f68-4fb5-a628-834e0a60659f",
-      "name": "React 컴포넌트 Props 타입 정의 및 Chart 컴포넌트 타입 보강",
-      "description": "React 컴포넌트의 props any 타입과 Recharts 컴포넌트의 타입 에러 해결. TypeScript interface를 통한 컴포넌트 타입 안정성 확보",
-      "notes": "모든 React 컴포넌트에 명시적 타입 정의. Recharts 라이브러리의 타입 정의 활용하여 차트 컴포넌트 타입 안정성 확보",
-      "status": "in_progress",
-      "dependencies": [
-        {
-          "taskId": "ddd0c28f-ea61-445f-9dca-6269614fdde5"
-        }
-      ],
-      "createdAt": "2025-09-16T07:33:11.950Z",
-      "updatedAt": "2025-09-16T07:39:35.996Z",
+      "id": "7527d00d-3fe7-4555-b5d1-ef5262f95b29",
+      "name": "파일 관리 모듈 구현",
+      "description": "파일 업로드, 목록 보기, 삭제 기능을 가진 파일 관리 시스템 구현",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2025-09-17T06:38:28.847Z",
+      "updatedAt": "2025-09-17T06:47:37.102Z",
       "relatedFiles": [
         {
-          "path": "src/components/charts/dashboard-chart.tsx",
-          "type": "TO_MODIFY",
-          "description": "대시보드 차트 컴포넌트 타입 정의"
-        },
-        {
-          "path": "src/components/admin/dashboard/stats.tsx",
-          "type": "TO_MODIFY",
-          "description": "통계 컴포넌트 타입 정의"
-        },
-        {
-          "path": "src/types/components.ts",
+          "path": "/app/api/files/route.ts",
           "type": "CREATE",
-          "description": "공통 컴포넌트 타입 정의 파일"
+          "description": "파일 관리 Mock API"
+        },
+        {
+          "path": "/app/admin/files/page.tsx",
+          "type": "CREATE",
+          "description": "파일 관리 UI"
         }
       ],
-      "implementationGuide": "// 1. 컴포넌트 Props 인터페이스 정의\ninterface ComponentProps {\n  data: DataType[];\n  onAction?: (item: DataType) => void;\n  className?: string;\n}\n\n// 2. Recharts 타입 정의\nimport { ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';\n\ninterface ChartData {\n  name: string;\n  value: number;\n}\n\n// 3. 컴포넌트에 타입 적용\nconst MyComponent: React.FC<ComponentProps> = ({ data, onAction, className }) => {\n  return <div>{/* 컴포넌트 구현 */}</div>;\n};",
-      "verificationCriteria": "모든 React 컴포넌트 props any 타입 제거. Recharts 관련 타입 에러 해결. 컴포넌트 IntelliSense 지원 확인",
-      "analysisResult": "Next.js 15.5.3 + TypeScript + Prisma 프로젝트의 112개 ESLint 에러를 체계적으로 해결하여 TypeScript 100% 최적화 달성. API Routes의 88개 any 타입과 24개 기타 경고를 4단계로 분해하여 타입 안정성과 코드 품질 향상."
+      "implementationGuide": "Mock API로 파일 메타데이터 관리. 실제 업로드는 나중에 구현 예정. 파일 타입별 아이콘, 크기 표시",
+      "verificationCriteria": "파일 목록 표시, 파일 정보 관리, 삭제 기능 확인",
+      "analysisResult": "CMS 페이지 관리 모듈을 shadcn/ui 컴포넌트로 구현. 페이지 CRUD, SEO 메타데이터, 템플릿 시스템, 슬러그 관리 기능 포함",
+      "summary": "파일 관리 모듈 성공적으로 구현. 파일 업로드 시뮬레이션, 목록 표시, 필터링, 다중 선택 삭제, 파일 타입별 아이콘 표시, WebP 이미지 변환 준비 완료",
+      "completedAt": "2025-09-17T06:47:37.100Z"
     },
     {
-      "id": "07b4be3e-b5d6-45f4-9f3b-84dc99ea41ba",
-      "name": "Services 및 Utils 함수 타입 보강",
-      "description": "유틸리티 함수와 서비스 레이어의 any 타입 제거 및 명시적 타입 정의. 비즈니스 로직의 타입 안정성 확보",
-      "notes": "lib 디렉토리의 모든 유틸리티 함수에 명시적 타입 적용. 에러 처리와 비동기 함수의 반환 타입 명확화",
-      "status": "pending",
-      "dependencies": [
-        {
-          "taskId": "a1061895-6f68-4fb5-a628-834e0a60659f"
-        }
-      ],
-      "createdAt": "2025-09-16T07:33:11.950Z",
-      "updatedAt": "2025-09-16T07:33:11.950Z",
+      "id": "3206d967-175e-40cc-a5a7-ef28051844f6",
+      "name": "설정 관리 모듈 구현",
+      "description": "사이트 설정, 연락처 정보, 시스템 설정을 관리하는 설정 페이지 구현",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2025-09-17T06:38:28.847Z",
+      "updatedAt": "2025-09-17T06:50:16.069Z",
       "relatedFiles": [
         {
-          "path": "src/lib/utils.ts",
-          "type": "TO_MODIFY",
-          "description": "공통 유틸리티 함수 타입 정의"
+          "path": "/app/api/settings/route.ts",
+          "type": "CREATE",
+          "description": "설정 관리 Mock API"
         },
         {
-          "path": "src/lib/auth.ts",
-          "type": "TO_MODIFY",
-          "description": "인증 관련 함수 타입 정의"
-        },
-        {
-          "path": "src/lib/validations.ts",
-          "type": "TO_MODIFY",
-          "description": "검증 함수 타입 정의"
+          "path": "/app/admin/settings/page.tsx",
+          "type": "CREATE",
+          "description": "설정 관리 UI"
         }
       ],
-      "implementationGuide": "// 1. 유틸리티 함수 타입 정의\nexport function formatDate(date: Date | string): string {\n  // 구현\n}\n\nexport function validateEmail(email: string): boolean {\n  // 구현\n}\n\n// 2. 서비스 함수 타입 정의\nexport async function fetchUserData(id: string): Promise<User | null> {\n  // 구현\n}\n\n// 3. 공통 타입 정의\ntype ApiErrorResponse = {\n  error: string;\n  code: number;\n};",
-      "verificationCriteria": "모든 유틸리티 및 서비스 함수의 any 타입 제거. 함수 시그니처 명확화 및 타입 안정성 확보",
-      "analysisResult": "Next.js 15.5.3 + TypeScript + Prisma 프로젝트의 112개 ESLint 에러를 체계적으로 해결하여 TypeScript 100% 최적화 달성. API Routes의 88개 any 타입과 24개 기타 경고를 4단계로 분해하여 타입 안정성과 코드 품질 향상."
+      "implementationGuide": "카테고리별 탭 구성. key-value 형태의 설정 관리. 폼 유효성 검사 추가",
+      "verificationCriteria": "설정 카테고리별 표시, 값 수정 및 저장 기능 확인",
+      "analysisResult": "CMS 페이지 관리 모듈을 shadcn/ui 컴포넌트로 구현. 페이지 CRUD, SEO 메타데이터, 템플릿 시스템, 슬러그 관리 기능 포함",
+      "summary": "설정 관리 모듈을 완벽하게 구현했습니다. 5개 카테고리(일반, 연락처, SEO, 사업자, API)로 탭 구성, key-value 형태의 18개 설정 항목, 다양한 입력 타입 지원(text, textarea, email, tel, url, boolean), 수정 사항 추적 및 일괄 저장, 카테고리별 기본값 초기화 기능을 모두 구현했습니다.",
+      "completedAt": "2025-09-17T06:50:16.067Z"
     },
     {
-      "id": "d15cc175-fbb4-44e5-bd11-7316f817de20",
-      "name": "TypeScript 설정 최적화 및 미사용 import 정리",
-      "description": "tsconfig.json 설정 최적화, 미사용 import/변수 제거, React 컴포넌트 displayName 추가 등 최종 코드 품질 향상",
-      "notes": "최종 코드 품질 검증 및 TypeScript 컴파일러 설정 최적화. 모든 ESLint 규칙 준수 확인",
-      "status": "pending",
-      "dependencies": [
-        {
-          "taskId": "07b4be3e-b5d6-45f4-9f3b-84dc99ea41ba"
-        }
-      ],
-      "createdAt": "2025-09-16T07:33:11.950Z",
-      "updatedAt": "2025-09-16T07:33:11.950Z",
+      "id": "fb54043d-409f-4be8-adc6-2d3009c168cb",
+      "name": "사용자 관리 모듈 구현",
+      "description": "사용자 목록, 권한 관리, 활성화 상태 관리 기능을 가진 사용자 관리 시스템",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2025-09-17T06:38:28.847Z",
+      "updatedAt": "2025-09-17T06:54:12.257Z",
       "relatedFiles": [
         {
-          "path": "tsconfig.json",
-          "type": "TO_MODIFY",
-          "description": "TypeScript 설정 최적화"
+          "path": "/app/api/users/route.ts",
+          "type": "CREATE",
+          "description": "사용자 관리 Mock API"
         },
         {
-          "path": ".eslintrc.json",
-          "type": "REFERENCE",
-          "description": "ESLint 설정 참조"
-        },
-        {
-          "path": "src/**/*.ts",
-          "type": "TO_MODIFY",
-          "description": "전체 TypeScript 파일 정리"
-        },
-        {
-          "path": "src/**/*.tsx",
-          "type": "TO_MODIFY",
-          "description": "전체 React 컴포넌트 파일 정리"
+          "path": "/app/admin/users/page.tsx",
+          "type": "CREATE",
+          "description": "사용자 관리 UI"
         }
       ],
-      "implementationGuide": "// 1. tsconfig.json 최적화\n{\n  \"compilerOptions\": {\n    \"strict\": true,\n    \"noUnusedLocals\": true,\n    \"noUnusedParameters\": true,\n    \"noImplicitReturns\": true\n  }\n}\n\n// 2. 미사용 import 제거\n// ESLint rule: \"@typescript-eslint/no-unused-vars\"\n\n// 3. React 컴포넌트 displayName 추가\nMyComponent.displayName = 'MyComponent';",
-      "verificationCriteria": "모든 ESLint 에러 해결. TypeScript strict 모드 활성화. 빌드 성공 및 타입 체크 통과",
-      "analysisResult": "Next.js 15.5.3 + TypeScript + Prisma 프로젝트의 112개 ESLint 에러를 체계적으로 해결하여 TypeScript 100% 최적화 달성. API Routes의 88개 any 타입과 24개 기타 경고를 4단계로 분해하여 타입 안정성과 코드 품질 향상."
-    },
-    {
-      "id": "d599eb24-45d4-4a17-bf7c-1281f121f178",
-      "name": "최종 빌드 검증 및 타입 체크 완료",
-      "description": "전체 프로젝트 빌드 수행 및 TypeScript 타입 체크 완료. 모든 ESLint 에러 해결 확인 및 성능 검증",
-      "notes": "모든 단계 완료 후 최종 검증. 112개 ESLint 에러 완전 해결 확인 및 TypeScript 100% 최적화 달성",
-      "status": "pending",
-      "dependencies": [
-        {
-          "taskId": "d15cc175-fbb4-44e5-bd11-7316f817de20"
-        }
-      ],
-      "createdAt": "2025-09-16T07:33:11.950Z",
-      "updatedAt": "2025-09-16T07:33:11.950Z",
-      "relatedFiles": [
-        {
-          "path": "package.json",
-          "type": "REFERENCE",
-          "description": "빌드 스크립트 참조"
-        },
-        {
-          "path": ".next/",
-          "type": "OTHER",
-          "description": "빌드 결과 확인"
-        }
-      ],
-      "implementationGuide": "// 1. 타입 체크 수행\nnpm run type-check\n\n// 2. 린트 검사\nnpm run lint\n\n// 3. 빌드 수행\nnpm run build\n\n// 4. 테스트 실행 (있는 경우)\nnpm test\n\n// 5. 타입 커버리지 확인\n// TypeScript 100% 타입 안정성 달성 확인",
-      "verificationCriteria": "npm run build 성공. 모든 ESLint 에러 해결 (0/112). TypeScript strict 모드 통과. 타입 안정성 100% 달성",
-      "analysisResult": "Next.js 15.5.3 + TypeScript + Prisma 프로젝트의 112개 ESLint 에러를 체계적으로 해결하여 TypeScript 100% 최적화 달성. API Routes의 88개 any 타입과 24개 기타 경고를 4단계로 분해하여 타입 안정성과 코드 품질 향상."
+      "implementationGuide": "역할 기반 권한 표시. 비밀번호 재설정 기능. 마지막 로그인 시간 표시",
+      "verificationCriteria": "사용자 목록 표시, 권한 수정, 활성화 토글 기능 확인",
+      "analysisResult": "CMS 페이지 관리 모듈을 shadcn/ui 컴포넌트로 구현. 페이지 CRUD, SEO 메타데이터, 템플릿 시스템, 슬러그 관리 기능 포함",
+      "summary": "사용자 관리 모듈을 완벽하게 구현했습니다. 6명의 Mock 사용자 데이터, 역할 기반 권한 시스템(SUPER_ADMIN, ADMIN, EDITOR, USER), 활성화 토글, 비밀번호 재설정, 마지막 로그인 시간 표시, 검색 및 필터링 기능, 임시 비밀번호 생성 기능을 모두 구현했습니다.",
+      "completedAt": "2025-09-17T06:54:12.255Z"
     }
   ]
 }

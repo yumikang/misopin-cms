@@ -126,6 +126,16 @@ export default function LoginPage() {
             </button>
           </form>
 
+          <div className="mt-6">
+            <button
+              type="button"
+              onClick={() => window.open('/user-manual.html', '_blank')}
+              className="w-full py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              📖 사용자 매뉴얼
+            </button>
+          </div>
+
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-center text-sm text-gray-600 mb-3">테스트 계정:</p>
             <div className="space-y-2 text-xs text-gray-500">
