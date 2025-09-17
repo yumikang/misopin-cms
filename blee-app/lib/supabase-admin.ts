@@ -1,11 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-if (!supabaseServiceKey || supabaseServiceKey === '여기에_SERVICE_ROLE_KEY를_붙여넣으세요') {
-  console.warn('⚠️ SUPABASE_SERVICE_ROLE_KEY is not set properly. Admin features will not work.');
-}
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpemxlZ2p2ZmFweWt1Znpyb2psIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODA4MDk4OSwiZXhwIjoyMDczNjU2OTg5fQ.HRknUNazo3GE068z-VwqEOcGqmTMhu__v_RsnhV7SeI';
 
 // Admin client that bypasses RLS
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {

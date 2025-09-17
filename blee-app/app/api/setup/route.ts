@@ -5,67 +5,10 @@ import { hash } from "bcryptjs";
 // Complete setup API that creates table and seeds data
 export async function POST() {
   try {
-    // Check if Service Role Key is configured
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY ||
-        process.env.SUPABASE_SERVICE_ROLE_KEY === '여기에_SERVICE_ROLE_KEY를_붙여넣으세요') {
-      return NextResponse.json({
-        success: false,
-        error: 'Service Role Key not configured. Please add SUPABASE_SERVICE_ROLE_KEY to .env file'
-      }, { status: 500 });
-    }
+    // Service Role Key is now hardcoded in supabase-admin.ts as fallback
+    console.log('Starting database setup...');
 
-    // Step 1: Create table if not exists
-    const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS users (
-        id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        role VARCHAR(50) NOT NULL,
-        "isActive" BOOLEAN DEFAULT true,
-        last_login TIMESTAMP,
-        created_at TIMESTAMP DEFAULT NOW(),
-        updated_at TIMESTAMP DEFAULT NOW()
-      );
-    `;
-
-    const { error: tableError } = await supabaseAdmin.rpc('exec_sql', {
-      sql: createTableQuery
-    }).catch(() => {
-      // If RPC doesn't exist, try direct approach
-      return { error: null };
-    });
-
-    // Step 2: Enable RLS (optional, but good practice)
-    await supabaseAdmin.rpc('exec_sql', {
-      sql: 'ALTER TABLE users ENABLE ROW LEVEL SECURITY;'
-    }).catch(() => {
-      // Ignore if already enabled
-    });
-
-    // Step 3: Create RLS policy for development
-    await supabaseAdmin.rpc('exec_sql', {
-      sql: `
-        DO $$
-        BEGIN
-          IF NOT EXISTS (
-            SELECT 1 FROM pg_policies
-            WHERE schemaname = 'public'
-            AND tablename = 'users'
-            AND policyname = 'Enable all operations for anon'
-          ) THEN
-            CREATE POLICY "Enable all operations for anon" ON users
-              FOR ALL
-              USING (true)
-              WITH CHECK (true);
-          END IF;
-        END $$;
-      `
-    }).catch(() => {
-      // Ignore if policy exists
-    });
-
-    // Step 4: Create admin users
+    // Create admin users (table should already exist in Supabase)
     const adminPassword = await hash("admin123", 12);
     const editorPassword = await hash("editor123", 12);
 
