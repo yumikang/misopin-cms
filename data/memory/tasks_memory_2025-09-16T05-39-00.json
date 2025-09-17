@@ -1,0 +1,105 @@
+{
+  "tasks": [
+    {
+      "id": "469daf29-ca92-4a49-8e0e-a5bce1943f0a",
+      "name": "팝업 수정 페이지 라우트 생성",
+      "description": "팝업 수정을 위한 동적 라우트 페이지 생성. 기존 pages 모듈의 edit 패턴과 동일하게 구현",
+      "notes": "기존 /src/app/admin/pages/[id]/edit/page.tsx 패턴과 완전히 동일하게 구현",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2025-09-16T05:29:32.242Z",
+      "updatedAt": "2025-09-16T05:29:55.589Z",
+      "relatedFiles": [
+        {
+          "path": "/src/app/(admin)/admin/popups/[id]/edit/page.tsx",
+          "type": "CREATE",
+          "description": "팝업 수정 페이지"
+        },
+        {
+          "path": "/src/app/admin/pages/[id]/edit/page.tsx",
+          "type": "REFERENCE",
+          "description": "참고할 기존 패턴"
+        }
+      ],
+      "implementationGuide": "1. /src/app/(admin)/admin/popups/[id]/edit/page.tsx 파일 생성\n2. Server Component로 구현하여 데이터 페칭\n3. getPopup 함수로 API 호출 (cache: no-store 사용)\n4. 404 처리를 위해 notFound() 사용\n5. PopupForm 컴포넌트에 mode='edit', popupId, initialData 전달",
+      "verificationCriteria": "페이지가 /admin/popups/[id]/edit 경로로 접근 가능하고, 팝업 데이터가 폼에 로드되는지 확인",
+      "analysisResult": "팝업 및 게시판 수정 기능 구현 - API는 이미 완성되어 있으므로 edit 페이지 라우트만 생성하면 됨",
+      "summary": "팝업 수정 페이지 라우트 생성 완료 - /admin/popups/[id]/edit 경로에서 팝업 데이터를 불러와 PopupForm 컴포넌트에 전달하는 Server Component 구현",
+      "completedAt": "2025-09-16T05:29:55.578Z"
+    },
+    {
+      "id": "d13734ae-aec6-4fd0-8720-b38d1dbb28cb",
+      "name": "게시판 수정 페이지 라우트 생성",
+      "description": "게시글 수정을 위한 동적 라우트 페이지 생성. 팝업과 동일한 패턴으로 구현",
+      "notes": "팝업 수정 페이지와 동일한 패턴 적용",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "469daf29-ca92-4a49-8e0e-a5bce1943f0a"
+        }
+      ],
+      "createdAt": "2025-09-16T05:29:32.242Z",
+      "updatedAt": "2025-09-16T05:30:29.545Z",
+      "relatedFiles": [
+        {
+          "path": "/src/app/(admin)/admin/board/[id]/edit/page.tsx",
+          "type": "CREATE",
+          "description": "게시글 수정 페이지"
+        }
+      ],
+      "implementationGuide": "1. /src/app/(admin)/admin/board/[id]/edit/page.tsx 파일 생성\n2. Server Component로 구현\n3. getBoardPost 함수로 API 호출 (cache: no-store)\n4. notFound() 사용하여 404 처리\n5. BoardPostForm 컴포넌트에 mode='edit', postId, initialData 전달",
+      "verificationCriteria": "페이지가 /admin/board/[id]/edit 경로로 접근 가능하고, 게시글 데이터가 폼에 로드되는지 확인",
+      "analysisResult": "팝업 및 게시판 수정 기능 구현 - API는 이미 완성되어 있으므로 edit 페이지 라우트만 생성하면 됨",
+      "summary": "게시판 수정 페이지 라우트 생성 완료 - /admin/board/[id]/edit 경로에서 게시글 데이터를 불러와 BoardPostForm 컴포넌트에 전달하는 Server Component 구현, 태그 배열을 문자열로 변환 처리",
+      "completedAt": "2025-09-16T05:30:29.538Z"
+    },
+    {
+      "id": "55c75ebd-8b33-4127-a774-59c2c204e202",
+      "name": "PopupForm 컴포넌트 수정 메서드 변경",
+      "description": "기존 PUT 메서드를 PATCH로 변경하여 실제 API와 일치시킴",
+      "notes": "API는 PATCH 메서드를 사용하므로 일치시켜야 함",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2025-09-16T05:29:32.242Z",
+      "updatedAt": "2025-09-16T05:30:56.084Z",
+      "relatedFiles": [
+        {
+          "path": "/src/components/admin/popups/popup-form.tsx",
+          "type": "TO_MODIFY",
+          "description": "PUT을 PATCH로 변경",
+          "lineStart": 88,
+          "lineEnd": 88
+        }
+      ],
+      "implementationGuide": "1. /src/components/admin/popups/popup-form.tsx 파일 수정\n2. onSubmit 함수에서 mode === 'edit'일 때 method를 'PUT'에서 'PATCH'로 변경\n3. 날짜 형식이 올바르게 변환되는지 확인",
+      "verificationCriteria": "수정 모드에서 PATCH 요청이 정상적으로 전송되고 팝업이 업데이트되는지 확인",
+      "analysisResult": "팝업 및 게시판 수정 기능 구현 - API는 이미 완성되어 있으므로 edit 페이지 라우트만 생성하면 됨",
+      "summary": "PopupForm 컴포넌트에서 수정 모드일 때 HTTP 메서드를 PUT에서 PATCH로 변경 완료 - API 엔드포인트와 일치하도록 수정",
+      "completedAt": "2025-09-16T05:30:56.074Z"
+    },
+    {
+      "id": "81073dbe-fd30-43bd-b22e-df807ff701b8",
+      "name": "BoardPostForm 컴포넌트 수정 메서드 변경",
+      "description": "기존 PUT 메서드를 PATCH로 변경하여 실제 API와 일치시킴",
+      "notes": "태그 배열 변환 로직이 이미 올바르게 구현되어 있음",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2025-09-16T05:29:32.242Z",
+      "updatedAt": "2025-09-16T05:31:22.682Z",
+      "relatedFiles": [
+        {
+          "path": "/src/components/admin/board/board-post-form.tsx",
+          "type": "TO_MODIFY",
+          "description": "PUT을 PATCH로 변경",
+          "lineStart": 75,
+          "lineEnd": 75
+        }
+      ],
+      "implementationGuide": "1. /src/components/admin/board/board-post-form.tsx 파일 수정\n2. onSubmit 함수에서 mode === 'edit'일 때 method를 'PUT'에서 'PATCH'로 변경",
+      "verificationCriteria": "수정 모드에서 PATCH 요청이 정상적으로 전송되고 게시글이 업데이트되는지 확인",
+      "analysisResult": "팝업 및 게시판 수정 기능 구현 - API는 이미 완성되어 있으므로 edit 페이지 라우트만 생성하면 됨",
+      "summary": "BoardPostForm 컴포넌트에서 수정 모드일 때 HTTP 메서드를 PUT에서 PATCH로 변경 완료 - API 엔드포인트와 일치하도록 수정",
+      "completedAt": "2025-09-16T05:31:22.674Z"
+    }
+  ]
+}

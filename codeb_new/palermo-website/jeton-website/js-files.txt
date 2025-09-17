@@ -1,0 +1,5 @@
+/scripts/signature.js
+https://analytics.madebyburo.com/umami.js
+https://stats.withburo.com/script.js
+/_nuxt/DJNGssg4.js
+/_payload.json?5b5ab4a6-b9c9-4765-9941-af33e1e84bd4

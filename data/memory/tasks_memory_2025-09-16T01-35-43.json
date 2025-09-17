@@ -1,0 +1,36 @@
+{
+  "tasks": [
+    {
+      "id": "b7e93359-e54b-4d49-9c3d-86040e2dbea3",
+      "name": "NextAuth.js 설정 및 인증 시스템 구현",
+      "description": "NextAuth.js v4를 설정하고 JWT 기반 인증 시스템을 구현합니다. Prisma Adapter 연결, bcrypt 패스워드 해싱, 역할 기반 접근 제어를 포함합니다.",
+      "notes": "NEXTAUTH_SECRET은 강력한 키로 변경 필수. React 19 호환성 고려",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2025-09-15T06:31:12.730Z",
+      "updatedAt": "2025-09-15T06:35:57.690Z",
+      "relatedFiles": [
+        {
+          "path": "/src/lib/db.ts",
+          "type": "DEPENDENCY",
+          "description": "기존 Prisma 싱글톤 재사용"
+        },
+        {
+          "path": "prisma/schema.prisma",
+          "type": "REFERENCE",
+          "description": "User 모델 참조"
+        },
+        {
+          "path": ".env.local",
+          "type": "TO_MODIFY",
+          "description": "인증 환경변수 추가"
+        }
+      ],
+      "implementationGuide": "1. 필요 패키지 설치: next-auth@4, @auth/prisma-adapter, bcryptjs, jsonwebtoken\\n2. /src/lib/auth.ts 생성하여 NextAuth 설정\\n3. JWT 전략 설정, secret 환경변수 추가\\n4. callbacks에서 jwt와 session에 user role 추가\\n5. /src/app/api/auth/[...nextauth]/route.ts 생성\\n6. Prisma adapter 연결 및 User 모델과 통합",
+      "verificationCriteria": "로그인 API 엔드포인트 동작 확인, JWT 토큰 생성 및 검증, 역할별 세션 데이터 확인",
+      "analysisResult": "미소핀 병원 CMS 2단계 구현 - Next.js 14 App Router, Prisma ORM, PostgreSQL 환경에서 NextAuth.js JWT 인증과 Shadcn UI 관리자 대시보드를 구축합니다. 기존 Prisma 스키마와 db.ts 싱글톤 패턴을 활용하고, React 19 호환성을 고려하여 개발합니다.",
+      "summary": "NextAuth.js JWT 인증 시스템 구현 완료. Prisma 어댑터 연동, bcrypt 암호화, 역할 기반 접근 제어, 시드 데이터 생성 및 API 엔드포인트 동작 확인 완료",
+      "completedAt": "2025-09-15T06:35:57.676Z"
+    }
+  ]
+}

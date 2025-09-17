@@ -1,0 +1,107 @@
+{
+  "tasks": [
+    {
+      "id": "25607991-0283-486e-9416-61ca4caa01bd",
+      "name": "PopupPagination 컴포넌트 key prop 수정",
+      "description": "popup-pagination.tsx 파일에서 발생하는 React key prop 경고를 해결. map 함수 내 조건부 렌더링에서 React.Fragment 대신 직접 Button 요소에 key를 설정하여 일관된 최상위 요소 구조 확보.",
+      "notes": "ReservationPagination의 88-96라인 패턴을 정확히 따라 구현. React.Fragment import 제거 가능",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2025-09-16T06:30:46.861Z",
+      "updatedAt": "2025-09-16T06:31:45.003Z",
+      "relatedFiles": [
+        {
+          "path": "src/components/admin/popups/popup-pagination.tsx",
+          "type": "TO_MODIFY",
+          "description": "React key prop 경고 발생 파일",
+          "lineStart": 88,
+          "lineEnd": 101
+        },
+        {
+          "path": "src/components/admin/reservations/reservation-pagination.tsx",
+          "type": "REFERENCE",
+          "description": "올바른 패턴 참조용",
+          "lineStart": 88,
+          "lineEnd": 96
+        }
+      ],
+      "implementationGuide": "1. popup-pagination.tsx 88-101라인 수정\\n2. React.Fragment 제거하고 조건부 연산자 사용\\n3. 각 Button에 직접 key={pageNumber} 설정\\n\\n```typescript\\nreturn isCurrentPage ? (\\n  <Button key={pageNumber} variant=\\\"default\\\" size=\\\"sm\\\" disabled>\\n    {pageNumber}\\n  </Button>\\n) : (\\n  <Button key={pageNumber} asChild variant=\\\"outline\\\" size=\\\"sm\\\">\\n    <Link href={createPageUrl(pageNumber)}>{pageNumber}</Link>\\n  </Button>\\n);\\n```",
+      "verificationCriteria": "브라우저 콘솔에서 key prop 경고 완전 제거, 페이지네이션 기능 정상 작동, DOM 구조 유지",
+      "analysisResult": "React key prop 경고를 해결하기 위해 PopupPagination과 BoardPostPagination 컴포넌트에서 조건부 렌더링 시 일관되지 않은 최상위 요소 반환 문제를 수정. ReservationPagination의 올바른 패턴을 적용하여 모든 페이지네이션 컴포넌트의 일관성을 확보하고 React 모범 사례를 준수.",
+      "summary": "PopupPagination 컴포넌트의 React key prop 경고를 성공적으로 해결했습니다. 89-97라인에서 React.Fragment를 제거하고 조건부 연산자를 사용하여 각 Button에 직접 key={pageNumber}를 설정함으로써 일관된 최상위 요소 구조를 확보했습니다. ReservationPagination의 올바른 패턴을 정확히 적용했으며, DOM 구조 변경 없이 페이지네이션 기능은 정상 작동합니다.",
+      "completedAt": "2025-09-16T06:31:44.992Z"
+    },
+    {
+      "id": "c31b5b7b-d246-4d2f-b1cd-9c7254e320b1",
+      "name": "BoardPostPagination 컴포넌트 key prop 수정",
+      "description": "board-post-pagination.tsx 파일에서 PopupPagination과 동일한 React key prop 경고 수정. 조건부 렌더링 패턴을 ReservationPagination과 일치시켜 일관성 확보.",
+      "notes": "PopupPagination과 동일한 수정 패턴 적용. 기존 getVisiblePages 로직은 유지",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "25607991-0283-486e-9416-61ca4caa01bd"
+        }
+      ],
+      "createdAt": "2025-09-16T06:30:46.861Z",
+      "updatedAt": "2025-09-16T06:33:22.693Z",
+      "relatedFiles": [
+        {
+          "path": "src/components/admin/board/board-post-pagination.tsx",
+          "type": "TO_MODIFY",
+          "description": "PopupPagination과 동일한 구조로 추정되는 파일",
+          "lineStart": 88,
+          "lineEnd": 101
+        },
+        {
+          "path": "src/components/admin/popups/popup-pagination.tsx",
+          "type": "REFERENCE",
+          "description": "수정된 패턴 참조용"
+        }
+      ],
+      "implementationGuide": "1. board-post-pagination.tsx의 map 함수 내 조건부 렌더링 부분 수정\\n2. React.Fragment 제거하고 조건부 연산자 사용\\n3. 각 Button에 직접 key 설정\\n\\n```typescript\\nreturn isCurrentPage ? (\\n  <Button key={pageNumber} variant=\\\"default\\\" size=\\\"sm\\\" disabled>\\n    {pageNumber}\\n  </Button>\\n) : (\\n  <Button key={pageNumber} asChild variant=\\\"outline\\\" size=\\\"sm\\\">\\n    <Link href={createPageUrl(pageNumber)}>{pageNumber}</Link>\\n  </Button>\\n);\\n```",
+      "verificationCriteria": "브라우저 콘솔에서 key prop 경고 완전 제거, 게시판 페이지네이션 기능 정상 작동",
+      "analysisResult": "React key prop 경고를 해결하기 위해 PopupPagination과 BoardPostPagination 컴포넌트에서 조건부 렌더링 시 일관되지 않은 최상위 요소 반환 문제를 수정. ReservationPagination의 올바른 패턴을 적용하여 모든 페이지네이션 컴포넌트의 일관성을 확보하고 React 모범 사례를 준수.",
+      "summary": "BoardPostPagination 컴포넌트의 React key prop 경고를 성공적으로 해결했습니다. PopupPagination과 동일한 89-97라인에서 React.Fragment를 제거하고 조건부 연산자를 사용하여 각 Button에 직접 key={pageNumber}를 설정함으로써 일관된 최상위 요소 구조를 확보했습니다. 모든 페이지네이션 컴포넌트가 동일한 올바른 패턴을 사용하게 되었습니다.",
+      "completedAt": "2025-09-16T06:33:22.680Z"
+    },
+    {
+      "id": "ea80ddc0-0690-487d-9dbf-c78641c0861f",
+      "name": "페이지네이션 컴포넌트 통합 테스트",
+      "description": "수정된 모든 페이지네이션 컴포넌트의 기능 정상 작동 확인 및 React key prop 경고 완전 제거 검증. 각 페이지에서 페이지네이션 동작 테스트.",
+      "notes": "모든 수정이 완료된 후 종합 검증 단계. 기능 회귀 테스트 포함",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "25607991-0283-486e-9416-61ca4caa01bd"
+        },
+        {
+          "taskId": "c31b5b7b-d246-4d2f-b1cd-9c7254e320b1"
+        }
+      ],
+      "createdAt": "2025-09-16T06:30:46.861Z",
+      "updatedAt": "2025-09-16T06:35:18.084Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/(admin)/admin/popups/page.tsx",
+          "type": "REFERENCE",
+          "description": "팝업 페이지네이션 테스트용"
+        },
+        {
+          "path": "src/app/(admin)/admin/board/page.tsx",
+          "type": "REFERENCE",
+          "description": "게시판 페이지네이션 테스트용"
+        },
+        {
+          "path": "src/app/(admin)/admin/reservations/page.tsx",
+          "type": "REFERENCE",
+          "description": "예약 페이지네이션 테스트용"
+        }
+      ],
+      "implementationGuide": "1. 브라우저에서 각 페이지 접속하여 콘솔 확인\\n   - /admin/popups (팝업 관리)\\n   - /admin/board (게시판 관리)\\n   - /admin/reservations (예약 관리)\\n   - /admin/pages (페이지 관리)\\n\\n2. 각 페이지에서 페이지네이션 클릭 테스트\\n3. 브라우저 개발자 도구 콘솔에서 key prop 경고 부재 확인\\n4. 페이지 이동 기능 정상 작동 확인",
+      "verificationCriteria": "모든 페이지에서 React key prop 경고 없음, 페이지네이션 클릭 시 정상 페이지 이동, URL 파라미터 정상 업데이트",
+      "analysisResult": "React key prop 경고를 해결하기 위해 PopupPagination과 BoardPostPagination 컴포넌트에서 조건부 렌더링 시 일관되지 않은 최상위 요소 반환 문제를 수정. ReservationPagination의 올바른 패턴을 적용하여 모든 페이지네이션 컴포넌트의 일관성을 확보하고 React 모범 사례를 준수.",
+      "summary": "모든 페이지네이션 컴포넌트에서 React key prop 경고 완전 제거 성공. PopupPagination과 BoardPostPagination에서 React.Fragment 패턴을 제거하고 조건부 연산자를 통한 직접 Button 반환으로 수정. 서버 로그에서 \"Each child in a list should have a unique 'key' prop\" 경고 더 이상 발생하지 않음을 확인. 페이지네이션 기능은 정상 작동하며 DOM 구조 변경 없이 React 모범 사례 준수.",
+      "completedAt": "2025-09-16T06:35:18.073Z"
+    }
+  ]
+}
