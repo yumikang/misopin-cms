@@ -46,7 +46,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-xl">
+      <div className="w-full max-w-md bg-white rounded-xl">
         <div className="p-8">
           <div className="text-center mb-8">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-600">
@@ -148,7 +148,7 @@ export default function LoginPage() {
                 <span>manager@misopin.com / admin123</span>
               </div>
               <div className="flex justify-between px-2">
-                <span className="font-semibold">편집자:</span>
+                <span className="font-semibold">직원:</span>
                 <span>editor@misopin.com / editor123</span>
               </div>
             </div>
