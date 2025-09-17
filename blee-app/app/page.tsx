@@ -14,14 +14,14 @@ export default function Home() {
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 mb-8">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
               시스템 접속
             </h2>
 
             <div className="grid md:grid-cols-2 gap-6">
               <Link href="/login" className="group">
-                <div className="bg-blue-50 dark:bg-gray-700 rounded-lg p-6 transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <div className="bg-blue-50 dark:bg-gray-700 rounded-lg p-6 transition-all duration-300 hover:scale-105">
                   <div className="text-3xl mb-3">🔐</div>
                   <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
                     관리자 로그인
@@ -33,7 +33,7 @@ export default function Home() {
               </Link>
 
               <a href="https://misopin.com" target="_blank" rel="noopener noreferrer" className="group">
-                <div className="bg-green-50 dark:bg-gray-700 rounded-lg p-6 transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <div className="bg-green-50 dark:bg-gray-700 rounded-lg p-6 transition-all duration-300 hover:scale-105">
                   <div className="text-3xl mb-3">🌐</div>
                   <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
                     웹사이트 방문
@@ -46,7 +46,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8">
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
               시스템 정보
             </h2>
