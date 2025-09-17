@@ -1,42 +1,7 @@
-import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
-import { hash } from "bcryptjs";
+-- Complete Database Schema for Misopin CMS
+-- Run this script in Supabase SQL Editor
 
-// Complete initialization - checks and creates everything needed
-export async function POST() {
-  try {
-    const steps = [];
-
-    // Step 1: Check if all tables exist
-    const tables = ['users', 'reservations', 'popups', 'board_categories', 'board_posts', 'pages', 'files', 'settings'];
-    const missingTables = [];
-
-    for (const table of tables) {
-      const { error } = await supabaseAdmin
-        .from(table)
-        .select('id')
-        .limit(1);
-
-      if (error && error.code === '42P01') {
-        missingTables.push(table);
-      }
-    }
-
-    if (missingTables.length > 0) {
-      // Tables don't exist
-      steps.push({
-        step: 'table_check',
-        status: 'missing',
-        message: `Missing tables: ${missingTables.join(', ')}. Please create them using the SQL script.`
-      });
-
-      // Return SQL script for easy copy-paste
-      return NextResponse.json({
-        success: false,
-        error: 'Table not found',
-        message: 'Please run the following SQL in Supabase SQL Editor:',
-        sql: `
--- Create users table
+-- 1. Create users table
 CREATE TABLE IF NOT EXISTS users (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
@@ -49,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create reservations table
+-- 2. Create reservations table
 CREATE TABLE IF NOT EXISTS reservations (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
@@ -63,7 +28,7 @@ CREATE TABLE IF NOT EXISTS reservations (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create popups table
+-- 3. Create popups table
 CREATE TABLE IF NOT EXISTS popups (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title VARCHAR(200) NOT NULL,
@@ -83,7 +48,7 @@ CREATE TABLE IF NOT EXISTS popups (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create board_categories table
+-- 4. Create board_categories table
 CREATE TABLE IF NOT EXISTS board_categories (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
@@ -95,7 +60,7 @@ CREATE TABLE IF NOT EXISTS board_categories (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create board_posts table
+-- 5. Create board_posts table
 CREATE TABLE IF NOT EXISTS board_posts (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   category_id UUID REFERENCES board_categories(id) ON DELETE CASCADE,
@@ -112,7 +77,7 @@ CREATE TABLE IF NOT EXISTS board_posts (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create pages table
+-- 6. Create pages table
 CREATE TABLE IF NOT EXISTS pages (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title VARCHAR(200) NOT NULL,
@@ -128,7 +93,7 @@ CREATE TABLE IF NOT EXISTS pages (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create files table
+-- 7. Create files table
 CREATE TABLE IF NOT EXISTS files (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   filename VARCHAR(255) NOT NULL,
@@ -141,7 +106,7 @@ CREATE TABLE IF NOT EXISTS files (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create settings table
+-- 8. Create settings table
 CREATE TABLE IF NOT EXISTS settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   key VARCHAR(100) UNIQUE NOT NULL,
@@ -206,7 +171,8 @@ INSERT INTO board_categories (name, slug, description, display_order, is_active)
   ('공지사항', 'notice', '병원 공지사항', 1, true),
   ('이벤트', 'event', '진행중인 이벤트', 2, true),
   ('건강정보', 'health', '건강 관련 정보', 3, true),
-  ('FAQ', 'faq', '자주 묻는 질문', 4, true);
+  ('FAQ', 'faq', '자주 묻는 질문', 4, true)
+ON CONFLICT (slug) DO NOTHING;
 
 -- Insert default settings
 INSERT INTO settings (key, value, type, category, description) VALUES
@@ -216,136 +182,5 @@ INSERT INTO settings (key, value, type, category, description) VALUES
   ('contact_phone', '02-1234-5678', 'string', 'contact', '연락처 전화번호'),
   ('business_hours', '평일 09:00 - 18:00, 토요일 09:00 - 13:00', 'string', 'contact', '영업 시간'),
   ('maintenance_mode', 'false', 'boolean', 'system', '유지보수 모드'),
-  ('max_file_size', '10485760', 'number', 'system', '최대 파일 크기 (bytes)');
-        `,
-        next_step: 'After creating the table, run this API again to add test accounts.'
-      }, { status: 400 });
-    }
-
-    steps.push({
-      step: 'table_check',
-      status: 'exists',
-      message: 'All tables found'
-    });
-
-    // Step 2: Check if any users exist
-    const { data: existingUsers, error: userCheckError } = await supabaseAdmin
-      .from('users')
-      .select('email')
-      .limit(10);
-
-    if (userCheckError) {
-      return NextResponse.json({
-        success: false,
-        error: 'Failed to check users',
-        details: userCheckError.message
-      }, { status: 500 });
-    }
-
-    if (existingUsers && existingUsers.length > 0) {
-      steps.push({
-        step: 'user_check',
-        status: 'exists',
-        message: `Found ${existingUsers.length} existing users`,
-        users: existingUsers.map(u => u.email)
-      });
-    }
-
-    // Step 3: Create test accounts
-    const adminPassword = await hash("admin123", 12);
-    const editorPassword = await hash("editor123", 12);
-
-    const accounts = [
-      {
-        email: "admin@misopin.com",
-        name: "슈퍼 관리자",
-        password: adminPassword,
-        role: "SUPER_ADMIN",
-        isActive: true,
-      },
-      {
-        email: "manager@misopin.com",
-        name: "일반 관리자",
-        password: adminPassword,
-        role: "ADMIN",
-        isActive: true,
-      },
-      {
-        email: "editor@misopin.com",
-        name: "편집자",
-        password: editorPassword,
-        role: "EDITOR",
-        isActive: true,
-      }
-    ];
-
-    const results = [];
-
-    for (const account of accounts) {
-      // Use upsert to handle existing users
-      const { data, error } = await supabaseAdmin
-        .from('users')
-        .upsert(account, {
-          onConflict: 'email',
-          ignoreDuplicates: false
-        })
-        .select()
-        .single();
-
-      if (error) {
-        results.push({
-          email: account.email,
-          status: 'error',
-          error: error.message
-        });
-      } else {
-        results.push({
-          email: account.email,
-          status: 'success',
-          data: data
-        });
-      }
-    }
-
-    steps.push({
-      step: 'user_creation',
-      status: 'completed',
-      results
-    });
-
-    // Step 4: Verify setup
-    const { data: finalCheck } = await supabaseAdmin
-      .from('users')
-      .select('email, role, isActive')
-      .order('created_at', { ascending: false });
-
-    return NextResponse.json({
-      success: true,
-      message: "✅ Database initialization completed!",
-      steps,
-      current_users: finalCheck,
-      test_accounts: [
-        { email: "admin@misopin.com", password: "admin123", role: "SUPER_ADMIN" },
-        { email: "manager@misopin.com", password: "admin123", role: "ADMIN" },
-        { email: "editor@misopin.com", password: "editor123", role: "EDITOR" }
-      ],
-      login_url: process.env.NODE_ENV === 'production'
-        ? 'https://misopin-cms.vercel.app/login'
-        : 'http://localhost:3000/login'
-    });
-
-  } catch (error) {
-    console.error('Init error:', error);
-
-    return NextResponse.json({
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-      hint: 'Check console for details'
-    }, { status: 500 });
-  }
-}
-
-// GET request for browser access
-export async function GET() {
-  return POST();
-}
+  ('max_file_size', '10485760', 'number', 'system', '최대 파일 크기 (bytes)')
+ON CONFLICT (key) DO NOTHING;

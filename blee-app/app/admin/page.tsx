@@ -25,12 +25,6 @@ export default function AdminPage() {
     setUser(JSON.parse(userData));
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    router.push("/login");
-  };
-
   const getRoleDisplay = (role: string) => {
     switch (role) {
       case "SUPER_ADMIN":
@@ -82,32 +76,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-800">미소핀의원 CMS</h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-gray-600">{user.name}</p>
-                <p className="text-xs text-gray-500">{getRoleDisplay(user.role)}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-              >
-                로그아웃
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="p-6">
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900">대시보드</h2>
@@ -219,26 +188,113 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Quick Links */}
+        {/* Quick Links - Now with navigation */}
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <button className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left">
-            <h4 className="font-medium text-gray-900">예약 관리</h4>
-            <p className="text-sm text-gray-600 mt-1">예약 확인 및 관리</p>
+          <button
+            onClick={() => router.push('/admin/reservations')}
+            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left group hover:bg-blue-50"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-900 group-hover:text-blue-600">예약 관리</h4>
+                <p className="text-sm text-gray-600 mt-1">예약 확인 및 관리</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
           </button>
-          <button className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left">
-            <h4 className="font-medium text-gray-900">팝업 관리</h4>
-            <p className="text-sm text-gray-600 mt-1">팝업 생성 및 수정</p>
+          <button
+            onClick={() => router.push('/admin/popups')}
+            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left group hover:bg-green-50"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-900 group-hover:text-green-600">팝업 관리</h4>
+                <p className="text-sm text-gray-600 mt-1">팝업 생성 및 수정</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 group-hover:text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
           </button>
-          <button className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left">
-            <h4 className="font-medium text-gray-900">게시판 관리</h4>
-            <p className="text-sm text-gray-600 mt-1">게시글 작성 및 관리</p>
+          <button
+            onClick={() => router.push('/admin/board')}
+            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left group hover:bg-purple-50"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-900 group-hover:text-purple-600">게시판 관리</h4>
+                <p className="text-sm text-gray-600 mt-1">게시글 작성 및 관리</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 group-hover:text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
           </button>
-          <button className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left">
-            <h4 className="font-medium text-gray-900">설정</h4>
-            <p className="text-sm text-gray-600 mt-1">시스템 설정 변경</p>
+          <button
+            onClick={() => router.push('/admin/pages')}
+            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left group hover:bg-orange-50"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-900 group-hover:text-orange-600">페이지 관리</h4>
+                <p className="text-sm text-gray-600 mt-1">페이지 생성 및 편집</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 group-hover:text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
           </button>
         </div>
-      </main>
+
+        {/* Additional Admin Functions */}
+        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <button
+            onClick={() => router.push('/admin/settings')}
+            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left group hover:bg-gray-50"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-900 group-hover:text-gray-700">⚙️ 시스템 설정</h4>
+                <p className="text-sm text-gray-600 mt-1">사이트 설정 관리</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </button>
+          <button
+            onClick={() => router.push('/admin/files')}
+            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left group hover:bg-indigo-50"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-900 group-hover:text-indigo-600">📁 파일 관리</h4>
+                <p className="text-sm text-gray-600 mt-1">업로드된 파일 관리</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </button>
+          {user.role === 'SUPER_ADMIN' && (
+            <button
+              onClick={() => router.push('/admin/users')}
+              className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left group hover:bg-red-50"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-medium text-gray-900 group-hover:text-red-600">👥 사용자 관리</h4>
+                  <p className="text-sm text-gray-600 mt-1">관리자 계정 관리</p>
+                </div>
+                <svg className="w-5 h-5 text-gray-400 group-hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </button>
+          )}
+        </div>
     </div>
   );
 }
