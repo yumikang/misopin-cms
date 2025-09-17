@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { hash } from "bcryptjs";
 
 // Vercel에서 일회성으로 seed 데이터를 실행하기 위한 API
@@ -37,7 +37,7 @@ export async function POST() {
 
     for (const account of accounts) {
       // Check if user already exists
-      const { data: existingUser } = await supabase
+      const { data: existingUser } = await supabaseAdmin
         .from('users')
         .select('id')
         .eq('email', account.email)
@@ -45,7 +45,7 @@ export async function POST() {
 
       if (existingUser) {
         // Update existing user
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
           .from('users')
           .update(account)
           .eq('email', account.email)
@@ -56,7 +56,7 @@ export async function POST() {
         results.push({ action: 'updated', user: data });
       } else {
         // Create new user
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
           .from('users')
           .insert(account)
           .select()

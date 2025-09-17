@@ -1,29 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import pool from '@/lib/db';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
-    // Find user - CMS uses different table structure
-    const result = await pool.query(
-      'SELECT * FROM users WHERE email = $1',
-      [email]
-    );
+    // Find user in Supabase
+    const { data: users, error: fetchError } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
 
-    if (result.rows.length === 0) {
+    if (fetchError || !users) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
-    const user = result.rows[0];
-
-    // Check password - CMS passwords are hashed with bcrypt
-    const validPassword = await bcrypt.compare(password, user.password);
+    // Check password
+    const validPassword = await bcrypt.compare(password, users.password);
     if (!validPassword) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
@@ -32,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is active
-    if (!user.isActive && !user.is_active) {
+    if (!users.isActive) {
       return NextResponse.json(
         { error: 'Account is disabled' },
         { status: 403 }
@@ -42,29 +41,32 @@ export async function POST(request: NextRequest) {
     // Generate token
     const token = jwt.sign(
       {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        name: user.name
+        id: users.id,
+        email: users.email,
+        role: users.role,
+        name: users.name
       },
       process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
 
     // Update last login
-    await pool.query(
-      'UPDATE users SET last_login = NOW() WHERE id = $1',
-      [user.id]
-    ).catch(() => {
-      // Ignore if column doesn't exist
-    });
+    await supabaseAdmin
+      .from('users')
+      .update({ last_login: new Date().toISOString() })
+      .eq('id', users.id)
+      .select()
+      .single()
+      .catch(() => {
+        // Ignore if column doesn't exist
+      });
 
     return NextResponse.json({
       user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role
+        id: users.id,
+        email: users.email,
+        name: users.name,
+        role: users.role
       },
       token,
       success: true
