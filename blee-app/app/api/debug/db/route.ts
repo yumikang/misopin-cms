@@ -29,7 +29,7 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json({
       error: 'Failed to parse DATABASE_URL',
-      message: error.message
+      message: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }
 }
