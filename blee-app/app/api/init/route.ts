@@ -8,7 +8,7 @@ export async function POST() {
     const steps = [];
 
     // Step 1: Check if users table exists
-    const { data: tables, error: tableCheckError } = await supabaseAdmin
+    const { error: tableCheckError } = await supabaseAdmin
       .from('users')
       .select('id')
       .limit(1);

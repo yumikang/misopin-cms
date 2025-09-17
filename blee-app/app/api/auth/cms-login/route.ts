@@ -50,16 +50,17 @@ export async function POST(request: NextRequest) {
       { expiresIn: '7d' }
     );
 
-    // Update last login
-    await supabaseAdmin
-      .from('users')
-      .update({ last_login: new Date().toISOString() })
-      .eq('id', users.id)
-      .select()
-      .single()
-      .catch(() => {
-        // Ignore if column doesn't exist
-      });
+    // Update last login (ignore errors if column doesn't exist)
+    try {
+      await supabaseAdmin
+        .from('users')
+        .update({ last_login: new Date().toISOString() })
+        .eq('id', users.id)
+        .select()
+        .single();
+    } catch {
+      // Ignore if column doesn't exist
+    }
 
     return NextResponse.json({
       user: {
