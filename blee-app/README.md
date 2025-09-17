@@ -23,6 +23,7 @@
 - ✅ **파일 관리** - 업로드, 폴더 분류, 다중 삭제
 - ✅ **설정 관리** - 5개 카테고리 설정, Key-Value 관리
 - ✅ **사용자 관리** - 4단계 권한, 비밀번호 재설정
+- ✅ **사용자 매뉴얼** - 역할별 가이드, HTML 매뉴얼 제공
 
 ### 개발 예정
 - 📱 프론트엔드 사용자 페이지
@@ -99,6 +100,9 @@ blee-app/
 │   ├── supabase.ts       # Supabase 클라이언트
 │   └── supabase-admin.ts # Admin 클라이언트 (RLS 우회)
 ├── public/                # 정적 파일
+│   └── user-manual.html   # 사용자 매뉴얼 (HTML)
+├── docs/                  # 문서
+│   └── user-manual.md     # 사용자 매뉴얼 (Markdown)
 ├── .env                   # 환경 변수
 └── package.json          # 프로젝트 설정
 ```
@@ -152,6 +156,12 @@ blee-app/
 - 📊 관리자 대시보드 UI 구현
 - 🚀 Vercel 자동 배포 설정
 - 🔧 자동 DB 초기화 시스템 구축
+- 📖 **사용자 매뉴얼 시스템 추가**
+  - HTML 매뉴얼 (`/public/user-manual.html`) 생성
+  - Markdown 매뉴얼 (`/docs/user-manual.md`) 생성
+  - 로그인 페이지에 매뉴얼 버튼 추가
+  - 역할별 권한 안내 및 사용법 가이드
+  - 반응형 디자인으로 모바일 최적화
 
 ## 🛡️ 보안 고려사항
 
