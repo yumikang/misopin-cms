@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -27,7 +27,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -37,7 +36,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar, Clock, Phone, Mail, User, FileText, Search } from "lucide-react";
+import { Clock, Phone, Mail, User, FileText, Search } from "lucide-react";
 
 interface Reservation {
   id: string;
@@ -123,23 +122,7 @@ export default function ReservationsPage() {
     notes: "",
   });
 
-  useEffect(() => {
-    fetchReservations();
-  }, [selectedDate, filterStatus, filterDepartment, searchTerm]);
-
-  useEffect(() => {
-    // Update stats
-    const newStats = {
-      total: reservations.length,
-      pending: reservations.filter(r => r.status === 'PENDING').length,
-      confirmed: reservations.filter(r => r.status === 'CONFIRMED').length,
-      completed: reservations.filter(r => r.status === 'COMPLETED').length,
-      cancelled: reservations.filter(r => r.status === 'CANCELLED' || r.status === 'NO_SHOW').length
-    };
-    setStats(newStats);
-  }, [reservations]);
-
-  const fetchReservations = async () => {
+  const fetchReservations = useCallback(async () => {
     try {
       const params = new URLSearchParams();
       params.append("date", selectedDate);
@@ -156,7 +139,23 @@ export default function ReservationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedDate, filterStatus, filterDepartment, searchTerm]);
+
+  useEffect(() => {
+    fetchReservations();
+  }, [fetchReservations]);
+
+  useEffect(() => {
+    // Update stats
+    const newStats = {
+      total: reservations.length,
+      pending: reservations.filter(r => r.status === 'PENDING').length,
+      confirmed: reservations.filter(r => r.status === 'CONFIRMED').length,
+      completed: reservations.filter(r => r.status === 'COMPLETED').length,
+      cancelled: reservations.filter(r => r.status === 'CANCELLED' || r.status === 'NO_SHOW').length
+    };
+    setStats(newStats);
+  }, [reservations]);
 
   const fetchAvailableSlots = async (date: string, department: string) => {
     if (!date || !department) {
@@ -213,7 +212,7 @@ export default function ReservationsPage() {
 
   const handleStatusUpdate = async (reservation: Reservation, newStatus: Reservation['status']) => {
     try {
-      const updateData: any = { status: newStatus };
+      const updateData: { status: Reservation['status']; cancel_reason?: string } = { status: newStatus };
 
       if (newStatus === 'CANCELLED') {
         const reason = prompt('취소 사유를 입력하세요:');

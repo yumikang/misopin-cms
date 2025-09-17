@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import type { File } from '@/lib/types/database';
+import type { File as DatabaseFile } from '@/lib/types/database';
 
 // Mock data for testing
-const mockFiles: File[] = [
+const mockFiles: DatabaseFile[] = [
   {
     id: '1',
     filename: 'banner-main.webp',
@@ -129,7 +129,7 @@ export async function POST(request: Request) {
     }
 
     // Mock file upload - in real implementation, upload to S3/Cloudinary
-    const newFile: File = {
+    const newFile: DatabaseFile = {
       id: Date.now().toString(),
       filename: `${Date.now()}-${file.name.replace(/\.[^/.]+$/, '')}.webp`,
       original_name: file.name,

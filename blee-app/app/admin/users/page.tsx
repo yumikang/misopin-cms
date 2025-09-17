@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -107,11 +107,7 @@ export default function UsersPage() {
     is_active: true,
   });
 
-  useEffect(() => {
-    fetchUsers();
-  }, [filterRole, filterStatus, searchTerm]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const params = new URLSearchParams();
       if (filterRole !== "all") params.append("role", filterRole);
@@ -127,7 +123,11 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterRole, filterStatus, searchTerm]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
