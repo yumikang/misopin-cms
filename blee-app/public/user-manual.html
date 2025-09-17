@@ -86,7 +86,7 @@
         }
 
         .permissions-table td:first-child {
-            text-align: left;
+            text-align: center;
             font-weight: 500;
         }
 
@@ -312,7 +312,6 @@
                         <th>슈퍼관리자</th>
                         <th>일반관리자</th>
                         <th>편집자</th>
-                        <th>일반사용자</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -321,20 +320,17 @@
                         <td class="check">✓</td>
                         <td class="check">✓</td>
                         <td class="cross">✗</td>
-                        <td class="cross">✗</td>
                     </tr>
                     <tr>
                         <td>게시글 작성/수정</td>
                         <td class="check">✓</td>
                         <td class="check">✓</td>
                         <td class="check">✓</td>
-                        <td class="cross">✗</td>
                     </tr>
                     <tr>
                         <td>팝업/페이지 관리</td>
                         <td class="check">✓</td>
                         <td class="check">✓</td>
-                        <td class="cross">✗</td>
                         <td class="cross">✗</td>
                     </tr>
                     <tr>
@@ -342,11 +338,9 @@
                         <td class="check">✓</td>
                         <td class="cross">✗</td>
                         <td class="cross">✗</td>
-                        <td class="cross">✗</td>
                     </tr>
                     <tr>
                         <td>현황 조회</td>
-                        <td class="check">✓</td>
                         <td class="check">✓</td>
                         <td class="check">✓</td>
                         <td class="check">✓</td>
@@ -366,7 +360,7 @@
                         <li>오늘 예약 목록 확인</li>
                         <li>상태 변경 (확정/취소/완료)</li>
                     </ul>
-                    <small style="color: #666;">관리자만 가능</small>
+                    <small style="color: #666;">슈퍼/일반관리자 가능</small>
                 </div>
 
                 <div class="step-card">
@@ -385,7 +379,7 @@
                         <li>팝업 내용 작성</li>
                         <li>노출 기간 설정 → 저장</li>
                     </ul>
-                    <small style="color: #666;">관리자만 가능</small>
+                    <small style="color: #666;">슈퍼/일반관리자 가능</small>
                 </div>
 
                 <div class="step-card">
@@ -404,7 +398,6 @@
             <h2>역할별 주요 업무</h2>
             <div class="role-grid">
                 <div class="role-card">
-                    <div class="role-icon">👑</div>
                     <h3>슈퍼관리자</h3>
                     <p class="role-desc">모든 권한</p>
                     <div class="role-tasks">
@@ -415,7 +408,6 @@
                 </div>
 
                 <div class="role-card">
-                    <div class="role-icon">🔧</div>
                     <h3>일반관리자</h3>
                     <p class="role-desc">운영 담당</p>
                     <div class="role-tasks">
@@ -426,24 +418,12 @@
                 </div>
 
                 <div class="role-card">
-                    <div class="role-icon">✏️</div>
                     <h3>편집자</h3>
                     <p class="role-desc">콘텐츠 전담</p>
                     <div class="role-tasks">
                         • 게시글/공지사항 작성<br>
                         • 블로그 포스팅<br>
                         • 콘텐츠 수정
-                    </div>
-                </div>
-
-                <div class="role-card">
-                    <div class="role-icon">👥</div>
-                    <h3>일반사용자</h3>
-                    <p class="role-desc">조회만</p>
-                    <div class="role-tasks">
-                        • 현황 확인<br>
-                        • 데이터 열람<br>
-                        • 통계 조회
                     </div>
                 </div>
             </div>
