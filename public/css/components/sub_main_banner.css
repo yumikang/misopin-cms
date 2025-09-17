@@ -1,8 +1,0 @@
-@charset "utf-8";
-
-#shSub{display:flex;align-items:center;justify-content:center;height:460px;margin:0 auto;background-image:linear-gradient(rgb(0, 0, 0, 0.2), rgb(0, 0, 0, 0.2)), url(./sub_bg.jpg);background-size:cover;background-repeat:no-repeat;background-position:50% 70%;font-family:var(--e-font),var(--k-font)}
-#shSub .txt_area{color:#fff;text-align:center}
-#shSub .txt_area p{margin-bottom:15px;font-size:42px}
-#shSub .txt_area div{display:flex;justify-content:center;align-items:center;font-size:16px;font-weight:500}
-#shSub .txt_area div a{color:#fff}
-#shSub .txt_area div i{margin:0 18px;font-size:14px}
