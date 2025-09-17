@@ -35,16 +35,6 @@ const mockSettings: Setting[] = [
     type: 'textarea',
     updated_at: '2025-01-15T09:00:00'
   },
-  {
-    id: '3',
-    category: 'general',
-    key: 'maintenance_mode',
-    value: 'false',
-    label: '유지보수 모드',
-    description: '활성화 시 관리자를 제외한 모든 사용자에게 유지보수 페이지 표시',
-    type: 'boolean',
-    updated_at: '2025-01-15T09:00:00'
-  },
 
   // Contact Settings
   {
@@ -254,7 +244,6 @@ export async function DELETE(request: Request) {
   // In a real implementation, you would fetch default values from a config
   const defaultValues: Record<string, string> = {
     site_name: '미소핀의원',
-    maintenance_mode: 'false',
     // Add more defaults as needed
   };
 
