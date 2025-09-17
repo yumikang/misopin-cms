@@ -98,7 +98,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="flex flex-col h-full">
@@ -175,8 +175,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       )}
 
       {/* Main content */}
-      <div className="lg:ml-64">
-        <main className="pt-16 lg:pt-0">
+      <div className="lg:pl-64">
+        <main className="pt-16 lg:pt-0 min-h-screen">
           {children}
         </main>
       </div>
