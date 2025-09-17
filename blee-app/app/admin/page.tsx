@@ -76,9 +76,9 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 lg:p-6">
         {/* Welcome Section */}
-        <div className="mb-8">
+        <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">대시보드</h2>
           <p className="text-gray-600 mt-1">
             미소핀의원 CMS에 오신 것을 환영합니다, {user.name}님
@@ -86,9 +86,9 @@ export default function AdminPage() {
         </div>
 
         {/* User Info Card */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
+        <div className="bg-white rounded-lg shadow p-4 lg:p-6 mb-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">현재 로그인 정보</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <p className="text-sm text-gray-500">이름</p>
               <p className="font-medium text-gray-900">{user.name}</p>
@@ -107,7 +107,7 @@ export default function AdminPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">
           {stats.map((stat) => (
             <div key={stat.title} className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-4">
@@ -123,8 +123,8 @@ export default function AdminPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div className="bg-white rounded-lg shadow p-6">
+        <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 mb-6">
+          <div className="bg-white rounded-lg shadow p-4 lg:p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">예약 관리</h3>
             <p className="text-sm text-gray-600 mb-4">
               오늘의 예약을 확인하고 관리하세요
@@ -145,7 +145,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 lg:p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">최근 활동</h3>
             <p className="text-sm text-gray-600 mb-4">
               시스템의 최근 활동을 확인하세요
@@ -166,7 +166,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 lg:p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">콘텐츠 현황</h3>
             <p className="text-sm text-gray-600 mb-4">
               웹사이트 콘텐츠 현황을 확인하세요
@@ -189,7 +189,7 @@ export default function AdminPage() {
         </div>
 
         {/* Quick Links - Now with navigation */}
-        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">
           <button
             onClick={() => router.push('/admin/reservations')}
             className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left group hover:bg-blue-50"
@@ -249,7 +249,7 @@ export default function AdminPage() {
         </div>
 
         {/* Additional Admin Functions */}
-        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <button
             onClick={() => router.push('/admin/settings')}
             className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow text-left group hover:bg-gray-50"
