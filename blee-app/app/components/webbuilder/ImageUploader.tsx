@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, X, Image as ImageIcon, Link2, Loader2 } from 'lucide-react';
+import { Upload, X, Link2, Loader2 } from 'lucide-react';
 
 interface ImageUploadResult {
   original: string;

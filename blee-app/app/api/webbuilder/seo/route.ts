@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { requireWebBuilderPermission } from '@/lib/auth';
 import { SEOSettings, WebBuilderResponse } from '@/app/types/webbuilder';
 
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
         ogDescription: seoData.ogDescription,
         ogImage: seoData.ogImage,
         canonicalUrl: seoData.canonicalUrl,
-        structuredData: seoData.structuredData || null,
+        structuredData: (seoData.structuredData || null) as Prisma.InputJsonValue,
       },
       update: {
         metaTitle: seoData.metaTitle,
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
         ogDescription: seoData.ogDescription,
         ogImage: seoData.ogImage,
         canonicalUrl: seoData.canonicalUrl,
-        structuredData: seoData.structuredData || null,
+        structuredData: (seoData.structuredData || null) as Prisma.InputJsonValue,
       },
     });
 

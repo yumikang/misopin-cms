@@ -39,11 +39,7 @@ export async function GET(request: NextRequest) {
             ...(sectionName ? { sectionName } : {}),
           },
           include: {
-            block: {
-              where: {
-                isActive: true, // 활성화된 블록만
-              },
-            },
+            block: true,
           },
           orderBy: [
             { sectionName: 'asc' },
@@ -70,7 +66,7 @@ export async function GET(request: NextRequest) {
       settings: unknown;
       order: number;
     }>>, pb) => {
-      if (!pb.block) return acc; // 블록이 없으면 스킵
+      if (!pb.block || !pb.block.isActive) return acc; // 블록이 없거나 비활성화 상태면 스킵
 
       if (!acc[pb.sectionName]) {
         acc[pb.sectionName] = [];
@@ -132,7 +128,7 @@ export async function GET(request: NextRequest) {
 }
 
 // OPTIONS: CORS preflight 처리
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {

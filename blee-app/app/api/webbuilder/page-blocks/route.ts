@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { requireWebBuilderPermission } from '@/lib/auth';
 import { PageBlockArrangement, WebBuilderResponse } from '@/app/types/webbuilder';
 
@@ -46,14 +46,7 @@ export async function GET(request: NextRequest) {
       if (!acc[pb.sectionName]) {
         acc[pb.sectionName] = [];
       }
-      acc[pb.sectionName].push({
-        id: pb.id,
-        blockId: pb.blockId,
-        order: pb.order,
-        isVisible: pb.isVisible,
-        customStyles: pb.customStyles,
-        block: pb.block,
-      });
+      acc[pb.sectionName].push(pb);
       return acc;
     }, {});
 
@@ -107,7 +100,7 @@ export async function POST(request: NextRequest) {
         blockId,
         sectionName,
         order: newOrder,
-        customStyles: customStyles || null,
+        customStyles: (customStyles || null) as Prisma.InputJsonValue,
       },
       include: {
         block: true,
@@ -208,7 +201,7 @@ export async function PUT(request: NextRequest) {
           },
           data: {
             order: block.order,
-            customStyles: block.customStyles || undefined,
+            customStyles: block.customStyles ? block.customStyles as Prisma.InputJsonValue : undefined,
           },
         })
       )

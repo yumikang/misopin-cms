@@ -5,11 +5,11 @@ import { BlockTemplateData } from '@/app/types/webbuilder';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+// import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Eye,
   Download,
-  Heart,
+  // Heart, // Reserved for future use
   User,
   Clock,
   Tag,
@@ -22,7 +22,7 @@ interface TemplateCardProps {
   onUse: () => void;
   onPreview: () => void;
   canUse: boolean;
-  canManage: boolean;
+  // canManage: boolean; // Reserved for future use
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -53,8 +53,8 @@ export default function TemplateCard({
   template,
   onUse,
   onPreview,
-  canUse,
-  canManage
+  canUse
+  // canManage // Reserved for future use
 }: TemplateCardProps) {
   const categoryColor = CATEGORY_COLORS[template.category] || CATEGORY_COLORS.OTHER;
   const categoryLabel = CATEGORY_LABELS[template.category] || template.category;

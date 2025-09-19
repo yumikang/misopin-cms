@@ -172,7 +172,7 @@ export default function ReservationsPage() {
         const data = await response.json();
         setAvailableSlots(data.availableSlots);
       }
-    } catch (err) {
+    } catch {
       setAvailableSlots(timeSlots);
     }
   };
@@ -240,6 +240,8 @@ export default function ReservationsPage() {
     }
   };
 
+  // Reserved for future use - delete functionality
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDelete = async (id: string) => {
     if (!confirm("정말 이 예약을 취소하시겠습니까?")) return;
 

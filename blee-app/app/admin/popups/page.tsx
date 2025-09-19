@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation"; // 추후 페이지 전환 기능 구현 시 사용
 import {
   Table,
   TableBody,
@@ -39,7 +39,7 @@ export default function PopupsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPopup, setEditingPopup] = useState<Popup | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  // const router = useRouter(); // 추후 페이지 전환 기능 구현 시 사용
 
   const [formData, setFormData] = useState<PopupInput>({
     title: "",

@@ -6,10 +6,10 @@
 import { ContentBlockData } from '@/app/types/webbuilder';
 import {
   BlockRendererFactory,
-  RenderingPerformanceMonitor,
+  // RenderingPerformanceMonitor, // 현재 테스트에서 사용 안함
   SUPPORTED_BLOCK_TYPES,
   safeRenderBlock,
-  safeRenderBlocks,
+  // safeRenderBlocks, // 현재 테스트에서 사용 안함
   checkRenderersHealth,
   isSupportedBlockType,
   normalizeBlockType

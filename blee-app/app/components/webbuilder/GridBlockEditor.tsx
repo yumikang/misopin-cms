@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2, Grid, Columns, Rows, Settings } from 'lucide-react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { Plus, Trash2, Grid, Settings } from 'lucide-react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -28,7 +28,6 @@ interface GridItem {
 // Sortable Grid Item Component
 const SortableGridItem = ({
   item,
-  columns,
   onEdit,
   onDelete
 }: {
@@ -94,7 +93,7 @@ const SortableGridItem = ({
           </div>
         </div>
         <div className="flex-1">
-          <div className="text-sm font-medium mb-1">{content.type}</div>
+          <div className="text-sm font-medium mb-1">{item.content.type}</div>
           <div className="text-xs text-gray-500">{getContentPreview(item.content)}</div>
           {(item.span && item.span > 1) && (
             <div className="text-xs text-blue-600 mt-1">열 {item.span}개</div>
@@ -130,13 +129,13 @@ const GridBlockEditor: React.FC<GridBlockEditorProps> = ({ content, onChange }) 
     }));
   };
 
-  const handleDragEnd = (event: { active: { id: string }; over: { id: string } | null }) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
       const items = getGridItems();
-      const oldIndex = items.findIndex((item) => item.id === active.id);
-      const newIndex = items.findIndex((item) => item.id === over.id);
+      const oldIndex = items.findIndex((item) => item.id === String(active.id));
+      const newIndex = items.findIndex((item) => item.id === String(over.id));
 
       const reorderedItems = arrayMove(items, oldIndex, newIndex);
       onChange({
@@ -457,7 +456,7 @@ const GridBlockEditor: React.FC<GridBlockEditorProps> = ({ content, onChange }) 
                     value={(editingItem.content as { text?: string }).text || ''}
                     onChange={(e) => setEditingItem({
                       ...editingItem,
-                      content: { ...editingItem.content, text: e.target.value }
+                      content: { ...editingItem.content, text: e.target.value } as BlockContent
                     })}
                     placeholder="텍스트 내용을 입력하세요"
                   />
@@ -470,7 +469,7 @@ const GridBlockEditor: React.FC<GridBlockEditorProps> = ({ content, onChange }) 
                       value={(editingItem.content as { src?: string }).src || ''}
                       onChange={(e) => setEditingItem({
                         ...editingItem,
-                        content: { ...editingItem.content, src: e.target.value }
+                        content: { ...editingItem.content, src: e.target.value } as BlockContent
                       })}
                     />
                     <Input
@@ -478,7 +477,7 @@ const GridBlockEditor: React.FC<GridBlockEditorProps> = ({ content, onChange }) 
                       value={(editingItem.content as { alt?: string }).alt || ''}
                       onChange={(e) => setEditingItem({
                         ...editingItem,
-                        content: { ...editingItem.content, alt: e.target.value }
+                        content: { ...editingItem.content, alt: e.target.value } as BlockContent
                       })}
                     />
                   </div>
@@ -491,7 +490,7 @@ const GridBlockEditor: React.FC<GridBlockEditorProps> = ({ content, onChange }) 
                       value={(editingItem.content as { text?: string }).text || ''}
                       onChange={(e) => setEditingItem({
                         ...editingItem,
-                        content: { ...editingItem.content, text: e.target.value }
+                        content: { ...editingItem.content, text: e.target.value } as BlockContent
                       })}
                     />
                     <Input
@@ -499,7 +498,7 @@ const GridBlockEditor: React.FC<GridBlockEditorProps> = ({ content, onChange }) 
                       value={(editingItem.content as { link?: string }).link || ''}
                       onChange={(e) => setEditingItem({
                         ...editingItem,
-                        content: { ...editingItem.content, link: e.target.value }
+                        content: { ...editingItem.content, link: e.target.value } as BlockContent
                       })}
                     />
                   </div>
@@ -512,7 +511,7 @@ const GridBlockEditor: React.FC<GridBlockEditorProps> = ({ content, onChange }) 
                     value={(editingItem.content as { src?: string }).src || ''}
                     onChange={(e) => setEditingItem({
                       ...editingItem,
-                      content: { ...editingItem.content, src: e.target.value }
+                      content: { ...editingItem.content, src: e.target.value } as BlockContent
                     })}
                   />
                 )}
@@ -523,7 +522,7 @@ const GridBlockEditor: React.FC<GridBlockEditorProps> = ({ content, onChange }) 
                     value={(editingItem.content as { html?: string }).html || ''}
                     onChange={(e) => setEditingItem({
                       ...editingItem,
-                      content: { ...editingItem.content, html: e.target.value }
+                      content: { ...editingItem.content, html: e.target.value } as BlockContent
                     })}
                     placeholder="<div>HTML 코드를 입력하세요</div>"
                   />

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import type { Popup, PopupInput } from '@/lib/types/database';
+import type { PopupInput } from '@/lib/types/database';
 
 // GET - 팝업 목록 조회
 export async function GET(request: Request) {

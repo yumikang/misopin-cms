@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, BlockType } from '@prisma/client';
+import { PrismaClient, BlockType, Prisma } from '@prisma/client';
 import { requireWebBuilderPermission } from '@/lib/auth';
 import { ContentBlockData, WebBuilderResponse } from '@/app/types/webbuilder';
 
@@ -83,9 +83,9 @@ export async function POST(request: NextRequest) {
       data: {
         name: body.name,
         type: body.type,
-        content: body.content,
-        styles: body.styles || null,
-        settings: body.settings || null,
+        content: body.content as unknown as Prisma.InputJsonValue,
+        styles: (body.styles || null) as Prisma.InputJsonValue,
+        settings: (body.settings || null) as Prisma.InputJsonValue,
         isGlobal: body.isGlobal || false,
       },
     });
@@ -95,9 +95,9 @@ export async function POST(request: NextRequest) {
       data: {
         blockId: block.id,
         version: 1,
-        content: block.content,
-        styles: block.styles,
-        settings: block.settings,
+        content: block.content as Prisma.InputJsonValue,
+        styles: block.styles as Prisma.InputJsonValue,
+        settings: block.settings as Prisma.InputJsonValue,
         changedBy: user.id,
         changeNote: 'Initial creation',
       },
@@ -167,9 +167,9 @@ export async function PATCH(request: NextRequest) {
       data: {
         blockId,
         version: nextVersion,
-        content: body.content || currentBlock.content,
-        styles: body.styles || currentBlock.styles,
-        settings: body.settings || currentBlock.settings,
+        content: (body.content || currentBlock.content) as Prisma.InputJsonValue,
+        styles: (body.styles || currentBlock.styles) as Prisma.InputJsonValue,
+        settings: (body.settings || currentBlock.settings) as Prisma.InputJsonValue,
         changedBy: user.id,
         changeNote: body.changeNote || 'Updated',
       },
@@ -180,9 +180,9 @@ export async function PATCH(request: NextRequest) {
       where: { id: blockId },
       data: {
         name: body.name || undefined,
-        content: body.content || undefined,
-        styles: body.styles || undefined,
-        settings: body.settings || undefined,
+        content: body.content ? body.content as Prisma.InputJsonValue : undefined,
+        styles: body.styles ? body.styles as Prisma.InputJsonValue : undefined,
+        settings: body.settings ? body.settings as Prisma.InputJsonValue : undefined,
         isGlobal: body.isGlobal !== undefined ? body.isGlobal : undefined,
         isActive: body.isActive !== undefined ? body.isActive : undefined,
       },

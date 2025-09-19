@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Plus, Trash2, GripVertical, Settings } from 'lucide-react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -104,12 +104,12 @@ const FormBlockEditor: React.FC<FormBlockEditorProps> = ({ content, onChange }) 
     })
   );
 
-  const handleDragEnd = (event: { active: { id: string }; over: { id: string } | null }) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = content.fields.findIndex((field) => field.id === active.id);
-      const newIndex = content.fields.findIndex((field) => field.id === over.id);
+      const oldIndex = content.fields.findIndex((field) => field.id === String(active.id));
+      const newIndex = content.fields.findIndex((field) => field.id === String(over.id));
 
       onChange({
         ...content,
@@ -333,8 +333,8 @@ const FormBlockEditor: React.FC<FormBlockEditorProps> = ({ content, onChange }) 
                   <Label>너비</Label>
                   <Select
                     value={editingField.width || 'full'}
-                    onValueChange={(value: FormFieldConfig['width']) =>
-                      setEditingField({ ...editingField, width: value })
+                    onValueChange={(value) =>
+                      setEditingField({ ...editingField, width: value as FormFieldConfig['width'] })
                     }
                   >
                     <SelectTrigger>

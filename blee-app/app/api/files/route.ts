@@ -147,7 +147,7 @@ export async function POST(request: Request) {
       ...newFile,
       formattedSize: formatFileSize(newFile.size || 0)
     }, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to upload file' },
       { status: 500 }

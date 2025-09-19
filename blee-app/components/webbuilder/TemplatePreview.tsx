@@ -101,7 +101,15 @@ export default function TemplatePreview({
           <div className="p-4 border rounded-lg bg-white">
             <Button
               variant={'variant' in templateData.content && templateData.content.variant === 'outline' ? 'outline' : 'default'}
-              size={'size' in templateData.content ? templateData.content.size || 'default' : 'default'}
+              size={((): 'default' | 'sm' | 'lg' | 'icon' => {
+                if ('size' in templateData.content) {
+                  const size = templateData.content.size;
+                  if (size === 'small') return 'sm';
+                  if (size === 'large') return 'lg';
+                  return 'default';
+                }
+                return 'default';
+              })()}
             >
               {'text' in templateData.content ? templateData.content.text || '버튼' : '버튼'}
             </Button>

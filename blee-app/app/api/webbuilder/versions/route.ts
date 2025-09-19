@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { requireWebBuilderPermission } from '@/lib/auth';
-import { VersionInfo, WebBuilderResponse } from '@/app/types/webbuilder';
+import { WebBuilderResponse } from '@/app/types/webbuilder';
 
 const prisma = new PrismaClient();
 
@@ -115,9 +115,9 @@ export async function POST(request: NextRequest) {
       data: {
         blockId,
         version: nextVersion,
-        content: version.content,
-        styles: version.styles,
-        settings: version.settings,
+        content: version.content as Prisma.InputJsonValue,
+        styles: version.styles as Prisma.InputJsonValue,
+        settings: version.settings as Prisma.InputJsonValue,
         changedBy: user.id,
         changeNote: `Restored from version ${version.version}`,
       },
@@ -127,9 +127,9 @@ export async function POST(request: NextRequest) {
     const restoredBlock = await prisma.contentBlock.update({
       where: { id: blockId },
       data: {
-        content: version.content,
-        styles: version.styles,
-        settings: version.settings,
+        content: version.content as Prisma.InputJsonValue,
+        styles: version.styles as Prisma.InputJsonValue,
+        settings: version.settings as Prisma.InputJsonValue,
       },
     });
 

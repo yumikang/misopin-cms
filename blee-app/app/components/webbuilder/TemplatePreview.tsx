@@ -15,7 +15,7 @@ import {
   Lock,
   Eye,
   Code,
-  Palette,
+  // Palette, // 추후 스타일 편집 기능 구현 시 사용
   Settings
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -101,7 +101,12 @@ export default function TemplatePreview({
           <div className="p-4 border rounded-lg bg-white">
             <Button
               variant={(templateData.content as ButtonBlockContent).variant === 'outline' ? 'outline' : 'default'}
-              size={(templateData.content as ButtonBlockContent).size || 'default'}
+              size={((): 'default' | 'sm' | 'lg' | 'icon' => {
+                const content = templateData.content as ButtonBlockContent;
+                if (content.size === 'small') return 'sm';
+                if (content.size === 'large') return 'lg';
+                return 'default';
+              })()}
             >
               {(templateData.content as ButtonBlockContent).text || '버튼'}
             </Button>

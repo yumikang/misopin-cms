@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { BlockType } from '@prisma/client';
-import { ContentBlockData, BlockContent } from '@/app/types/webbuilder';
+import { ContentBlockData, BlockContent, CarouselBlockContent, HtmlBlockContent, FormBlockContent, MapBlockContent, GridBlockContent } from '@/app/types/webbuilder';
 import TipTapEditor from './TipTapEditor';
 import FormBlockEditor from './FormBlockEditor';
 import MapBlockEditor from './MapBlockEditor';
@@ -47,15 +47,15 @@ const BlockEditor: React.FC<BlockEditorProps> = ({
       case 'VIDEO':
         return <VideoBlockEditor content={block.content} onChange={handleContentChange} />;
       case 'CAROUSEL':
-        return <CarouselBlockEditor content={block.content} onChange={handleContentChange} />;
+        return <CarouselBlockEditor content={block.content as CarouselBlockContent} onChange={handleContentChange} />;
       case 'HTML':
-        return <HtmlBlockEditor content={block.content} onChange={handleContentChange} />;
+        return <HtmlBlockEditor content={block.content as HtmlBlockContent} onChange={handleContentChange} />;
       case 'FORM':
-        return <FormBlockEditor content={block.content} onChange={handleContentChange} />;
+        return <FormBlockEditor content={block.content as FormBlockContent} onChange={handleContentChange} />;
       case 'MAP':
-        return <MapBlockEditor content={block.content} onChange={handleContentChange} />;
+        return <MapBlockEditor content={block.content as MapBlockContent} onChange={handleContentChange} />;
       case 'GRID':
-        return <GridBlockEditor content={block.content} onChange={handleContentChange} />;
+        return <GridBlockEditor content={block.content as GridBlockContent} onChange={handleContentChange} />;
       default:
         return <div>이 블록 타입은 아직 지원되지 않습니다.</div>;
     }
@@ -116,7 +116,7 @@ const TextBlockEditor: React.FC<{
   content: BlockContent;
   onChange: (content: Partial<BlockContent>) => void;
 }> = ({ content, onChange }) => {
-  const textContent = content as { type: 'TEXT'; text: string; format?: string };
+  const textContent = content as { type: 'TEXT'; text: string; format?: 'html' | 'plain' | 'markdown' };
 
   return (
     <div className="space-y-4">
@@ -124,7 +124,7 @@ const TextBlockEditor: React.FC<{
         <Label>형식</Label>
         <Select
           value={textContent.format || 'html'}
-          onValueChange={(value) => onChange({ ...textContent, format: value })}
+          onValueChange={(value) => onChange({ type: 'TEXT', text: textContent.text, format: value as 'html' | 'plain' | 'markdown' })}
         >
           <SelectTrigger>
             <SelectValue />
@@ -140,13 +140,13 @@ const TextBlockEditor: React.FC<{
       {textContent.format === 'html' ? (
         <TipTapEditor
           content={textContent.text}
-          onChange={(text) => onChange({ ...textContent, text })}
+          onChange={(text) => onChange({ type: 'TEXT', text, format: textContent.format })}
           placeholder="텍스트를 입력하세요..."
         />
       ) : (
         <Textarea
           value={textContent.text}
-          onChange={(e) => onChange({ ...textContent, text: e.target.value })}
+          onChange={(e) => onChange({ type: 'TEXT', text: e.target.value, format: textContent.format })}
           placeholder="텍스트를 입력하세요..."
           rows={10}
         />
@@ -162,7 +162,7 @@ const ImageBlockEditor: React.FC<{
 }> = ({ content, onChange }) => {
   const imageContent = content as { type: 'IMAGE'; src: string; alt: string; caption?: string; link?: string };
 
-  const handleImageChange = (imageUrl: string, metadata?: { width: number; height: number; format: string; size: number }) => {
+  const handleImageChange = (imageUrl: string) => {
     onChange({ ...imageContent, src: imageUrl });
   };
 
@@ -234,7 +234,7 @@ const ButtonBlockEditor: React.FC<{
   content: BlockContent;
   onChange: (content: Partial<BlockContent>) => void;
 }> = ({ content, onChange }) => {
-  const buttonContent = content as { type: 'BUTTON'; text: string; link: string; variant?: string; size?: string };
+  const buttonContent = content as { type: 'BUTTON'; text: string; link: string; variant?: 'primary' | 'secondary' | 'outline'; size?: 'small' | 'medium' | 'large' };
 
   return (
     <div className="space-y-4">
@@ -243,7 +243,7 @@ const ButtonBlockEditor: React.FC<{
         <Input
           id="text"
           value={buttonContent.text}
-          onChange={(e) => onChange({ ...buttonContent, text: e.target.value })}
+          onChange={(e) => onChange({ type: 'BUTTON', text: e.target.value, link: buttonContent.link, variant: buttonContent.variant, size: buttonContent.size })}
           placeholder="버튼 텍스트"
         />
       </div>
@@ -252,7 +252,7 @@ const ButtonBlockEditor: React.FC<{
         <Input
           id="link"
           value={buttonContent.link}
-          onChange={(e) => onChange({ ...buttonContent, link: e.target.value })}
+          onChange={(e) => onChange({ type: 'BUTTON', text: buttonContent.text, link: e.target.value, variant: buttonContent.variant, size: buttonContent.size })}
           placeholder="https://..."
         />
       </div>
@@ -261,7 +261,7 @@ const ButtonBlockEditor: React.FC<{
           <Label>스타일</Label>
           <Select
             value={buttonContent.variant || 'primary'}
-            onValueChange={(value) => onChange({ ...buttonContent, variant: value })}
+            onValueChange={(value) => onChange({ type: 'BUTTON', text: buttonContent.text, link: buttonContent.link, variant: value as 'primary' | 'secondary' | 'outline', size: buttonContent.size })}
           >
             <SelectTrigger>
               <SelectValue />
@@ -277,7 +277,7 @@ const ButtonBlockEditor: React.FC<{
           <Label>크기</Label>
           <Select
             value={buttonContent.size || 'medium'}
-            onValueChange={(value) => onChange({ ...buttonContent, size: value })}
+            onValueChange={(value) => onChange({ type: 'BUTTON', text: buttonContent.text, link: buttonContent.link, variant: buttonContent.variant, size: value as 'small' | 'medium' | 'large' })}
           >
             <SelectTrigger>
               <SelectValue />

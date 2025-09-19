@@ -86,11 +86,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
 
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
-    const urls: Record<string, string> = {};
+    const urls: { original?: string; thumbnail?: string; small?: string; medium?: string; large?: string } = {};
 
     // 원본 이미지 업로드
     const originalPath = `${folder}/${fileName}.${fileExt}`;
-    const { data: originalData, error: originalError } = await supabase.storage
+    const { error: originalError } = await supabase.storage
       .from('images')
       .upload(originalPath, buffer, {
         contentType: file.type,
@@ -139,7 +139,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
                 .from('images')
                 .getPublicUrl(optimizedPath);
 
-              urls[size] = publicUrl;
+              if (size === 'thumbnail' || size === 'small' || size === 'medium' || size === 'large') {
+                urls[size] = publicUrl;
+              }
             }
           } catch (err) {
             console.error(`Failed to create ${size} version:`, err);
@@ -151,6 +153,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
     return NextResponse.json({
       success: true,
       data: {
+        original: urls.original || originalPath,
         ...urls,
         metadata: {
           width: metadata.width,

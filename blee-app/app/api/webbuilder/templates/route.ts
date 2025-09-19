@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { requireWebBuilderPermission } from '@/lib/auth';
-import { BlockTemplateData, WebBuilderResponse } from '@/app/types/webbuilder';
+import { WebBuilderResponse } from '@/app/types/webbuilder';
 
 const prisma = new PrismaClient();
 

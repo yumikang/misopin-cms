@@ -5,11 +5,11 @@ import { BlockTemplateData } from '@/app/types/webbuilder';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+// import { Avatar, AvatarFallback } from '@/components/ui/avatar'; // 추후 아바타 기능 구현 시 사용
 import {
   Eye,
   Download,
-  Heart,
+  // Heart, // 추후 좋아요 기능 구현 시 사용
   User,
   Clock,
   Tag,
@@ -54,7 +54,7 @@ export default function TemplateCard({
   onUse,
   onPreview,
   canUse,
-  canManage
+  // canManage // 추후 관리 기능 구현 시 사용
 }: TemplateCardProps) {
   const categoryColor = CATEGORY_COLORS[template.category] || CATEGORY_COLORS.OTHER;
   const categoryLabel = CATEGORY_LABELS[template.category] || template.category;

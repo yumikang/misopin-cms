@@ -5,11 +5,11 @@ import { TemplateCategory } from '@prisma/client';
 import { BlockTemplateData, TemplateGalleryFilter } from '@/app/types/webbuilder';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // 현재 사용 안함
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+// import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'; // 현재 사용 안함
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Grid3X3, Filter, Eye, Download, Heart, Star } from 'lucide-react';
+import { Search, Grid3X3 } from 'lucide-react';
 import TemplateCard from './TemplateCard';
 import TemplatePreview from './TemplatePreview';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -94,7 +94,7 @@ export default function TemplateGallery({
       } else {
         setError(data.error || 'Failed to load templates');
       }
-    } catch (err) {
+    } catch {
       setError('네트워크 오류가 발생했습니다.');
     } finally {
       setLoading(false);
@@ -104,7 +104,7 @@ export default function TemplateGallery({
   // 초기 로드 및 필터 변경 시 재로드
   useEffect(() => {
     loadTemplates(true);
-  }, [filter]);
+  }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 템플릿 사용 처리
   const handleUseTemplate = async (template: BlockTemplateData) => {

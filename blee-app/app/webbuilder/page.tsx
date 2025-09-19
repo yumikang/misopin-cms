@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { BlockType } from '@prisma/client';
+import { BlockType, TemplateCategory } from '@prisma/client';
 import { ContentBlockData, PageSection, BlockContent, BlockTemplateData } from '@/app/types/webbuilder';
 import BlockEditor from '@/components/webbuilder/BlockEditor';
 import TemplateGallery from '@/components/webbuilder/TemplateGallery';
@@ -10,13 +10,13 @@ import { useAutoSave, AutoSaveIndicator } from '@/hooks/useAutoSave';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Eye, Save, Trash2, Edit2, GripVertical, Globe, Lock, Settings, Layout, Bookmark } from 'lucide-react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { Plus, Eye, Save, Trash2, Edit2, GripVertical, Globe, Settings, Layout, Bookmark } from 'lucide-react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+// import { Switch } from '@/components/ui/switch';
+// import { Label } from '@/components/ui/label';
 import { usePermissions, PermissionGate, PermissionDenied } from '@/hooks/usePermissions';
 
 // 페이지 섹션 정의
@@ -129,19 +129,19 @@ const SortableBlock = ({ block, onEdit, onDelete, onSaveAsTemplate }: {
   );
 };
 
-export default function WebBuilderPage() {
+function WebBuilderContent() {
   const searchParams = useSearchParams();
   const pageSlug = searchParams.get('page') || 'home';
   const sectionName = searchParams.get('section');
 
   const {
-    user,
+    // user,
     loading,
     error,
     canViewWebBuilder,
-    canCreateBlocks,
-    canEditBlocks,
-    canDeleteBlocks,
+    // canCreateBlocks,
+    // canEditBlocks,
+    // canDeleteBlocks,
     canManagePages
   } = usePermissions();
 
@@ -153,7 +153,7 @@ export default function WebBuilderPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const [showTemplateGallery, setShowTemplateGallery] = useState(false);
-  const [selectedTemplateCategory, setSelectedTemplateCategory] = useState<string | undefined>();
+  const [selectedTemplateCategory, setSelectedTemplateCategory] = useState<TemplateCategory | undefined>();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -166,6 +166,7 @@ export default function WebBuilderPage() {
   useEffect(() => {
     loadPageBlocks();
     loadGlobalBlocks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageSlug]);
 
   const loadPageBlocks = async () => {
@@ -192,13 +193,13 @@ export default function WebBuilderPage() {
     }
   };
 
-  const handleDragEnd = (event: { active: { id: string }; over: { id: string } | null }) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
       setSectionBlocks((prev) => {
-        const oldIndex = prev[selectedSection].findIndex((item) => item.id === active.id);
-        const newIndex = prev[selectedSection].findIndex((item) => item.id === over.id);
+        const oldIndex = prev[selectedSection].findIndex((item) => item.id === String(active.id));
+        const newIndex = prev[selectedSection].findIndex((item) => item.id === String(over.id));
 
         return {
           ...prev,
@@ -392,7 +393,7 @@ export default function WebBuilderPage() {
     }
   };
 
-  const currentSection = PAGE_SECTIONS.find(s => s.sectionName === selectedSection);
+  // const currentSection = PAGE_SECTIONS.find(s => s.sectionName === selectedSection);
   const currentSectionBlocks = sectionBlocks[selectedSection] || [];
 
   // 자동 저장 설정
@@ -653,5 +654,19 @@ export default function WebBuilderPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function WebBuilderPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">페이지 로딩 중...</div>
+        </div>
+      </div>
+    }>
+      <WebBuilderContent />
+    </Suspense>
   );
 }

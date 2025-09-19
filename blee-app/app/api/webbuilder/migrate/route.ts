@@ -199,7 +199,7 @@ CREATE POLICY "Service role can do everything" ON content_versions
     // Verify tables were created
     const verification = [];
     for (const table of tables) {
-      const { data, error } = await supabaseAdmin
+      const { error } = await supabaseAdmin
         .from(table)
         .select('*')
         .limit(1);

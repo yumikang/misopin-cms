@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { MapBlockContent } from '@/app/types/webbuilder';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { MapPin, Navigation, ZoomIn, ZoomOut } from 'lucide-react';
+import { MapPin, Navigation } from 'lucide-react';
 
 interface MapBlockEditorProps {
   content: MapBlockContent;
@@ -16,11 +16,7 @@ interface MapBlockEditorProps {
 
 const MapBlockEditor: React.FC<MapBlockEditorProps> = ({ content, onChange }) => {
   const [address, setAddress] = useState(content.address || '');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  // 기본 위치는 서울
-  const defaultLat = 37.5665;
-  const defaultLng = 126.9780;
+  // const [searchQuery, setSearchQuery] = useState(''); // 추후 검색 기능 구현 시 사용
 
   const handleLatChange = (value: string) => {
     const lat = parseFloat(value);

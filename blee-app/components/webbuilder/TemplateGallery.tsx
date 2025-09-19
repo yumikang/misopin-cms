@@ -5,11 +5,11 @@ import { TemplateCategory } from '@prisma/client';
 import { BlockTemplateData, TemplateGalleryFilter } from '@/app/types/webbuilder';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+// import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+// import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Grid3X3, Filter, Eye, Download, Heart, Star } from 'lucide-react';
+import { Search, Grid3X3 } from 'lucide-react';
 import TemplateCard from './TemplateCard';
 import TemplatePreview from './TemplatePreview';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -229,7 +229,6 @@ export default function TemplateGallery({
               onUse={() => handleUseTemplate(template)}
               onPreview={() => setPreviewTemplate(template)}
               canUse={canCreateBlocks}
-              canManage={canManageTemplates}
             />
           ))}
         </div>

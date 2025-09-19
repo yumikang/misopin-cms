@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import PreviewFrame from '@/components/webbuilder/PreviewFrame';
 import { ContentBlockData } from '@/app/types/webbuilder';
 import { Button } from '@/components/ui/button';
 import { Monitor, Tablet, Smartphone, ZoomIn, ZoomOut, RotateCw, X } from 'lucide-react';
 
-export default function PreviewPage() {
+function PreviewPageContent() {
   const searchParams = useSearchParams();
   const pageSlug = searchParams.get('page') || 'home';
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
@@ -23,6 +23,7 @@ export default function PreviewPage() {
 
   useEffect(() => {
     loadPageContent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageSlug]);
 
   const loadPageContent = async () => {
@@ -171,5 +172,20 @@ export default function PreviewPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function PreviewPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-gray-600">페이지 로딩 중...</p>
+        </div>
+      </div>
+    }>
+      <PreviewPageContent />
+    </Suspense>
   );
 }

@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 // GET: 개별 템플릿 조회
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await requireWebBuilderPermission(request, ['VIEW_WEBBUILDER']);
@@ -20,7 +20,7 @@ export async function GET(
     }
 
     const { user } = authResult;
-    const { id } = params;
+    const { id } = await params;
 
     const template = await prisma.blockTemplate.findUnique({
       where: { id },
@@ -66,7 +66,7 @@ export async function GET(
 // PUT: 템플릿 수정 (소유자 또는 ADMIN 이상만 가능)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await requireWebBuilderPermission(request, ['MANAGE_TEMPLATES']);
@@ -78,7 +78,7 @@ export async function PUT(
     }
 
     const { user } = authResult;
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     const existingTemplate = await prisma.blockTemplate.findUnique({
@@ -170,7 +170,7 @@ export async function PUT(
 // DELETE: 템플릿 삭제 (소유자 또는 SUPER_ADMIN만 가능)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await requireWebBuilderPermission(request, ['MANAGE_TEMPLATES']);
@@ -182,7 +182,7 @@ export async function DELETE(
     }
 
     const { user } = authResult;
-    const { id } = params;
+    const { id } = await params;
 
     const existingTemplate = await prisma.blockTemplate.findUnique({
       where: { id }
@@ -226,7 +226,7 @@ export async function DELETE(
 // POST: 템플릿 사용 (사용 횟수 증가)
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await requireWebBuilderPermission(request, ['CREATE_BLOCKS']);
@@ -238,7 +238,7 @@ export async function POST(
     }
 
     const { user } = authResult;
-    const { id } = params;
+    const { id } = await params;
 
     const template = await prisma.blockTemplate.findUnique({
       where: { id }
