@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import pool from '@/lib/db';
+import { generateToken } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     // Find user
     const result = await pool.query(
-      'SELECT * FROM users WHERE email = $1',
+      'SELECT id, email, name, password, role, "isActive" FROM users WHERE email = $1 AND "isActive" = true',
       [email]
     );
 
@@ -31,18 +31,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate token
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '7d' }
-    );
+    // Generate token with role information
+    const token = generateToken({
+      id: user.id,
+      email: user.email,
+      role: user.role
+    });
 
     return NextResponse.json({
       user: {
         id: user.id,
         email: user.email,
-        name: user.name
+        name: user.name,
+        role: user.role
       },
       token
     });

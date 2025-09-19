@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { WebBuilderAction, createWebBuilderUserContext, WebBuilderUserContext } from '@/lib/middleware/auth';
 

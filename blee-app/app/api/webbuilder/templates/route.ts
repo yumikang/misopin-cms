@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const tags = searchParams.get('tags')?.split(',').filter(Boolean);
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     // 카테고리 필터
     if (category && category !== 'ALL') {

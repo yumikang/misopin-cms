@@ -254,6 +254,7 @@ export interface BlockTemplateData {
   thumbnailUrl?: string;
   isPublic?: boolean;
   createdBy?: string;
+  creator?: { name: string };
   templateData: ContentBlockData;
   tags?: string[];
   usageCount?: number;
