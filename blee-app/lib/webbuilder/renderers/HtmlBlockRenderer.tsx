@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ContentBlockData, HtmlBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
@@ -29,14 +29,14 @@ export class HtmlBlockRenderer extends BaseBlockRenderer {
       }
 
       const content = block.content as HtmlBlockContent;
-      const {
-        html,
-        sanitize = true,
-        allowScripts = false,
-        allowStyles = true,
-        allowedTags,
-        allowedAttributes
-      } = content;
+      const { html } = content;
+
+      // Default values for HTML processing options
+      const sanitize = true;
+      const allowScripts = false;
+      const allowStyles = true;
+      const allowedTags: string[] | undefined = undefined;
+      const allowedAttributes: Record<string, string[]> | undefined = undefined;
 
       const tailwindClasses = this.generateTailwindClasses(block);
 
@@ -77,21 +77,21 @@ export class HtmlBlockRenderer extends BaseBlockRenderer {
   /**
    * React JSX로 렌더링
    */
-  renderToReact(block: ContentBlockData): JSX.Element {
+  renderToReact(block: ContentBlockData): ReactElement {
     try {
       if (!this.validate(block)) {
         throw new Error('Invalid HTML block data');
       }
 
       const content = block.content as HtmlBlockContent;
-      const {
-        html,
-        sanitize = true,
-        allowScripts = false,
-        allowStyles = true,
-        allowedTags,
-        allowedAttributes
-      } = content;
+      const { html } = content;
+
+      // Default values for HTML processing options
+      const sanitize = true;
+      const allowScripts = false;
+      const allowStyles = true;
+      const allowedTags: string[] | undefined = undefined;
+      const allowedAttributes: Record<string, string[]> | undefined = undefined;
 
       const tailwindClasses = this.generateTailwindClasses(block);
       const className = `cms-html-block ${tailwindClasses}`;
@@ -192,7 +192,7 @@ export class HtmlBlockRenderer extends BaseBlockRenderer {
       }
 
       // 속성 필터링
-      const filteredTag = tag.replace(/(\w+)="[^"]*"/g, (attrMatch, attrName) => {
+      const filteredTag = tag.replace(/(\w+)="[^"]*"/g, (attrMatch: string, attrName: string) => {
         return finalAllowedAttributes.includes(attrName.toLowerCase()) ? attrMatch : '';
       });
 
@@ -349,7 +349,7 @@ function HtmlContentComponent({
   js,
   allowScripts,
   allowStyles
-}: HtmlContentComponentProps): JSX.Element {
+}: HtmlContentComponentProps): ReactElement {
   const contentRef = React.useRef<HTMLDivElement>(null);
 
   // CSS 적용
@@ -398,7 +398,7 @@ interface HtmlPreviewComponentProps {
 export function HtmlPreviewComponent({
   html,
   showWarnings = true
-}: HtmlPreviewComponentProps): JSX.Element {
+}: HtmlPreviewComponentProps): ReactElement {
   const renderer = new HtmlBlockRenderer();
   const [warnings, setWarnings] = React.useState<string[]>([]);
 

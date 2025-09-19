@@ -1,5 +1,6 @@
 import { ContentBlockData } from '@/app/types/webbuilder';
 import { BlockRenderer } from './BlockRenderer';
+import { ReactElement } from 'react';
 import { TextBlockRenderer } from './TextBlockRenderer';
 import { ImageBlockRenderer } from './ImageBlockRenderer';
 import { GridBlockRenderer } from './GridBlockRenderer';
@@ -98,7 +99,7 @@ export class BlockRendererFactory {
   /**
    * 블록을 React JSX로 렌더링
    */
-  static renderToReact(block: ContentBlockData): JSX.Element {
+  static renderToReact(block: ContentBlockData): ReactElement {
     try {
       const renderer = this.getRenderer(block.type);
       return renderer.renderToReact(block);
@@ -161,7 +162,7 @@ export class BlockRendererFactory {
   /**
    * 여러 블록을 한번에 React로 렌더링
    */
-  static renderBlocksToReact(blocks: ContentBlockData[]): JSX.Element {
+  static renderBlocksToReact(blocks: ContentBlockData[]): ReactElement {
     if (!blocks || blocks.length === 0) {
       return (
         <div className="empty-blocks text-gray-500 text-center py-8">
@@ -356,7 +357,7 @@ export class BlockRendererFactory {
   /**
    * React 폴백 생성
    */
-  private static generateFallbackReact(block: ContentBlockData, error: Error): JSX.Element {
+  private static generateFallbackReact(block: ContentBlockData, error: Error): ReactElement {
     return (
       <div className="cms-block cms-block-error p-4 border border-red-300 bg-red-50 rounded">
         <p className="text-red-700 text-sm">

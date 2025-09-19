@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ContentBlockData, TextBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
@@ -73,7 +73,7 @@ export class TextBlockRenderer extends BaseBlockRenderer {
   /**
    * React JSX로 렌더링
    */
-  renderToReact(block: ContentBlockData): JSX.Element {
+  renderToReact(block: ContentBlockData): ReactElement {
     try {
       if (!this.validate(block)) {
         throw new Error('Invalid text block data');

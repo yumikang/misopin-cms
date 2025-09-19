@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ContentBlockData, CarouselBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
@@ -34,13 +34,15 @@ export class CarouselBlockRenderer extends BaseBlockRenderer {
       const {
         items = [],
         autoplay = false,
-        interval = 5000,
-        showDots = true,
-        showArrows = true,
-        infinite = true,
-        slidesToShow = 1,
-        slidesToScroll = 1
+        interval = 5000
       } = content;
+
+      // Default carousel settings
+      const showDots = true;
+      const showArrows = true;
+      const infinite = true;
+      const slidesToShow = 1;
+      const slidesToScroll = 1;
 
       const tailwindClasses = this.generateTailwindClasses(block);
       const carouselId = `carousel-${Math.random().toString(36).substr(2, 9)}`;
@@ -119,7 +121,7 @@ export class CarouselBlockRenderer extends BaseBlockRenderer {
   /**
    * React JSX로 렌더링
    */
-  renderToReact(block: ContentBlockData): JSX.Element {
+  renderToReact(block: ContentBlockData): ReactElement {
     try {
       if (!this.validate(block)) {
         throw new Error('Invalid carousel block data');
@@ -129,13 +131,15 @@ export class CarouselBlockRenderer extends BaseBlockRenderer {
       const {
         items = [],
         autoplay = false,
-        interval = 5000,
-        showDots = true,
-        showArrows = true,
-        infinite = true,
-        slidesToShow = 1,
-        slidesToScroll = 1
+        interval = 5000
       } = content;
+
+      // Default carousel settings
+      const showDots = true;
+      const showArrows = true;
+      const infinite = true;
+      const slidesToShow = 1;
+      const slidesToScroll = 1;
 
       const tailwindClasses = this.generateTailwindClasses(block);
       const className = `cms-carousel-block ${tailwindClasses}`;
@@ -175,29 +179,20 @@ export class CarouselBlockRenderer extends BaseBlockRenderer {
    * 캐러셀 아이템 렌더링
    */
   private renderCarouselItem(item: CarouselBlockContent['items'][0]): string {
-    if (item.type === 'image') {
-      const { src, alt = '', caption } = item;
-      return `
-        <div class="carousel-item-content">
-          <img src="${this.escapeAttribute(src)}" alt="${this.escapeAttribute(alt)}" class="w-full h-auto object-cover" />
-          ${caption ? `<div class="carousel-caption absolute bottom-4 left-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded">${this.escapeHtml(caption)}</div>` : ''}
-        </div>
-      `;
-    } else if (item.type === 'content') {
-      const { title, description, image, link } = item;
-      return `
-        <div class="carousel-item-content flex items-center p-8">
-          ${image ? `<img src="${this.escapeAttribute(image)}" alt="" class="w-1/3 h-auto object-cover rounded mr-6" />` : ''}
-          <div class="flex-1">
-            ${title ? `<h3 class="text-2xl font-bold mb-4">${this.escapeHtml(title)}</h3>` : ''}
-            ${description ? `<p class="text-gray-600 mb-4">${this.escapeHtml(description)}</p>` : ''}
-            ${link ? `<a href="${this.escapeAttribute(link.url)}" class="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">${this.escapeHtml(link.text || '더 보기')}</a>` : ''}
+    // All carousel items have the same structure: image, title, description, link
+    const { image, title, description, link } = item;
+    return `
+      <div class="carousel-item-content relative">
+        ${image ? `<img src="${this.escapeAttribute(image)}" alt="${title ? this.escapeAttribute(title) : ''}" class="w-full h-auto object-cover" />` : ''}
+        ${(title || description) ? `
+          <div class="carousel-overlay absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent text-white p-6">
+            ${title ? `<h3 class="text-xl font-bold mb-2">${this.escapeHtml(title)}</h3>` : ''}
+            ${description ? `<p class="text-sm opacity-90">${this.escapeHtml(description)}</p>` : ''}
+            ${link ? `<a href="${this.escapeAttribute(link)}" class="mt-3 inline-block bg-white text-black px-4 py-2 rounded text-sm font-medium hover:bg-gray-100 transition-colors">자세히 보기</a>` : ''}
           </div>
-        </div>
-      `;
-    } else {
-      return `<div class="carousel-item-content p-8 text-center text-gray-500">지원되지 않는 콘텐츠 타입</div>`;
-    }
+        ` : ''}
+      </div>
+    `;
   }
 
   /**
@@ -378,7 +373,7 @@ function CarouselComponent({
   infinite,
   slidesToShow,
   slidesToScroll
-}: CarouselComponentProps): JSX.Element {
+}: CarouselComponentProps): ReactElement {
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const totalSlides = items.length;
 
@@ -468,45 +463,29 @@ function CarouselComponent({
 /**
  * 캐러셀 아이템 React 컴포넌트
  */
-function CarouselItemComponent({ item }: { item: CarouselBlockContent['items'][0] }): JSX.Element {
-  if (item.type === 'image') {
-    const { src, alt = '', caption } = item;
-    return (
-      <div className="carousel-item-content relative">
-        <img src={src} alt={alt} className="w-full h-auto object-cover" />
-        {caption && (
-          <div className="carousel-caption absolute bottom-4 left-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded">
-            {caption}
-          </div>
-        )}
-      </div>
-    );
-  } else if (item.type === 'content') {
-    const { title, description, image, link } = item;
-    return (
-      <div className="carousel-item-content flex items-center p-8">
-        {image && (
-          <img src={image} alt="" className="w-1/3 h-auto object-cover rounded mr-6" />
-        )}
-        <div className="flex-1">
-          {title && <h3 className="text-2xl font-bold mb-4">{title}</h3>}
-          {description && <p className="text-gray-600 mb-4">{description}</p>}
+function CarouselItemComponent({ item }: { item: CarouselBlockContent['items'][0] }): ReactElement {
+  // All carousel items have the same structure: image, title, description, link
+  const { image, title, description, link } = item;
+
+  return (
+    <div className="carousel-item-content relative">
+      {image && (
+        <img src={image} alt={title || ''} className="w-full h-auto object-cover" />
+      )}
+      {(title || description) && (
+        <div className="carousel-overlay absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent text-white p-6">
+          {title && <h3 className="text-xl font-bold mb-2">{title}</h3>}
+          {description && <p className="text-sm opacity-90">{description}</p>}
           {link && (
             <a
-              href={link.url}
-              className="inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
+              href={link}
+              className="mt-3 inline-block bg-white text-black px-4 py-2 rounded text-sm font-medium hover:bg-gray-100 transition-colors"
             >
-              {link.text || '더 보기'}
+              자세히 보기
             </a>
           )}
         </div>
-      </div>
-    );
-  } else {
-    return (
-      <div className="carousel-item-content p-8 text-center text-gray-500">
-        지원되지 않는 콘텐츠 타입
-      </div>
-    );
-  }
+      )}
+    </div>
+  );
 }

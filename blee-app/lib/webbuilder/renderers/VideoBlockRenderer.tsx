@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ContentBlockData, VideoBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
@@ -34,15 +34,17 @@ export class VideoBlockRenderer extends BaseBlockRenderer {
         poster,
         autoplay = false,
         loop = false,
-        muted = false,
-        controls = true,
-        width,
-        height,
-        caption
+        controls = true
       } = content;
 
+      // Default video settings
+      const muted = false;
+      const width = 800; // Default pixel width for embed
+      const height = 450; // Default pixel height for embed
+      const caption = '';
+
       const tailwindClasses = this.generateTailwindClasses(block);
-      const accessibilityAttrs = RenderUtils.generateAccessibilityAttributes('VIDEO', content);
+      const accessibilityAttrs = RenderUtils.generateAccessibilityAttributes('VIDEO', content as unknown as Record<string, unknown>);
 
       // YouTube/Vimeo 임베드 감지
       const embedHtml = this.generateEmbedHTML(src, width, height);
@@ -117,7 +119,7 @@ export class VideoBlockRenderer extends BaseBlockRenderer {
   /**
    * React JSX로 렌더링
    */
-  renderToReact(block: ContentBlockData): JSX.Element {
+  renderToReact(block: ContentBlockData): ReactElement {
     try {
       if (!this.validate(block)) {
         throw new Error('Invalid video block data');
@@ -129,12 +131,14 @@ export class VideoBlockRenderer extends BaseBlockRenderer {
         poster,
         autoplay = false,
         loop = false,
-        muted = false,
-        controls = true,
-        width,
-        height,
-        caption
+        controls = true
       } = content;
+
+      // Default video settings
+      const muted = false;
+      const width = 800; // Default pixel width for embed
+      const height = 450; // Default pixel height for embed
+      const caption = '';
 
       const tailwindClasses = this.generateTailwindClasses(block);
       const className = `cms-video-block ${tailwindClasses}`;

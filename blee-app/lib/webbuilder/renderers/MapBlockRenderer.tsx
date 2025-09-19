@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ContentBlockData, MapBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
@@ -64,8 +64,7 @@ export class MapBlockRenderer extends BaseBlockRenderer {
 
     const content = block.content as MapBlockContent;
     return !!(content && (
-      content.embedUrl ||
-      (content.latitude && content.longitude) ||
+      (content.lat && content.lng) ||
       content.address
     ));
   }
@@ -81,45 +80,43 @@ export class MapBlockRenderer extends BaseBlockRenderer {
 
       const content = block.content as MapBlockContent;
       const {
-        embedUrl,
-        latitude,
-        longitude,
+        lat,
+        lng,
         address,
         zoom = 15,
-        mapType = 'roadmap',
-        width = '100%',
-        height = '400px',
-        showMarker = true,
-        markerTitle,
-        apiKey
+        title: markerTitle,
+        provider = 'google'
       } = content;
+
+      // Default rendering options
+      const mapType = 'roadmap';
+      const width = '100%';
+      const height = '400px';
+      const showMarker = true;
 
       const tailwindClasses = this.generateTailwindClasses(block);
       const mapId = `map-${Math.random().toString(36).substr(2, 9)}`;
 
       let mapHTML = '';
 
-      if (embedUrl) {
-        // 직접 임베드 URL 사용
-        mapHTML = this.generateEmbedMapHTML(embedUrl, width, height);
-      } else if (latitude && longitude && apiKey) {
-        // Google Maps API를 사용한 동적 지도
-        mapHTML = this.generateDynamicMapHTML(mapId, {
-          latitude,
-          longitude,
+      if (lat && lng) {
+        // 좌표 기반 지도
+        mapHTML = this.generateCoordinateMapHTML(mapId, {
+          lat,
+          lng,
           zoom,
           mapType,
           width,
           height,
           showMarker,
           markerTitle,
-          apiKey
+          provider
         });
       } else if (address) {
         // 주소 기반 임베드 지도
         mapHTML = this.generateAddressMapHTML(address, width, height, zoom);
       } else {
-        throw new Error('지도 데이터가 부족합니다. embedUrl, 좌표(latitude/longitude), 또는 address가 필요합니다.');
+        throw new Error('지도 데이터가 부족합니다. 좌표(lat/lng) 또는 address가 필요합니다.');
       }
 
       // 기본 지도 컨테이너 생성
@@ -142,7 +139,7 @@ export class MapBlockRenderer extends BaseBlockRenderer {
   /**
    * React JSX로 렌더링
    */
-  renderToReact(block: ContentBlockData): JSX.Element {
+  renderToReact(block: ContentBlockData): ReactElement {
     try {
       if (!this.validate(block)) {
         throw new Error('Invalid map block data');
@@ -150,18 +147,19 @@ export class MapBlockRenderer extends BaseBlockRenderer {
 
       const content = block.content as MapBlockContent;
       const {
-        embedUrl,
-        latitude,
-        longitude,
+        lat,
+        lng,
         address,
         zoom = 15,
-        mapType = 'roadmap',
-        width = '100%',
-        height = '400px',
-        showMarker = true,
-        markerTitle,
-        apiKey
+        title: markerTitle,
+        provider = 'google'
       } = content;
+
+      // Default rendering options
+      const mapType = 'roadmap';
+      const width = '100%';
+      const height = '400px';
+      const showMarker = true;
 
       const tailwindClasses = this.generateTailwindClasses(block);
       const className = `cms-map-block ${tailwindClasses}`;
@@ -171,15 +169,14 @@ export class MapBlockRenderer extends BaseBlockRenderer {
         <div className={className} style={inlineStyles}>
           <div className="map-container" style={{ width, height }}>
             <MapComponent
-              embedUrl={embedUrl}
-              latitude={latitude}
-              longitude={longitude}
+              lat={lat}
+              lng={lng}
               address={address}
               zoom={zoom}
               mapType={mapType}
               showMarker={showMarker}
               markerTitle={markerTitle}
-              apiKey={apiKey}
+              provider={provider}
             />
           </div>
         </div>
@@ -220,28 +217,31 @@ export class MapBlockRenderer extends BaseBlockRenderer {
   }
 
   /**
-   * 동적 Google Maps HTML 생성
+   * 좌표 기반 지도 HTML 생성
    */
-  private generateDynamicMapHTML(mapId: string, options: {
-    latitude: number;
-    longitude: number;
+  private generateCoordinateMapHTML(mapId: string, options: {
+    lat: number;
+    lng: number;
     zoom: number;
     mapType: string;
     width: string;
     height: string;
     showMarker: boolean;
     markerTitle?: string;
-    apiKey: string;
+    provider: string;
   }): string {
-    const mapScript = this.generateMapScript(mapId, options);
-
+    // Simple coordinate-based map display
     return `
-      <div id="${mapId}" style="width: 100%; height: 100%; border-radius: 8px;"></div>
-      <script async defer src="https://maps.googleapis.com/maps/api/js?key=${options.apiKey}&callback=initMap_${mapId}">
-      </script>
-      <script>
-        ${mapScript}
-      </script>
+      <div class="coordinate-map" style="width: 100%; height: 100%; border-radius: 8px; background: #f3f4f6; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #6b7280;">
+        <div class="map-icon" style="font-size: 48px; margin-bottom: 12px;">📍</div>
+        <div class="coordinates" style="font-size: 14px; font-weight: 500;">
+          위도: ${options.lat.toFixed(6)}, 경도: ${options.lng.toFixed(6)}
+        </div>
+        ${options.markerTitle ? `<div style="font-size: 12px; margin-top: 8px; text-align: center;">${this.escapeHtml(options.markerTitle)}</div>` : ''}
+        <div style="font-size: 12px; margin-top: 8px; color: #9ca3af;">
+          지도 제공: ${options.provider}
+        </div>
+      </div>
     `;
   }
 
@@ -275,8 +275,8 @@ export class MapBlockRenderer extends BaseBlockRenderer {
    * Google Maps JavaScript 코드 생성
    */
   private generateMapScript(mapId: string, options: {
-    latitude: number;
-    longitude: number;
+    lat: number;
+    lng: number;
     zoom: number;
     mapType: string;
     showMarker: boolean;
@@ -284,7 +284,7 @@ export class MapBlockRenderer extends BaseBlockRenderer {
   }): string {
     return `
       function initMap_${mapId}() {
-        const mapCenter = { lat: ${options.latitude}, lng: ${options.longitude} };
+        const mapCenter = { lat: ${options.lat}, lng: ${options.lng} };
 
         const map = new google.maps.Map(document.getElementById('${mapId}'), {
           zoom: ${options.zoom},
@@ -347,12 +347,12 @@ export class MapBlockRenderer extends BaseBlockRenderer {
   /**
    * 좌표 유효성 검증
    */
-  private validateCoordinates(latitude: number, longitude: number): boolean {
+  private validateCoordinates(lat: number, lng: number): boolean {
     return (
-      typeof latitude === 'number' &&
-      typeof longitude === 'number' &&
-      latitude >= -90 && latitude <= 90 &&
-      longitude >= -180 && longitude <= 180
+      typeof lat === 'number' &&
+      typeof lng === 'number' &&
+      lat >= -90 && lat <= 90 &&
+      lng >= -180 && lng <= 180
     );
   }
 
@@ -405,84 +405,33 @@ export class MapBlockRenderer extends BaseBlockRenderer {
  * React 지도 컴포넌트
  */
 interface MapComponentProps {
-  embedUrl?: string;
-  latitude?: number;
-  longitude?: number;
+  lat?: number;
+  lng?: number;
   address?: string;
   zoom: number;
   mapType: string;
   showMarker: boolean;
   markerTitle?: string;
-  apiKey?: string;
+  provider: string;
 }
 
 function MapComponent({
-  embedUrl,
-  latitude,
-  longitude,
+  lat,
+  lng,
   address,
   zoom,
   mapType,
   showMarker,
   markerTitle,
-  apiKey
-}: MapComponentProps): JSX.Element {
+  provider
+}: MapComponentProps): ReactElement {
   const mapRef = React.useRef<HTMLDivElement>(null);
   const [mapError, setMapError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    if (embedUrl) {
-      // 임베드 URL이 있으면 iframe 사용
-      return;
-    }
-
-    if (latitude && longitude && apiKey) {
-      // Google Maps API 로드 및 초기화
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initGoogleMap`;
-      script.async = true;
-      script.defer = true;
-
-      window.initGoogleMap = () => {
-        if (mapRef.current && window.google) {
-          try {
-            const map = new window.google.maps.Map(mapRef.current, {
-              zoom,
-              center: { lat: latitude, lng: longitude },
-              mapTypeId: window.google.maps.MapTypeId[mapType.toUpperCase() as keyof typeof window.google.maps.MapTypeId]
-            });
-
-            if (showMarker) {
-              const marker = new window.google.maps.Marker({
-                position: { lat: latitude, lng: longitude },
-                map,
-                title: markerTitle || '위치 마커'
-              });
-
-              if (markerTitle) {
-                const infoWindow = new window.google.maps.InfoWindow({
-                  content: `<div style="padding: 8px;"><strong>${markerTitle}</strong></div>`
-                });
-
-                marker.addListener('click', () => {
-                  infoWindow.open(map, marker);
-                });
-              }
-            }
-          } catch (error) {
-            setMapError('지도를 로드하는 중 오류가 발생했습니다.');
-          }
-        }
-      };
-
-      document.head.appendChild(script);
-
-      return () => {
-        document.head.removeChild(script);
-        delete window.initGoogleMap;
-      };
-    }
-  }, [latitude, longitude, zoom, mapType, showMarker, markerTitle, apiKey]);
+    // Simple coordinate display - no external API required
+    return;
+  }, [lat, lng, zoom, mapType, showMarker, markerTitle, provider]);
 
   if (mapError) {
     return (
@@ -492,50 +441,30 @@ function MapComponent({
     );
   }
 
-  if (embedUrl) {
+  if (address && !lat && !lng) {
     return (
-      <iframe
-        src={embedUrl}
-        width="100%"
-        height="100%"
-        style={{ border: 0, borderRadius: '8px' }}
-        allowFullScreen
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-        title="지도"
-        role="application"
-        aria-label="임베드 지도"
-      />
-    );
-  }
-
-  if (address && !latitude && !longitude) {
-    const encodedAddress = encodeURIComponent(address);
-    const googleEmbedUrl = `https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${encodedAddress}&zoom=${zoom}`;
-
-    return (
-      <div>
-        <iframe
-          src={googleEmbedUrl}
-          width="100%"
-          height="100%"
-          style={{ border: 0, borderRadius: '8px' }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title={`지도 - ${address}`}
-          role="application"
-          aria-label={`주소 기반 지도: ${address}`}
-        />
-        <div className="mt-2 text-sm text-gray-600">
-          📍 {address}
-        </div>
+      <div className="flex flex-col items-center justify-center h-full bg-gray-100 rounded text-gray-600 p-4">
+        <div className="text-4xl mb-3">📍</div>
+        <div className="text-sm font-medium mb-2">주소 기반 지도</div>
+        <div className="text-xs text-center">{address}</div>
+        <div className="text-xs mt-2 text-gray-500">지도 제공: {provider}</div>
       </div>
     );
   }
 
-  if (latitude && longitude && apiKey) {
-    return <div ref={mapRef} style={{ width: '100%', height: '100%', borderRadius: '8px' }} />;
+  if (lat && lng) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-gray-100 rounded text-gray-600 p-4">
+        <div className="text-4xl mb-3">📍</div>
+        <div className="text-sm font-medium mb-2">
+          위도: {lat.toFixed(6)}, 경도: {lng.toFixed(6)}
+        </div>
+        {markerTitle && (
+          <div className="text-xs text-center mb-2">{markerTitle}</div>
+        )}
+        <div className="text-xs text-gray-500">지도 제공: {provider}</div>
+      </div>
+    );
   }
 
   return (

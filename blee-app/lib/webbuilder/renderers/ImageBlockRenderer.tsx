@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ContentBlockData, ImageBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
@@ -34,7 +34,7 @@ export class ImageBlockRenderer extends BaseBlockRenderer {
       // 반응형 이미지 클래스
       const responsiveClasses = RenderUtils.getResponsiveImageClasses();
       const tailwindClasses = this.generateTailwindClasses(block);
-      const accessibilityAttrs = RenderUtils.generateAccessibilityAttributes('IMAGE', content);
+      const accessibilityAttrs = RenderUtils.generateAccessibilityAttributes('IMAGE', content as unknown as Record<string, unknown>);
 
       // 이미지 요소 생성
       const imageElement = `
@@ -87,7 +87,7 @@ export class ImageBlockRenderer extends BaseBlockRenderer {
   /**
    * React JSX로 렌더링
    */
-  renderToReact(block: ContentBlockData): JSX.Element {
+  renderToReact(block: ContentBlockData): ReactElement {
     try {
       if (!this.validate(block)) {
         throw new Error('Invalid image block data');

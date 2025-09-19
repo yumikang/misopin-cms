@@ -1,4 +1,5 @@
 import { ContentBlockData } from '@/app/types/webbuilder';
+import { ReactElement } from 'react';
 
 /**
  * 공통 블록 렌더러 인터페이스
@@ -17,7 +18,7 @@ export interface BlockRenderer {
    * @param block 렌더링할 블록 데이터
    * @returns React JSX Element
    */
-  renderToReact(block: ContentBlockData): JSX.Element;
+  renderToReact(block: ContentBlockData): ReactElement;
 
   /**
    * 블록 타입 유효성 검증
@@ -41,7 +42,7 @@ export interface BlockRenderer {
  */
 export abstract class BaseBlockRenderer implements BlockRenderer {
   abstract renderToHTML(block: ContentBlockData): string;
-  abstract renderToReact(block: ContentBlockData): JSX.Element;
+  abstract renderToReact(block: ContentBlockData): ReactElement;
 
   /**
    * 기본 유효성 검증 (하위 클래스에서 오버라이드 가능)

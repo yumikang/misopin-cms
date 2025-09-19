@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ContentBlockData, FormBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
@@ -35,30 +35,22 @@ export class FormBlockRenderer extends BaseBlockRenderer {
         fields = [],
         action = '#',
         method = 'POST',
-        title,
-        description,
         submitText = '제출',
-        successMessage = '성공적으로 제출되었습니다.',
-        errorMessage = '제출 중 오류가 발생했습니다.'
+        successMessage = '성공적으로 제출되었습니다.'
       } = content;
 
       const tailwindClasses = this.generateTailwindClasses(block);
       const formId = `form-${Math.random().toString(36).substr(2, 9)}`;
-      const accessibilityAttrs = RenderUtils.generateAccessibilityAttributes('FORM', content);
+      const accessibilityAttrs = RenderUtils.generateAccessibilityAttributes('FORM', content as unknown as Record<string, unknown>);
 
       // 폼 필드 렌더링
       const fieldsHTML = fields.map(field => this.renderFormField(field)).join('');
 
-      // 폼 헤더
-      const headerHTML = (title || description) ? `
-        <div class="form-header mb-6">
-          ${title ? `<h2 class="text-2xl font-bold mb-2">${this.escapeHtml(title)}</h2>` : ''}
-          ${description ? `<p class="text-gray-600">${this.escapeHtml(description)}</p>` : ''}
-        </div>
-      ` : '';
+      // 폼 헤더 (title과 description은 FormBlockContent에 정의되지 않음)
+      const headerHTML = '';
 
       // 폼 JavaScript
-      const formScript = this.generateFormScript(formId, { successMessage, errorMessage });
+      const formScript = this.generateFormScript(formId, { successMessage, errorMessage: '제출 중 오류가 발생했습니다.' });
 
       // 기본 폼 컨테이너 생성
       const baseHTML = `
@@ -88,7 +80,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
                 ${this.escapeHtml(successMessage)}
               </div>
               <div class="error-message hidden bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md">
-                ${this.escapeHtml(errorMessage)}
+                ${this.escapeHtml('제출 중 오류가 발생했습니다.')}
               </div>
             </div>
           </form>
@@ -109,7 +101,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
   /**
    * React JSX로 렌더링
    */
-  renderToReact(block: ContentBlockData): JSX.Element {
+  renderToReact(block: ContentBlockData): ReactElement {
     try {
       if (!this.validate(block)) {
         throw new Error('Invalid form block data');
@@ -120,11 +112,8 @@ export class FormBlockRenderer extends BaseBlockRenderer {
         fields = [],
         action = '#',
         method = 'POST',
-        title,
-        description,
         submitText = '제출',
-        successMessage = '성공적으로 제출되었습니다.',
-        errorMessage = '제출 중 오류가 발생했습니다.'
+        successMessage = '성공적으로 제출되었습니다.'
       } = content;
 
       const tailwindClasses = this.generateTailwindClasses(block);
@@ -137,11 +126,8 @@ export class FormBlockRenderer extends BaseBlockRenderer {
             fields={fields}
             action={action}
             method={method}
-            title={title}
-            description={description}
             submitText={submitText}
             successMessage={successMessage}
-            errorMessage={errorMessage}
           />
         </div>
       );
@@ -171,8 +157,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
       placeholder,
       required = false,
       validation,
-      options,
-      description
+      options
     } = field;
 
     const fieldId = `field-${name}`;
@@ -186,9 +171,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
       </label>
     ` : '';
 
-    const descriptionHTML = description ? `
-      <p class="text-sm text-gray-500 mb-2">${this.escapeHtml(description)}</p>
-    ` : '';
+    const descriptionHTML = '';
 
     // 필드 타입별 렌더링
     let inputHTML = '';
@@ -196,9 +179,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
     switch (type) {
       case 'text':
       case 'email':
-      case 'password':
       case 'tel':
-      case 'url':
         inputHTML = `
           <input
             type="${type}"
@@ -311,7 +292,6 @@ export class FormBlockRenderer extends BaseBlockRenderer {
             name="${this.escapeAttribute(name)}"
             ${requiredAttr}
             class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-            ${validation?.accept ? `accept="${this.escapeAttribute(validation.accept)}"` : ''}
           />
         `;
         break;
@@ -552,23 +532,17 @@ interface FormComponentProps {
   fields: FormBlockContent['fields'];
   action: string;
   method: string;
-  title?: string;
-  description?: string;
   submitText: string;
   successMessage: string;
-  errorMessage: string;
 }
 
 function FormComponent({
   fields,
   action,
   method,
-  title,
-  description,
   submitText,
-  successMessage,
-  errorMessage
-}: FormComponentProps): JSX.Element {
+  successMessage
+}: FormComponentProps): ReactElement {
   const [formData, setFormData] = React.useState<Record<string, string | boolean | File>>({});
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -600,7 +574,7 @@ function FormComponent({
         throw new Error('서버 응답 오류');
       }
     } catch (error) {
-      setMessage({ type: 'error', text: errorMessage });
+      setMessage({ type: 'error', text: '제출 중 오류가 발생했습니다.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -618,7 +592,7 @@ function FormComponent({
         isValid = false;
       }
 
-      if (field.type === 'email' && value) {
+      if (field.type === 'email' && typeof value === 'string' && value) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(value)) {
           newErrors[field.name] = '올바른 이메일 형식이 아닙니다.';
@@ -633,12 +607,6 @@ function FormComponent({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-      {(title || description) && (
-        <div className="form-header mb-6">
-          {title && <h2 className="text-2xl font-bold mb-2">{title}</h2>}
-          {description && <p className="text-gray-600">{description}</p>}
-        </div>
-      )}
 
       <div className="form-fields space-y-4">
         {fields.map((field, index) => (
@@ -685,22 +653,20 @@ interface FormFieldComponentProps {
   onChange: (value: string | boolean | File) => void;
 }
 
-function FormFieldComponent({ field, value, error, onChange }: FormFieldComponentProps): JSX.Element {
+function FormFieldComponent({ field, value, error, onChange }: FormFieldComponentProps): ReactElement {
   const fieldId = `field-${field.name}`;
 
   const renderInput = () => {
     switch (field.type) {
       case 'text':
       case 'email':
-      case 'password':
       case 'tel':
-      case 'url':
         return (
           <input
             type={field.type}
             id={fieldId}
             name={field.name}
-            value={value}
+            value={typeof value === 'string' ? value : ''}
             onChange={(e) => onChange(e.target.value)}
             placeholder={field.placeholder}
             required={field.required}
@@ -713,7 +679,7 @@ function FormFieldComponent({ field, value, error, onChange }: FormFieldComponen
           <textarea
             id={fieldId}
             name={field.name}
-            value={value}
+            value={typeof value === 'string' ? value : ''}
             onChange={(e) => onChange(e.target.value)}
             placeholder={field.placeholder}
             required={field.required}
@@ -727,7 +693,7 @@ function FormFieldComponent({ field, value, error, onChange }: FormFieldComponen
           <select
             id={fieldId}
             name={field.name}
-            value={value}
+            value={typeof value === 'string' ? value : ''}
             onChange={(e) => onChange(e.target.value)}
             required={field.required}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -757,9 +723,6 @@ function FormFieldComponent({ field, value, error, onChange }: FormFieldComponen
           {field.label}
           {field.required && <span className="text-red-500 ml-1">*</span>}
         </label>
-      )}
-      {field.description && (
-        <p className="text-sm text-gray-500 mb-2">{field.description}</p>
       )}
       {renderInput()}
       {error && (

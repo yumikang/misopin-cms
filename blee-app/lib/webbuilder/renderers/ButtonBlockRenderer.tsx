@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ContentBlockData, ButtonBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
@@ -40,7 +40,7 @@ export class ButtonBlockRenderer extends BaseBlockRenderer {
 
       const tailwindClasses = this.generateTailwindClasses(block);
       const buttonClasses = this.generateButtonClasses(variant, size);
-      const accessibilityAttrs = RenderUtils.generateAccessibilityAttributes('BUTTON', content);
+      const accessibilityAttrs = RenderUtils.generateAccessibilityAttributes('BUTTON', content as unknown as Record<string, unknown>);
 
       // 버튼 요소 생성
       const isExternalLink = this.isExternalLink(link);
@@ -76,7 +76,7 @@ export class ButtonBlockRenderer extends BaseBlockRenderer {
   /**
    * React JSX로 렌더링
    */
-  renderToReact(block: ContentBlockData): JSX.Element {
+  renderToReact(block: ContentBlockData): ReactElement {
     try {
       if (!this.validate(block)) {
         throw new Error('Invalid button block data');

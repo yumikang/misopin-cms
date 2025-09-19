@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { ContentBlockData, ComponentBlockContent } from '@/app/types/webbuilder';
-import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
+import { BaseBlockRenderer } from './BlockRenderer';
 
 /**
  * 컴포넌트 블록 렌더러
@@ -33,11 +33,13 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
       const content = block.content as ComponentBlockContent;
       const {
         componentName,
-        props = {},
-        children,
-        version = 'latest',
-        source = 'internal'
+        props = {}
       } = content;
+
+      // Default values for properties not in interface
+      const children = undefined;
+      const version = 'latest';
+      const source = 'internal';
 
       const tailwindClasses = this.generateTailwindClasses(block);
       const componentId = `component-${Math.random().toString(36).substr(2, 9)}`;
@@ -77,7 +79,7 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
   /**
    * React JSX로 렌더링
    */
-  renderToReact(block: ContentBlockData): JSX.Element {
+  renderToReact(block: ContentBlockData): ReactElement {
     try {
       if (!this.validate(block)) {
         throw new Error('Invalid component block data');
@@ -86,11 +88,13 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
       const content = block.content as ComponentBlockContent;
       const {
         componentName,
-        props = {},
-        children,
-        version = 'latest',
-        source = 'internal'
+        props = {}
       } = content;
+
+      // Default values for properties not in interface
+      const children = undefined;
+      const version = 'latest';
+      const source = 'internal';
 
       const tailwindClasses = this.generateTailwindClasses(block);
       const className = `cms-component-block ${tailwindClasses}`;
@@ -192,7 +196,11 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
    * 카드 컴포넌트 렌더링
    */
   private renderCardComponent(props: Record<string, unknown>, children?: React.ReactNode): string {
-    const { title, subtitle, image, footer, variant = 'default' } = props;
+    const title = typeof props.title === 'string' ? props.title : '';
+    const subtitle = typeof props.subtitle === 'string' ? props.subtitle : '';
+    const image = typeof props.image === 'string' ? props.image : '';
+    const footer = typeof props.footer === 'string' ? props.footer : '';
+    const variant = typeof props.variant === 'string' ? props.variant : 'default';
 
     const variantClasses = {
       default: 'bg-white border border-gray-200',
@@ -217,7 +225,9 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
    * 알림 컴포넌트 렌더링
    */
   private renderAlertComponent(props: Record<string, unknown>, children?: React.ReactNode): string {
-    const { type = 'info', dismissible = false, title } = props;
+    const type = typeof props.type === 'string' ? props.type : 'info';
+    const dismissible = typeof props.dismissible === 'boolean' ? props.dismissible : false;
+    const title = typeof props.title === 'string' ? props.title : '';
 
     const typeClasses = {
       success: 'bg-green-50 border-green-200 text-green-800',
@@ -282,7 +292,10 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
    * 진행률 컴포넌트 렌더링
    */
   private renderProgressComponent(props: Record<string, unknown>): string {
-    const { value = 0, max = 100, label, color = 'blue' } = props;
+    const value = typeof props.value === 'number' ? props.value : 0;
+    const max = typeof props.max === 'number' ? props.max : 100;
+    const label = typeof props.label === 'string' ? props.label : '';
+    const color = typeof props.color === 'string' ? props.color : 'blue';
     const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
     const colorClasses = {
@@ -364,7 +377,9 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
    * 모달 컴포넌트 렌더링
    */
   private renderModalComponent(props: Record<string, unknown>, children?: React.ReactNode): string {
-    const { title, size = 'md', trigger } = props;
+    const title = typeof props.title === 'string' ? props.title : '';
+    const size = typeof props.size === 'string' ? props.size : 'md';
+    const trigger = typeof props.trigger === 'string' ? props.trigger : '';
 
     const sizeClasses = {
       sm: 'max-w-md',
@@ -575,7 +590,7 @@ function DynamicComponent({
   children,
   version,
   source
-}: DynamicComponentProps): JSX.Element {
+}: DynamicComponentProps): ReactElement {
   const [Component, setComponent] = React.useState<React.ComponentType<Record<string, unknown>> | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -645,9 +660,9 @@ async function loadInternalComponent(componentName: string): Promise<React.Compo
     Card: ({ title, subtitle, children, ...props }) => (
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden" {...props}>
         <div className="p-6">
-          {title && <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>}
-          {subtitle && <p className="text-gray-600 mb-4">{subtitle}</p>}
-          {children}
+          {typeof title === 'string' && title && <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>}
+          {typeof subtitle === 'string' && subtitle && <p className="text-gray-600 mb-4">{subtitle}</p>}
+          {children as React.ReactNode}
         </div>
       </div>
     ),
@@ -661,8 +676,8 @@ async function loadInternalComponent(componentName: string): Promise<React.Compo
 
       return (
         <div className={`border rounded-lg p-4 ${typeClasses[type as keyof typeof typeClasses]}`} {...props}>
-          {title && <h4 className="font-medium mb-1">{title}</h4>}
-          {children}
+          {typeof title === 'string' && title && <h4 className="font-medium mb-1">{title}</h4>}
+          {children as React.ReactNode}
         </div>
       );
     }

@@ -3,13 +3,14 @@
  * 실제 운영 환경에서의 성능 테스트 및 최적화 검증
  */
 
-import { ContentBlockData } from '@/app/types/webbuilder';
+import { ContentBlockData, BlockContent } from '@/app/types/webbuilder';
 import {
   BlockRendererFactory,
   RenderingPerformanceMonitor,
   SUPPORTED_BLOCK_TYPES,
   safeRenderBlocks,
-  benchmarkRenderers
+  benchmarkRenderers,
+  RendererType
 } from './index';
 
 /**
@@ -162,9 +163,9 @@ class TestBlockGenerator {
 
     return {
       id: `${type.toLowerCase()}-${complexity}-${Date.now()}`,
-      type,
+      type: type as RendererType,
       name: `${type} ${complexity} 블록`,
-      content: blocks[type]?.[complexity] || blocks[type]?.medium || {},
+      content: (blocks[type]?.[complexity] || blocks[type]?.medium || {}) as BlockContent,
       styles: complexity === 'complex' ? {
         backgroundColor: '#f0f0f0',
         padding: '20px',

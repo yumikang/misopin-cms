@@ -4,9 +4,11 @@
  */
 
 import { ContentBlockData } from '@/app/types/webbuilder';
+import { BlockRendererFactory, RenderingPerformanceMonitor } from './BlockRendererFactory';
 
 // 기본 인터페이스 및 유틸리티
-export { BlockRenderer, BaseBlockRenderer, RenderUtils } from './BlockRenderer';
+export type { BlockRenderer } from './BlockRenderer';
+export { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
 // 개별 블록 렌더러
 export { TextBlockRenderer } from './TextBlockRenderer';

@@ -1,5 +1,5 @@
-import React from 'react';
-import { ContentBlockData, GridBlockContent } from '@/app/types/webbuilder';
+import React, { ReactElement } from 'react';
+import { ContentBlockData, GridBlockContent, TextBlockContent, ImageBlockContent, ButtonBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer } from './BlockRenderer';
 
 /**
@@ -107,7 +107,7 @@ export class GridBlockRenderer extends BaseBlockRenderer {
   /**
    * React JSX로 렌더링
    */
-  renderToReact(block: ContentBlockData): JSX.Element {
+  renderToReact(block: ContentBlockData): ReactElement {
     try {
       if (!this.validate(block)) {
         throw new Error('Invalid grid block data');
@@ -231,16 +231,19 @@ export class GridBlockRenderer extends BaseBlockRenderer {
     }
 
     // 중첩 블록이 있는 경우 재귀적으로 렌더링
-    if (content.type && content.content) {
+    if (content.type) {
       // 다른 렌더러를 호출해야 하는 경우 (순환 의존성 방지를 위해 간단한 처리)
       switch (content.type) {
         case 'TEXT':
-          return `<div class="prose">${content.content.text || ''}</div>`;
+          const textContent = content as TextBlockContent;
+          return `<div class="prose">${textContent.text || ''}</div>`;
         case 'IMAGE':
-          const { src, alt = '' } = content.content;
+          const imageContent = content as ImageBlockContent;
+          const { src, alt = '' } = imageContent;
           return src ? `<img src="${src}" alt="${alt}" class="w-full h-auto rounded" />` : '';
         case 'BUTTON':
-          const { text = '버튼', link = '#' } = content.content;
+          const buttonContent = content as ButtonBlockContent;
+          const { text = '버튼', link = '#' } = buttonContent;
           return `<a href="${link}" class="btn btn-primary">${text}</a>`;
         default:
           return `<div class="cms-nested-block">${content.type} 블록</div>`;
@@ -264,22 +267,25 @@ export class GridBlockRenderer extends BaseBlockRenderer {
     }
 
     // 중첩 블록이 있는 경우
-    if (content.type && content.content) {
+    if (content.type) {
       switch (content.type) {
         case 'TEXT':
+          const textContent = content as TextBlockContent;
           return (
             <div
               className="prose"
-              dangerouslySetInnerHTML={{ __html: content.content.text || '' }}
+              dangerouslySetInnerHTML={{ __html: textContent.text || '' }}
             />
           );
         case 'IMAGE':
-          const { src, alt = '' } = content.content;
+          const imageContent = content as ImageBlockContent;
+          const { src, alt = '' } = imageContent;
           return src ? (
             <img src={src} alt={alt} className="w-full h-auto rounded" />
           ) : null;
         case 'BUTTON':
-          const { text = '버튼', link = '#' } = content.content;
+          const buttonContent = content as ButtonBlockContent;
+          const { text = '버튼', link = '#' } = buttonContent;
           return (
             <a href={link} className="btn btn-primary">
               {text}
