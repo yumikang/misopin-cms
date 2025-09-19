@@ -416,7 +416,12 @@ export class RenderingPerformanceMonitor {
     maxTime: number;
     sampleCount: number;
   }} {
-    const stats: { [blockType: string]: any } = {};
+    const stats: { [blockType: string]: {
+      averageTime: number;
+      minTime: number;
+      maxTime: number;
+      sampleCount: number;
+    }} = {};
 
     this.metrics.forEach((times, blockType) => {
       if (times.length > 0) {

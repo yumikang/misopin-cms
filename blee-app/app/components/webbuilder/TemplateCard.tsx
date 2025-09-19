@@ -161,7 +161,7 @@ export default function TemplateCard({
           <div className="flex items-center gap-1">
             <User size={12} />
             <span className="truncate max-w-20">
-              {(template as any).creator?.name || '익명'}
+              {template.creator?.name || '익명'}
             </span>
           </div>
 

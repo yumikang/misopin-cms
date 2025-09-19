@@ -225,7 +225,7 @@ export class GridBlockRenderer extends BaseBlockRenderer {
   /**
    * 중첩 콘텐츠 HTML 렌더링
    */
-  private renderNestedContent(content: any): string {
+  private renderNestedContent(content: GridBlockContent['items'][0]['content']): string {
     if (!content) {
       return '<div class="cms-grid-placeholder">콘텐츠 없음</div>';
     }
@@ -258,7 +258,7 @@ export class GridBlockRenderer extends BaseBlockRenderer {
   /**
    * 중첩 콘텐츠 React 렌더링
    */
-  private renderNestedContentReact(content: any): React.ReactNode {
+  private renderNestedContentReact(content: GridBlockContent['items'][0]['content']): React.ReactNode {
     if (!content) {
       return <div className="cms-grid-placeholder">콘텐츠 없음</div>;
     }

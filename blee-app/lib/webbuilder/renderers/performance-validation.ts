@@ -66,7 +66,7 @@ class TestBlockGenerator {
    * 단일 테스트 블록 생성
    */
   static createTestBlock(type: string, complexity: 'simple' | 'medium' | 'complex' = 'medium'): ContentBlockData {
-    const blocks: { [key: string]: any } = {
+    const blocks: { [key: string]: Record<string, unknown> } = {
       TEXT: {
         simple: { text: '간단한 텍스트', format: 'plain' },
         medium: { text: '<h1>제목</h1><p>단락 텍스트</p>', format: 'html' },
@@ -446,7 +446,7 @@ export class RenderingPerformanceValidator {
     invalidBlocks.forEach(block => {
       const startTime = performance.now();
       try {
-        BlockRendererFactory.renderToHTML(block as any);
+        BlockRendererFactory.renderToHTML(block as ContentBlockData);
       } catch (error) {
         // 에러는 예상됨
       }

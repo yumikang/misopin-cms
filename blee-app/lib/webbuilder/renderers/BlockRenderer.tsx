@@ -190,7 +190,7 @@ export class RenderUtils {
   /**
    * 접근성 속성 생성
    */
-  static generateAccessibilityAttributes(type: string, content: Record<string, any>): string {
+  static generateAccessibilityAttributes(type: string, content: Record<string, unknown>): string {
     const attributes: string[] = [];
 
     switch (type) {

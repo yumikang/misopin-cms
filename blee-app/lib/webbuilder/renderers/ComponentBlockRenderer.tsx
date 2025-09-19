@@ -101,10 +101,11 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
           <DynamicComponent
             componentName={componentName}
             props={props}
-            children={children}
             version={version}
             source={source}
-          />
+          >
+            {children}
+          </DynamicComponent>
         </div>
       );
 
@@ -127,8 +128,8 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
    */
   private generateComponentHTML(
     componentName: string,
-    props: Record<string, any>,
-    children?: any,
+    props: Record<string, unknown>,
+    children?: React.ReactNode,
     componentId?: string
   ): string {
     // 빌트인 컴포넌트 처리
@@ -164,8 +165,8 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
    */
   private renderBuiltinComponent(
     componentName: string,
-    props: Record<string, any>,
-    children?: any
+    props: Record<string, unknown>,
+    children?: React.ReactNode
   ): string | null {
     switch (componentName.toLowerCase()) {
       case 'card':
@@ -190,7 +191,7 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
   /**
    * 카드 컴포넌트 렌더링
    */
-  private renderCardComponent(props: Record<string, any>, children?: any): string {
+  private renderCardComponent(props: Record<string, unknown>, children?: React.ReactNode): string {
     const { title, subtitle, image, footer, variant = 'default' } = props;
 
     const variantClasses = {
@@ -215,7 +216,7 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
   /**
    * 알림 컴포넌트 렌더링
    */
-  private renderAlertComponent(props: Record<string, any>, children?: any): string {
+  private renderAlertComponent(props: Record<string, unknown>, children?: React.ReactNode): string {
     const { type = 'info', dismissible = false, title } = props;
 
     const typeClasses = {
@@ -253,7 +254,7 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
   /**
    * 배지 컴포넌트 렌더링
    */
-  private renderBadgeComponent(props: Record<string, any>, children?: any): string {
+  private renderBadgeComponent(props: Record<string, unknown>, children?: React.ReactNode): string {
     const { variant = 'default', size = 'md' } = props;
 
     const variantClasses = {
@@ -280,7 +281,7 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
   /**
    * 진행률 컴포넌트 렌더링
    */
-  private renderProgressComponent(props: Record<string, any>): string {
+  private renderProgressComponent(props: Record<string, unknown>): string {
     const { value = 0, max = 100, label, color = 'blue' } = props;
     const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
@@ -305,10 +306,10 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
   /**
    * 아코디언 컴포넌트 렌더링
    */
-  private renderAccordionComponent(props: Record<string, any>): string {
+  private renderAccordionComponent(props: Record<string, unknown>): string {
     const { items = [], allowMultiple = false } = props;
 
-    const itemsHTML = items.map((item: any, index: number) => `
+    const itemsHTML = (items as Array<{title?: string; content?: string}>).map((item, index: number) => `
       <div class="accordion-item border border-gray-200 rounded mb-2">
         <button class="accordion-header w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition-colors" data-accordion-index="${index}">
           <div class="flex justify-between items-center">
@@ -332,16 +333,16 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
   /**
    * 탭 컴포넌트 렌더링
    */
-  private renderTabsComponent(props: Record<string, any>): string {
+  private renderTabsComponent(props: Record<string, unknown>): string {
     const { tabs = [], defaultTab = 0 } = props;
 
-    const tabHeadersHTML = tabs.map((tab: any, index: number) => `
+    const tabHeadersHTML = (tabs as Array<{title?: string}>).map((tab, index: number) => `
       <button class="tab-header px-4 py-2 font-medium border-b-2 transition-colors ${index === defaultTab ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}" data-tab-index="${index}">
         ${this.escapeHtml(tab.title || '')}
       </button>
     `).join('');
 
-    const tabContentsHTML = tabs.map((tab: any, index: number) => `
+    const tabContentsHTML = (tabs as Array<{content?: string}>).map((tab, index: number) => `
       <div class="tab-content p-4 ${index === defaultTab ? '' : 'hidden'}" data-tab-content="${index}">
         ${tab.content || ''}
       </div>
@@ -362,7 +363,7 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
   /**
    * 모달 컴포넌트 렌더링
    */
-  private renderModalComponent(props: Record<string, any>, children?: any): string {
+  private renderModalComponent(props: Record<string, unknown>, children?: React.ReactNode): string {
     const { title, size = 'md', trigger } = props;
 
     const sizeClasses = {
@@ -401,8 +402,8 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
    */
   private generateComponentScript(componentId: string, options: {
     componentName: string;
-    props: Record<string, any>;
-    children?: any;
+    props: Record<string, unknown>;
+    children?: React.ReactNode;
     version: string;
     source: string;
   }): string {
@@ -562,8 +563,8 @@ export class ComponentBlockRenderer extends BaseBlockRenderer {
  */
 interface DynamicComponentProps {
   componentName: string;
-  props: Record<string, any>;
-  children?: any;
+  props: Record<string, unknown>;
+  children?: React.ReactNode;
   version: string;
   source: string;
 }
@@ -575,7 +576,7 @@ function DynamicComponent({
   version,
   source
 }: DynamicComponentProps): JSX.Element {
-  const [Component, setComponent] = React.useState<React.ComponentType<any> | null>(null);
+  const [Component, setComponent] = React.useState<React.ComponentType<Record<string, unknown>> | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -638,9 +639,9 @@ function DynamicComponent({
 /**
  * 내부 컴포넌트 로더
  */
-async function loadInternalComponent(componentName: string): Promise<React.ComponentType<any>> {
+async function loadInternalComponent(componentName: string): Promise<React.ComponentType<Record<string, unknown>>> {
   // 빌트인 컴포넌트 매핑
-  const builtinComponents: Record<string, React.ComponentType<any>> = {
+  const builtinComponents: Record<string, React.ComponentType<Record<string, unknown>>> = {
     Card: ({ title, subtitle, children, ...props }) => (
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden" {...props}>
         <div className="p-6">
@@ -674,8 +675,8 @@ async function loadInternalComponent(componentName: string): Promise<React.Compo
 
   // 커스텀 컴포넌트 동적 import (예시)
   try {
-    const module = await import(`@/components/custom/${componentName}`);
-    return module.default || module[componentName];
+    const importedModule = await import(`@/components/custom/${componentName}`);
+    return importedModule.default || importedModule[componentName];
   } catch {
     throw new Error(`컴포넌트를 찾을 수 없습니다: ${componentName}`);
   }

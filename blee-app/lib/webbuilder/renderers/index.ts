@@ -3,6 +3,8 @@
  * 모든 블록 렌더러와 팩토리 클래스를 통합 export
  */
 
+import { ContentBlockData } from '@/app/types/webbuilder';
+
 // 기본 인터페이스 및 유틸리티
 export { BlockRenderer, BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
@@ -137,7 +139,7 @@ export function createRenderingError(
  * 안전한 블록 렌더링 (에러 처리 포함)
  */
 export function safeRenderBlock(
-  block: any,
+  block: ContentBlockData,
   options: BlockRenderingOptions = {}
 ): RenderingResult {
   const startTime = performance.now();
@@ -204,7 +206,7 @@ export function safeRenderBlock(
  * 여러 블록을 안전하게 렌더링
  */
 export function safeRenderBlocks(
-  blocks: any[],
+  blocks: ContentBlockData[],
   options: BlockRenderingOptions = {}
 ): {
   html: string;
@@ -254,7 +256,11 @@ export function checkRenderersHealth(): {
     error?: string;
   };
 } {
-  const health: { [key: string]: any } = {};
+  const health: { [key: string]: {
+    cached: boolean;
+    canInstantiate: boolean;
+    error?: string;
+  }} = {};
 
   SUPPORTED_BLOCK_TYPES.forEach(type => {
     try {
@@ -280,7 +286,7 @@ export function checkRenderersHealth(): {
  * 개발용 유틸리티: 렌더러 성능 벤치마크
  */
 export async function benchmarkRenderers(
-  sampleBlocks: { [type: string]: any },
+  sampleBlocks: { [type: string]: ContentBlockData },
   iterations: number = 10
 ): Promise<{ [rendererType: string]: PerformanceStats }> {
   const benchmarks: { [key: string]: PerformanceStats } = {};

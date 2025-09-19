@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BlockTemplateData } from '@/app/types/webbuilder';
+import { BlockTemplateData, TextBlockContent, ImageBlockContent, ButtonBlockContent, GridBlockContent } from '@/app/types/webbuilder';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -71,7 +71,7 @@ export default function TemplatePreview({
         return (
           <div className="p-4 border rounded-lg bg-white">
             <div className="prose max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: (templateData.content as any).text || '텍스트 콘텐츠' }} />
+              <div dangerouslySetInnerHTML={{ __html: (templateData.content as TextBlockContent).text || '텍스트 콘텐츠' }} />
             </div>
           </div>
         );
@@ -80,10 +80,10 @@ export default function TemplatePreview({
         return (
           <div className="p-4 border rounded-lg bg-white">
             <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center">
-              {(templateData.content as any).src ? (
+              {(templateData.content as ImageBlockContent).src ? (
                 <img
-                  src={(templateData.content as any).src}
-                  alt={(templateData.content as any).alt || '이미지'}
+                  src={(templateData.content as ImageBlockContent).src}
+                  alt={(templateData.content as ImageBlockContent).alt || '이미지'}
                   className="max-w-full max-h-full object-contain"
                 />
               ) : (
@@ -100,16 +100,16 @@ export default function TemplatePreview({
         return (
           <div className="p-4 border rounded-lg bg-white">
             <Button
-              variant={(templateData.content as any).variant === 'outline' ? 'outline' : 'default'}
-              size={(templateData.content as any).size || 'default'}
+              variant={(templateData.content as ButtonBlockContent).variant === 'outline' ? 'outline' : 'default'}
+              size={(templateData.content as ButtonBlockContent).size || 'default'}
             >
-              {(templateData.content as any).text || '버튼'}
+              {(templateData.content as ButtonBlockContent).text || '버튼'}
             </Button>
           </div>
         );
 
       case 'GRID':
-        const gridContent = templateData.content as any;
+        const gridContent = templateData.content as GridBlockContent;
         return (
           <div className="p-4 border rounded-lg bg-white">
             <div
@@ -229,7 +229,7 @@ export default function TemplatePreview({
                         <span className="text-gray-500">제작자:</span>
                         <div className="flex items-center gap-1 mt-1">
                           <User size={14} />
-                          {(template as any).creator?.name || '익명'}
+                          {template.creator?.name || '익명'}
                         </div>
                       </div>
                       <div>

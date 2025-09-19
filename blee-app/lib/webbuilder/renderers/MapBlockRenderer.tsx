@@ -2,6 +2,53 @@ import React from 'react';
 import { ContentBlockData, MapBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
+// Google Maps type declarations
+interface GoogleMapsAPI {
+  maps: {
+    Map: new (element: HTMLElement, options: GoogleMapOptions) => GoogleMap;
+    Marker: new (options: GoogleMarkerOptions) => GoogleMarker;
+    InfoWindow: new (options: { content: string }) => GoogleInfoWindow;
+    MapTypeId: {
+      ROADMAP: string;
+      SATELLITE: string;
+      HYBRID: string;
+      TERRAIN: string;
+    };
+  };
+}
+
+interface GoogleMapOptions {
+  zoom: number;
+  center: { lat: number; lng: number };
+  mapTypeId: string;
+}
+
+interface GoogleMap {
+  // Google Maps instance
+  [key: string]: unknown;
+}
+
+interface GoogleMarkerOptions {
+  position: { lat: number; lng: number };
+  map: GoogleMap;
+  title?: string;
+}
+
+interface GoogleMarker {
+  addListener: (event: string, handler: () => void) => void;
+}
+
+interface GoogleInfoWindow {
+  open: (map: GoogleMap, marker: GoogleMarker) => void;
+}
+
+declare global {
+  interface Window {
+    google?: GoogleMapsAPI;
+    initGoogleMap?: () => void;
+  }
+}
+
 /**
  * 지도 블록 렌더러
  * Google Maps, 네이버 지도, 카카오맵 임베드 지원
@@ -396,24 +443,24 @@ function MapComponent({
       script.async = true;
       script.defer = true;
 
-      (window as any).initGoogleMap = () => {
-        if (mapRef.current && (window as any).google) {
+      window.initGoogleMap = () => {
+        if (mapRef.current && window.google) {
           try {
-            const map = new (window as any).google.maps.Map(mapRef.current, {
+            const map = new window.google.maps.Map(mapRef.current, {
               zoom,
               center: { lat: latitude, lng: longitude },
-              mapTypeId: (window as any).google.maps.MapTypeId[mapType.toUpperCase()]
+              mapTypeId: window.google.maps.MapTypeId[mapType.toUpperCase() as keyof typeof window.google.maps.MapTypeId]
             });
 
             if (showMarker) {
-              const marker = new (window as any).google.maps.Marker({
+              const marker = new window.google.maps.Marker({
                 position: { lat: latitude, lng: longitude },
                 map,
                 title: markerTitle || '위치 마커'
               });
 
               if (markerTitle) {
-                const infoWindow = new (window as any).google.maps.InfoWindow({
+                const infoWindow = new window.google.maps.InfoWindow({
                   content: `<div style="padding: 8px;"><strong>${markerTitle}</strong></div>`
                 });
 
@@ -432,7 +479,7 @@ function MapComponent({
 
       return () => {
         document.head.removeChild(script);
-        delete (window as any).initGoogleMap;
+        delete window.initGoogleMap;
       };
     }
   }, [latitude, longitude, zoom, mapType, showMarker, markerTitle, apiKey]);

@@ -163,7 +163,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
   /**
    * 폼 필드 렌더링
    */
-  private renderFormField(field: any): string {
+  private renderFormField(field: FormBlockContent['fields'][0]): string {
     const {
       type,
       name,
@@ -227,7 +227,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
         break;
 
       case 'select':
-        const optionsHTML = options?.map((option: any) => `
+        const optionsHTML = options?.map((option: { value: string; label: string; selected?: boolean }) => `
           <option value="${this.escapeAttribute(option.value)}" ${option.selected ? 'selected' : ''}>
             ${this.escapeHtml(option.label)}
           </option>
@@ -247,7 +247,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
         break;
 
       case 'radio':
-        inputHTML = options?.map((option: any, index: number) => `
+        inputHTML = options?.map((option: { value: string; label: string; checked?: boolean }, index: number) => `
           <div class="flex items-center">
             <input
               type="radio"
@@ -268,7 +268,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
       case 'checkbox':
         if (options && options.length > 1) {
           // 다중 체크박스
-          inputHTML = options.map((option: any, index: number) => `
+          inputHTML = options.map((option: { value: string; label: string; checked?: boolean }, index: number) => `
             <div class="flex items-center">
               <input
                 type="checkbox"
@@ -337,7 +337,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
   /**
    * 유효성 검증 속성 생성
    */
-  private generateValidationAttributes(validation: any): string {
+  private generateValidationAttributes(validation: FormBlockContent['fields'][0]['validation']): string {
     if (!validation) return '';
 
     const attributes: string[] = [];
@@ -549,7 +549,7 @@ export class FormBlockRenderer extends BaseBlockRenderer {
  * React 폼 컴포넌트
  */
 interface FormComponentProps {
-  fields: any[];
+  fields: FormBlockContent['fields'];
   action: string;
   method: string;
   title?: string;
@@ -569,7 +569,7 @@ function FormComponent({
   successMessage,
   errorMessage
 }: FormComponentProps): JSX.Element {
-  const [formData, setFormData] = React.useState<Record<string, any>>({});
+  const [formData, setFormData] = React.useState<Record<string, string | boolean | File>>({});
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [message, setMessage] = React.useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -679,10 +679,10 @@ function FormComponent({
  * React 폼 필드 컴포넌트
  */
 interface FormFieldComponentProps {
-  field: any;
-  value: any;
+  field: FormBlockContent['fields'][0];
+  value: string | boolean | File;
   error?: string;
-  onChange: (value: any) => void;
+  onChange: (value: string | boolean | File) => void;
 }
 
 function FormFieldComponent({ field, value, error, onChange }: FormFieldComponentProps): JSX.Element {
@@ -733,7 +733,7 @@ function FormFieldComponent({ field, value, error, onChange }: FormFieldComponen
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           >
             {field.placeholder && <option value="">{field.placeholder}</option>}
-            {field.options?.map((option: any, index: number) => (
+            {field.options?.map((option, index: number) => (
               <option key={index} value={option.value}>
                 {option.label}
               </option>

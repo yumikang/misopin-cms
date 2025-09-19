@@ -440,7 +440,7 @@ describe('웹빌더 렌더링 엔진 통합 테스트', () => {
         content: null // 잘못된 콘텐츠
       };
 
-      const html = BlockRendererFactory.renderToHTML(invalidBlock as any);
+      const html = BlockRendererFactory.renderToHTML(invalidBlock as unknown as ContentBlockData);
       expect(html).toContain('cms-block-error');
       expect(html).toContain('렌더링 오류');
     });
@@ -448,11 +448,12 @@ describe('웹빌더 렌더링 엔진 통합 테스트', () => {
     test('React 렌더링 에러도 적절히 처리해야 함', () => {
       const invalidBlock = {
         id: 'test',
-        type: 'TEXT',
+        name: 'test block',
+        type: 'TEXT' as const,
         content: { text: null } // 잘못된 텍스트
-      };
+      } as ContentBlockData;
 
-      const element = BlockRendererFactory.renderToReact(invalidBlock as any);
+      const element = BlockRendererFactory.renderToReact(invalidBlock as ContentBlockData);
       expect(element).toBeDefined();
       expect(element.props.className).toContain('cms-block-error');
     });

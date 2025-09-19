@@ -174,7 +174,7 @@ export class CarouselBlockRenderer extends BaseBlockRenderer {
   /**
    * 캐러셀 아이템 렌더링
    */
-  private renderCarouselItem(item: any): string {
+  private renderCarouselItem(item: CarouselBlockContent['items'][0]): string {
     if (item.type === 'image') {
       const { src, alt = '', caption } = item;
       return `
@@ -359,7 +359,7 @@ export class CarouselBlockRenderer extends BaseBlockRenderer {
  * React 캐러셀 컴포넌트 (클라이언트 사이드)
  */
 interface CarouselComponentProps {
-  items: any[];
+  items: CarouselBlockContent['items'];
   autoplay: boolean;
   interval: number;
   showDots: boolean;
@@ -468,7 +468,7 @@ function CarouselComponent({
 /**
  * 캐러셀 아이템 React 컴포넌트
  */
-function CarouselItemComponent({ item }: { item: any }): JSX.Element {
+function CarouselItemComponent({ item }: { item: CarouselBlockContent['items'][0] }): JSX.Element {
   if (item.type === 'image') {
     const { src, alt = '', caption } = item;
     return (
