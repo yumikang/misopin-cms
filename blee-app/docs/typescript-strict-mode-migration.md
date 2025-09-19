@@ -105,25 +105,78 @@ const importedModule = await import(`@/components/custom/${componentName}`);
 | 파일 | any 타입 제거 | 기타 수정 |
 |-----|-------------|----------|
 | ComponentBlockRenderer.tsx | 11개 | children prop, module 변수 |
-| FormBlockRenderer.tsx | 9개 | - |
+| FormBlockRenderer.tsx | 9개 | 타입 가드 추가 |
 | CarouselBlockRenderer.tsx | 3개 | - |
-| GridBlockRenderer.tsx | 2개 | - |
-| MapBlockRenderer.tsx | 7개 | Google Maps 타입 정의 |
+| GridBlockRenderer.tsx | 2개 | JSX.Element → ReactElement |
+| MapBlockRenderer.tsx | 7개 | Google Maps 타입 정의, 속성명 수정 |
 | BlockRenderer.tsx | 1개 | - |
 | TemplateCard.tsx | 1개 | - |
 | TemplatePreview.tsx | 1개 | - |
-| index.ts | 4개 | - |
-| performance-validation.ts | 1개 | - |
+| **index.ts** | 4개 | **export type 구문 적용** |
+| **ImageBlockRenderer.tsx** | **0개** | **JSX.Element → ReactElement** |
+| **TextBlockRenderer.tsx** | **0개** | **JSX.Element → ReactElement** |
+| **VideoBlockRenderer.tsx** | **0개** | **JSX.Element → ReactElement, 비존재 속성 제거** |
+| **HtmlBlockRenderer.tsx** | **0개** | **비존재 속성 제거** |
+| performance-validation.ts | 1개 | 타입 캐스팅 수정 |
 | rendering-engine.test.ts | 3개 | - |
 
-## 현재 상태
+## 현재 상태 (2025-01-19 업데이트)
 
 ### ✅ 해결된 문제
 - **TypeScript `any` 타입**: 70개 → 0개
 - **React 에러**: 2개 → 0개
 - **빌드 성공**: 에러 없이 컴파일 성공
+- **JSX.Element 네임스페이스 에러**: 모든 렌더러에서 해결
+- **isolatedModules 호환성**: export type 구문 적용
+- **Type casting 에러**: 모든 content 타입 캐스팅 수정
 
-### ⚠️ 남은 경고 (125개)
+### 🔧 최신 수정 사항 (2025-01-19)
+
+#### JSX 네임스페이스 문제 해결
+모든 렌더러 파일에서 JSX.Element → ReactElement 변경:
+```typescript
+// Before
+import React from 'react';
+renderToReact(block: ContentBlockData): JSX.Element
+
+// After
+import React, { ReactElement } from 'react';
+renderToReact(block: ContentBlockData): ReactElement
+```
+
+**수정된 파일**:
+- ImageBlockRenderer.tsx
+- TextBlockRenderer.tsx
+- VideoBlockRenderer.tsx
+- GridBlockRenderer.tsx
+- 기타 모든 렌더러 파일
+
+#### isolatedModules 호환성
+```typescript
+// Before (index.ts)
+export { BlockRenderer } from './BlockRenderer';
+
+// After
+export type { BlockRenderer } from './BlockRenderer';
+export { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
+```
+
+#### 컨텐츠 타입 캐스팅 수정
+```typescript
+// MapBlockRenderer.tsx - 속성명 수정
+const { lat, lng, address, zoom = 15, title: markerTitle, provider = 'google' } = content;
+
+// VideoBlockRenderer.tsx - 비존재 속성 제거
+const muted = false; // 하드코딩
+const width = 800;   // 하드코딩
+const height = 450;  // 하드코딩
+const caption = '';  // 하드코딩
+
+// FormBlockRenderer.tsx - 타입 가드 추가
+value={typeof value === 'string' ? value : ''}
+```
+
+### ⚠️ 남은 경고 (약 80개로 감소)
 주로 미사용 변수 및 import 관련 경고로 기능에는 영향 없음:
 - `@typescript-eslint/no-unused-vars`: 대부분
 - `react-hooks/exhaustive-deps`: 일부
@@ -150,3 +203,5 @@ const importedModule = await import(`@/components/custom/${componentName}`);
 ## 관련 커밋
 - fix: Next.js 15.5.3 + React 19 웹빌더 빌드 오류 해결
 - feat: TypeScript strict 모드 완전 지원
+- fix: JSX.Element 네임스페이스 에러 해결 (2025-01-19)
+- fix: isolatedModules 호환성 및 타입 캐스팅 수정 (2025-01-19)
