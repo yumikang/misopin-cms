@@ -1,145 +1,249 @@
 {
   "tasks": [
     {
-      "id": "b385278d-e864-4b9d-a6aa-9806e268f5d1",
-      "name": "JSX 구문 오류 즉시 수정",
-      "description": "hooks/usePermissions.ts 파일의 JSX 구문 오류를 수정하여 빌드 차단 요소를 제거합니다. PermissionDenied와 PermissionGate 컴포넌트가 TypeScript 파일에 포함되어 있어 구문 오류가 발생하고 있습니다.",
-      "notes": "가장 높은 우선순위 작업. 이 작업이 완료되지 않으면 빌드가 전혀 진행되지 않음",
+      "id": "2d06be8d-8e98-4073-b0a2-816d3bd0b2de",
+      "name": "Fix JSX parsing errors in webbuilder renderer files",
+      "description": "Resolve 11 JSX syntax errors in lib/webbuilder/renderers/ factory pattern files causing \"'>' expected\" compilation errors. Each renderer file (TEXT, IMAGE, GRID, etc.) contains malformed JSX that breaks TypeScript compilation and prevents proper webbuilder functionality.",
+      "notes": "Critical priority as these errors prevent successful TypeScript compilation. Must maintain existing Factory pattern architecture and BlockRenderer interface contracts.",
       "status": "completed",
       "dependencies": [],
-      "createdAt": "2025-09-19T03:59:54.538Z",
-      "updatedAt": "2025-09-19T04:03:42.638Z",
+      "createdAt": "2025-09-19T05:59:09.380Z",
+      "updatedAt": "2025-09-19T06:03:35.543Z",
       "relatedFiles": [
         {
-          "path": "hooks/usePermissions.ts",
+          "path": "lib/webbuilder/renderers/TextRenderer.tsx",
           "type": "TO_MODIFY",
-          "description": "JSX 구문 오류가 있는 파일. .tsx로 확장자 변경 및 React import 추가 필요"
+          "description": "Text block renderer with JSX parsing errors",
+          "lineStart": 1,
+          "lineEnd": 50
+        },
+        {
+          "path": "lib/webbuilder/renderers/ImageRenderer.tsx",
+          "type": "TO_MODIFY",
+          "description": "Image block renderer with JSX parsing errors",
+          "lineStart": 1,
+          "lineEnd": 50
+        },
+        {
+          "path": "lib/webbuilder/renderers/GridRenderer.tsx",
+          "type": "TO_MODIFY",
+          "description": "Grid layout renderer with JSX parsing errors",
+          "lineStart": 1,
+          "lineEnd": 50
+        },
+        {
+          "path": "lib/webbuilder/renderers/",
+          "type": "TO_MODIFY",
+          "description": "All renderer files in directory with JSX issues",
+          "lineStart": 1,
+          "lineEnd": 100
         }
       ],
-      "implementationGuide": "1. hooks/usePermissions.ts 파일을 hooks/usePermissions.tsx로 확장자 변경\\n2. 파일 상단에 'use client' 지시문과 React import 추가\\n3. JSX 구문이 포함된 컴포넌트들이 올바르게 작동하는지 확인\\n4. TypeScript 엄격 모드 통과 확인",
-      "verificationCriteria": "1. TypeScript 컴파일 오류 해결 확인\\n2. PermissionDenied, PermissionGate 컴포넌트 정상 렌더링\\n3. 기존 권한 체크 로직 정상 작동\\n4. Next.js App Router 패턴 준수",
-      "analysisResult": "Next.js 15.5.3 프로젝트의 빌드 오류 해결 프로젝트. 주요 문제는 1) hooks/usePermissions.ts의 JSX 구문 오류, 2) 웹빌더 컴포넌트들의 경로 불일치 (@/components vs app/components), 3) useAutoSave 훅 누락입니다. 모든 해결책은 기존 프로젝트 패턴(TypeScript + Tailwind + Radix UI + App Router)을 준수하며, MCP 서버들(Context7, Sequential, Magic)을 활용하여 최신 베스트 프랙티스를 적용해야 합니다.",
-      "summary": "JSX 구문 오류가 성공적으로 해결되었습니다. hooks/usePermissions.ts 파일을 .tsx로 확장자 변경하고 'use client' 지시문을 추가했습니다. 빌드 시 더 이상 JSX 구문 오류가 발생하지 않으며, usePermissions 관련 오류는 모두 해결되었습니다. 남은 오류들은 모두 다른 모듈들의 경로 문제로, 이는 다음 태스크에서 해결할 예정입니다.",
-      "completedAt": "2025-09-19T04:03:42.636Z"
+      "implementationGuide": "1. Read each renderer file in lib/webbuilder/renderers/ to identify specific JSX syntax issues\\n2. Use context7 to reference React 19 + Next.js 15 JSX best practices\\n3. Apply proper JSX formatting: correct tag closures, proper attribute syntax, valid React element structure\\n4. Ensure TypeScript strict mode compliance in JSX expressions\\n5. Validate each fix with TypeScript compiler before proceeding to next file\\n\\nPseudocode:\\n```\\nFOR each_file in ['lib/webbuilder/renderers/*.tsx']:\\n  content = READ_FILE(file_path)\\n  jsx_errors = IDENTIFY_JSX_SYNTAX_ISSUES(content)\\n  FOR each_error in jsx_errors:\\n    fixed_content = APPLY_JSX_FIX(content, error)\\n    VALIDATE_TYPESCRIPT_COMPILATION(fixed_content)\\n  WRITE_FILE(file_path, fixed_content)\\n```",
+      "verificationCriteria": "All 11 renderer files compile successfully with TypeScript strict mode. Zero JSX syntax errors in ESLint output. Webbuilder Factory pattern functionality remains intact. npm run build succeeds without renderer-related errors.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors.",
+      "summary": "Successfully fixed all JSX parsing errors by renaming 12 TypeScript files containing JSX from .ts to .tsx extension. All \"'>' expected\" parsing errors eliminated. Root cause identified: TypeScript files with JSX syntax require .tsx extension for proper ESLint and TypeScript parsing. Solution systematically applied to all webbuilder renderer files plus useAutoSave hook. Zero JSX syntax errors remain in ESLint output. Webbuilder Factory pattern architecture preserved. All files compile successfully with TypeScript strict mode.",
+      "completedAt": "2025-09-19T06:03:35.542Z"
     },
     {
-      "id": "e2ca85ae-5c0a-46ab-990e-71ac88c44379",
-      "name": "웹빌더 컴포넌트 경로 문제 해결",
-      "description": "현재 웹빌더 컴포넌트들이 app/components/webbuilder/에 존재하지만 코드에서는 @/components/webbuilder/로 import하려고 시도하는 경로 불일치 문제를 해결합니다.",
-      "notes": "Next.js 13+ App Router 패턴에서는 components를 루트 레벨에 두는 것이 일반적. 기존 UI 컴포넌트들과 일관성 유지",
-      "status": "completed",
+      "id": "f880a05e-7585-4aa2-b59b-7a91f651e285",
+      "name": "Replace all any types with proper TypeScript interfaces",
+      "description": "Eliminate 7 instances of explicit 'any' type usage throughout the codebase, replacing with specific TypeScript interfaces, generics, or union types. This violates TypeScript strict mode and compromises type safety in the Next.js application.",
+      "notes": "Absolute requirement per user instructions. Must leverage existing type definitions from Supabase database.types.ts and shadcn/ui component types where applicable.",
+      "status": "pending",
       "dependencies": [
         {
-          "taskId": "b385278d-e864-4b9d-a6aa-9806e268f5d1"
+          "taskId": "2d06be8d-8e98-4073-b0a2-816d3bd0b2de"
         }
       ],
-      "createdAt": "2025-09-19T03:59:54.538Z",
-      "updatedAt": "2025-09-19T04:06:36.549Z",
+      "createdAt": "2025-09-19T05:59:09.380Z",
+      "updatedAt": "2025-09-19T05:59:09.380Z",
       "relatedFiles": [
         {
-          "path": "app/components/webbuilder/BlockEditor.tsx",
-          "type": "TO_MODIFY",
-          "description": "components/webbuilder/로 이동할 파일"
+          "path": "lib/types.ts",
+          "type": "REFERENCE",
+          "description": "Existing type definitions to extend",
+          "lineStart": 1,
+          "lineEnd": 100
         },
         {
-          "path": "app/components/webbuilder/TemplateGallery.tsx",
-          "type": "TO_MODIFY",
-          "description": "components/webbuilder/로 이동할 파일"
-        },
-        {
-          "path": "app/components/webbuilder/PreviewFrame.tsx",
-          "type": "TO_MODIFY",
-          "description": "components/webbuilder/로 이동할 파일"
+          "path": "lib/database.types.ts",
+          "type": "REFERENCE",
+          "description": "Supabase generated types for database entities",
+          "lineStart": 1,
+          "lineEnd": 200
         },
         {
           "path": "components/webbuilder/",
-          "type": "CREATE",
-          "description": "새로 생성할 디렉토리"
-        },
-        {
-          "path": "tsconfig.json",
-          "type": "REFERENCE",
-          "description": "경로 매핑 설정 확인"
+          "type": "TO_MODIFY",
+          "description": "Webbuilder components potentially using any types",
+          "lineStart": 1,
+          "lineEnd": 100
         }
       ],
-      "implementationGuide": "방법 1 (권장): components 디렉토리 구조 정리\\n1. 루트 레벨에 components/webbuilder/ 디렉토리 생성\\n2. app/components/webbuilder/ 파일들을 components/webbuilder/로 이동\\n3. 기존 import 경로들이 정상 작동하는지 확인\\n\\n방법 2 (대안): tsconfig.json 경로 매핑 수정\\n1. tsconfig.json에서 @/* 경로를 app/* 포함하도록 수정\\n2. 모든 import 경로 재검증",
-      "verificationCriteria": "1. 모든 웹빌더 컴포넌트 import 경로 정상 작동\\n2. app/webbuilder/page.tsx에서 컴포넌트들 정상 import\\n3. TypeScript 경로 해석 정상 작동\\n4. 빌드 시 모듈 not found 오류 해결",
-      "analysisResult": "Next.js 15.5.3 프로젝트의 빌드 오류 해결 프로젝트. 주요 문제는 1) hooks/usePermissions.ts의 JSX 구문 오류, 2) 웹빌더 컴포넌트들의 경로 불일치 (@/components vs app/components), 3) useAutoSave 훅 누락입니다. 모든 해결책은 기존 프로젝트 패턴(TypeScript + Tailwind + Radix UI + App Router)을 준수하며, MCP 서버들(Context7, Sequential, Magic)을 활용하여 최신 베스트 프랙티스를 적용해야 합니다.",
-      "summary": "웹빌더 컴포넌트 경로 문제를 성공적으로 해결했습니다. components/webbuilder/ 디렉토리를 루트 레벨에 생성하고 모든 웹빌더 컴포넌트 파일들(BlockEditor.tsx, TemplateGallery.tsx, PreviewFrame.tsx 등 10개 파일)을 새 위치로 이동시켰습니다. 이제 @/components/webbuilder/ 경로로 정상적으로 임포트할 수 있습니다.",
-      "completedAt": "2025-09-19T04:06:36.548Z"
+      "implementationGuide": "1. Locate all 7 instances of 'any' type usage using grep search\\n2. For each instance, analyze context and usage pattern\\n3. Use context7 to reference TypeScript best practices and existing project type patterns\\n4. Create or extend existing interfaces from lib/types.ts or database.types.ts\\n5. Replace any with specific types: interfaces for objects, generics for reusable components, union types for multiple possibilities\\n6. Validate type safety with TypeScript compiler\\n\\nPseudocode:\\n```\\nany_locations = GREP_SEARCH('any', ['*.ts', '*.tsx'])\\nFOR each_location in any_locations:\\n  context = ANALYZE_USAGE_CONTEXT(location)\\n  IF context.type == 'object':\\n    interface = CREATE_SPECIFIC_INTERFACE(context)\\n  ELIF context.type == 'generic':\\n    generic_type = CREATE_GENERIC_TYPE(context)\\n  ELIF context.type == 'union':\\n    union_type = CREATE_UNION_TYPE(context)\\n  REPLACE_ANY_WITH_SPECIFIC_TYPE(location, new_type)\\n```",
+      "verificationCriteria": "Zero instances of 'any' type in codebase grep search results. All replaced types provide proper IntelliSense and type checking. TypeScript strict mode compilation succeeds. No regression in component functionality.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors."
     },
     {
-      "id": "17eaae4f-17ea-4edd-8f31-57e89aa5cdfe",
-      "name": "useAutoSave 커스텀 훅 구현",
-      "description": "웹빌더 페이지에서 사용하는 useAutoSave 훅과 AutoSaveIndicator 컴포넌트를 구현합니다. 자동저장 기능, debounce, 상태 표시 등의 기능을 포함해야 합니다.",
-      "notes": "기존 코드에서 요구하는 인터페이스: useAutoSave(data, options) => status, AutoSaveIndicator({ status }). Tailwind CSS 활용하여 UI 구현",
-      "status": "completed",
+      "id": "3798c78b-07f6-4ac2-b796-1e884fb3ef38",
+      "name": "Optimize images with Next.js Image component",
+      "description": "Replace regular img tags with Next.js optimized Image component to improve Core Web Vitals, reduce bundle size, and enhance performance. This addresses performance-related ESLint warnings and follows Next.js 15 best practices.",
+      "notes": "Focus on user-facing images in webbuilder components and UI elements. Consider existing responsive design patterns from shadcn/ui components.",
+      "status": "pending",
       "dependencies": [
         {
-          "taskId": "b385278d-e864-4b9d-a6aa-9806e268f5d1"
+          "taskId": "f880a05e-7585-4aa2-b59b-7a91f651e285"
         }
       ],
-      "createdAt": "2025-09-19T03:59:54.538Z",
-      "updatedAt": "2025-09-19T04:08:42.330Z",
+      "createdAt": "2025-09-19T05:59:09.381Z",
+      "updatedAt": "2025-09-19T05:59:09.381Z",
       "relatedFiles": [
         {
-          "path": "hooks/useAutoSave.ts",
-          "type": "CREATE",
-          "description": "자동저장 훅과 인디케이터 컴포넌트 구현"
+          "path": "next.config.ts",
+          "type": "TO_MODIFY",
+          "description": "Next.js configuration for image optimization domains",
+          "lineStart": 1,
+          "lineEnd": 50
         },
         {
-          "path": "app/webbuilder/page.tsx",
-          "type": "REFERENCE",
-          "description": "useAutoSave 사용 방법 확인"
+          "path": "components/",
+          "type": "TO_MODIFY",
+          "description": "Component files potentially using img tags",
+          "lineStart": 1,
+          "lineEnd": 100
+        },
+        {
+          "path": "app/",
+          "type": "TO_MODIFY",
+          "description": "App directory components with image usage",
+          "lineStart": 1,
+          "lineEnd": 100
         }
       ],
-      "implementationGuide": "Context7 Next.js 패턴 참조하여 구현:\\n1. hooks/useAutoSave.ts 파일 생성\\n2. useCallback, useEffect, useState 훅 활용\\n3. debounce 기능 구현 (lodash.debounce 또는 자체 구현)\\n4. 자동저장 상태 관리 (idle, saving, saved, error)\\n5. AutoSaveIndicator 컴포넌트를 같은 파일에 구현\\n6. TypeScript 타입 정의 포함",
-      "verificationCriteria": "1. useAutoSave 훅이 기존 코드와 호환되는 인터페이스 제공\\n2. AutoSaveIndicator 컴포넌트 정상 렌더링\\n3. debounce 기능 정상 작동 (2초 지연)\\n4. 자동저장 상태 변화 UI 반영\\n5. TypeScript 타입 체크 통과",
-      "analysisResult": "Next.js 15.5.3 프로젝트의 빌드 오류 해결 프로젝트. 주요 문제는 1) hooks/usePermissions.ts의 JSX 구문 오류, 2) 웹빌더 컴포넌트들의 경로 불일치 (@/components vs app/components), 3) useAutoSave 훅 누락입니다. 모든 해결책은 기존 프로젝트 패턴(TypeScript + Tailwind + Radix UI + App Router)을 준수하며, MCP 서버들(Context7, Sequential, Magic)을 활용하여 최신 베스트 프랙티스를 적용해야 합니다.",
-      "summary": "useAutoSave 커스텀 훅과 AutoSaveIndicator 컴포넌트를 성공적으로 구현했습니다. debounce 기능(2초), 주기적 자동저장(30초), 5가지 상태 관리(idle, pending, saving, saved, error), TypeScript 타입 안정성, Tailwind CSS 기반 UI 인디케이터를 모두 포함했습니다. 기존 코드와 완벽하게 호환되는 인터페이스를 제공합니다.",
-      "completedAt": "2025-09-19T04:08:42.328Z"
+      "implementationGuide": "1. Use context7 to reference Next.js 15 Image component documentation and optimization patterns\\n2. Search codebase for img tag usage using grep or file analysis\\n3. Replace img elements with Next.js Image component:\\n   - Import Image from 'next/image'\\n   - Convert src, alt, width, height attributes\\n   - Add proper sizing strategy (fill, responsive, etc.)\\n   - Configure loading optimization (lazy, eager)\\n4. Update next.config.ts to configure image domains if external images are used\\n5. Validate image loading and responsive behavior\\n\\nPseudocode:\\n```\\nimg_locations = GREP_SEARCH('<img', ['*.tsx', '*.jsx'])\\nFOR each_img in img_locations:\\n  img_props = EXTRACT_IMG_ATTRIBUTES(img)\\n  next_image_props = CONVERT_TO_NEXT_IMAGE(img_props)\\n  REPLACE_IMG_WITH_NEXT_IMAGE(location, next_image_props)\\n  ADD_IMAGE_IMPORT_IF_NEEDED(file)\\nUPDATE_NEXT_CONFIG_FOR_DOMAINS()\\n```",
+      "verificationCriteria": "All img tags replaced with Next.js Image components. Images load with proper optimization and responsive behavior. next.config.ts correctly configured for image domains. ESLint warnings related to image optimization resolved.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors."
     },
     {
-      "id": "91bdf8a1-3cf5-437a-95dc-e454bf9aa5d7",
-      "name": "빌드 검증 및 오류 해결",
-      "description": "모든 수정 사항을 적용한 후 빌드를 실행하여 남은 오류들을 확인하고 해결합니다. TypeScript 엄격 모드와 Next.js 15.5.3 호환성을 확인합니다.",
-      "notes": "Context7에서 확인한 Next.js 15 패턴 준수 확인. React 19 호환성도 체크",
-      "status": "completed",
+      "id": "08559680-3f99-45f3-98db-e4171ca278e8",
+      "name": "Fix React hooks dependency arrays and warnings",
+      "description": "Resolve React hooks ESLint warnings including missing dependencies in useEffect, useCallback, and useMemo arrays. This ensures proper React 19 compliance and prevents potential bugs from stale closures.",
+      "notes": "Critical for React 19 compliance and preventing subtle runtime bugs. Pay special attention to webbuilder components with complex state management.",
+      "status": "pending",
       "dependencies": [
         {
-          "taskId": "b385278d-e864-4b9d-a6aa-9806e268f5d1"
-        },
-        {
-          "taskId": "e2ca85ae-5c0a-46ab-990e-71ac88c44379"
-        },
-        {
-          "taskId": "17eaae4f-17ea-4edd-8f31-57e89aa5cdfe"
+          "taskId": "3798c78b-07f6-4ac2-b796-1e884fb3ef38"
         }
       ],
-      "createdAt": "2025-09-19T03:59:54.538Z",
-      "updatedAt": "2025-09-19T04:13:03.788Z",
+      "createdAt": "2025-09-19T05:59:09.381Z",
+      "updatedAt": "2025-09-19T05:59:09.381Z",
+      "relatedFiles": [
+        {
+          "path": "components/webbuilder/BlockEditor.tsx",
+          "type": "TO_MODIFY",
+          "description": "Complex webbuilder component likely having hooks issues",
+          "lineStart": 1,
+          "lineEnd": 200
+        },
+        {
+          "path": "components/",
+          "type": "TO_MODIFY",
+          "description": "All component files with React hooks usage",
+          "lineStart": 1,
+          "lineEnd": 100
+        },
+        {
+          "path": "app/",
+          "type": "TO_MODIFY",
+          "description": "App directory components with hooks",
+          "lineStart": 1,
+          "lineEnd": 100
+        }
+      ],
+      "implementationGuide": "1. Use ESLint output to identify specific React hooks warnings\\n2. For each useEffect, useCallback, useMemo with missing dependencies:\\n   - Analyze which variables from component scope are used\\n   - Add missing dependencies to dependency array\\n   - Use useCallback for function dependencies if needed\\n   - Consider moving stable values outside component or using useRef\\n3. Use context7 to reference React 19 hooks best practices\\n4. Validate that fixes don't cause infinite re-renders\\n\\nPseudocode:\\n```\\nhooks_warnings = EXTRACT_REACT_HOOKS_WARNINGS(eslint_output)\\nFOR each_warning in hooks_warnings:\\n  hook_location = LOCATE_HOOK(warning.file, warning.line)\\n  used_vars = ANALYZE_HOOK_DEPENDENCIES(hook_location)\\n  current_deps = GET_CURRENT_DEPENDENCIES(hook_location)\\n  missing_deps = CALCULATE_MISSING_DEPS(used_vars, current_deps)\\n  UPDATE_DEPENDENCY_ARRAY(hook_location, missing_deps)\\n```",
+      "verificationCriteria": "Zero React hooks ESLint warnings in output. All dependency arrays correctly include used variables. No infinite re-render loops introduced. Component functionality preserved and optimized.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors."
+    },
+    {
+      "id": "fb34578e-b965-4a46-a4e9-78f2a35bc4f8",
+      "name": "Clean up unused variables and imports",
+      "description": "Remove approximately 107 ESLint warnings related to unused variables, unused imports, and unreachable code. This improves code maintainability and reduces bundle size.",
+      "notes": "Use ESLint autofix capability where possible to speed up process. Be cautious with dynamic imports and conditionally used variables in webbuilder context.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "08559680-3f99-45f3-98db-e4171ca278e8"
+        }
+      ],
+      "createdAt": "2025-09-19T05:59:09.381Z",
+      "updatedAt": "2025-09-19T05:59:09.381Z",
+      "relatedFiles": [
+        {
+          "path": "**/*.ts",
+          "type": "TO_MODIFY",
+          "description": "All TypeScript files with potential unused items",
+          "lineStart": 1,
+          "lineEnd": 100
+        },
+        {
+          "path": "**/*.tsx",
+          "type": "TO_MODIFY",
+          "description": "All React component files with potential unused items",
+          "lineStart": 1,
+          "lineEnd": 100
+        },
+        {
+          "path": "eslint.config.mjs",
+          "type": "REFERENCE",
+          "description": "ESLint configuration for autofix capabilities",
+          "lineStart": 1,
+          "lineEnd": 50
+        }
+      ],
+      "implementationGuide": "1. Run ESLint with detailed output to get complete list of unused variable/import warnings\\n2. Use sequential-thinking to categorize warnings:\\n   - Safe auto-removable: clearly unused imports and variables\\n   - Requires analysis: potentially used in dynamic contexts\\n   - Development artifacts: console.logs, debug variables\\n3. Apply ESLint autofix for safe removals: npx eslint --fix\\n4. Manually review and remove remaining unused items\\n5. Verify no runtime functionality is broken\\n\\nPseudocode:\\n```\\nunused_warnings = FILTER_ESLINT_WARNINGS('unused-vars', 'unused-imports')\\nsafe_removals = IDENTIFY_SAFE_AUTO_REMOVALS(unused_warnings)\\nAPPLY_ESLINT_AUTOFIX(safe_removals)\\nmanual_items = REMAINING_UNUSED_ITEMS()\\nFOR each_item in manual_items:\\n  IF SAFE_TO_REMOVE(item):\\n    REMOVE_UNUSED_ITEM(item)\\n  ELSE:\\n    MARK_FOR_REVIEW(item)\\n```",
+      "verificationCriteria": "ESLint output shows 0 unused variable and import warnings. Bundle size analysis shows reduction in unused code. All application functionality preserved after cleanup. Clean eslint report with only 0 errors and 0 warnings.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors."
+    },
+    {
+      "id": "71e5bbf5-7e7a-4cd6-a515-1fc9126a045b",
+      "name": "Validate zero ESLint errors and build success",
+      "description": "Final validation phase to ensure all 138 code quality issues have been resolved. Run comprehensive build and linting checks to confirm complete success and document the improvements achieved.",
+      "notes": "This is the final quality gate to confirm complete success. Must achieve absolute zero ESLint errors as explicitly required by user.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "fb34578e-b965-4a46-a4e9-78f2a35bc4f8"
+        }
+      ],
+      "createdAt": "2025-09-19T05:59:09.381Z",
+      "updatedAt": "2025-09-19T05:59:09.381Z",
       "relatedFiles": [
         {
           "path": "package.json",
           "type": "REFERENCE",
-          "description": "빌드 스크립트 확인"
+          "description": "Build scripts and linting commands",
+          "lineStart": 1,
+          "lineEnd": 50
         },
         {
-          "path": "next.config.ts",
+          "path": "eslint.config.mjs",
           "type": "REFERENCE",
-          "description": "Next.js 설정 확인"
+          "description": "ESLint configuration for final validation",
+          "lineStart": 1,
+          "lineEnd": 50
         },
         {
           "path": "tsconfig.json",
           "type": "REFERENCE",
-          "description": "TypeScript 설정 확인"
+          "description": "TypeScript configuration for compilation check",
+          "lineStart": 1,
+          "lineEnd": 50
         }
       ],
-      "implementationGuide": "1. npm run build 실행\\n2. 발생하는 모든 오류 로그 분석\\n3. TypeScript 타입 오류 해결\\n4. ESLint 경고사항 점검\\n5. 웹빌더 기능 기본 동작 테스트\\n6. 브라우저에서 페이지 로딩 확인",
-      "verificationCriteria": "1. npm run build 성공적으로 완료\\n2. TypeScript 컴파일 오류 0개\\n3. ESLint 오류 0개 (경고는 허용)\\n4. 웹빌더 페이지 정상 로딩\\n5. 권한 시스템 정상 작동\\n6. 자동저장 기능 정상 작동",
-      "analysisResult": "Next.js 15.5.3 프로젝트의 빌드 오류 해결 프로젝트. 주요 문제는 1) hooks/usePermissions.ts의 JSX 구문 오류, 2) 웹빌더 컴포넌트들의 경로 불일치 (@/components vs app/components), 3) useAutoSave 훅 누락입니다. 모든 해결책은 기존 프로젝트 패턴(TypeScript + Tailwind + Radix UI + App Router)을 준수하며, MCP 서버들(Context7, Sequential, Magic)을 활용하여 최신 베스트 프랙티스를 적용해야 합니다.",
-      "summary": "빌드 검증 및 오류 해결을 성공적으로 완료했습니다. npm run build가 성공적으로 실행되며, 모든 TypeScript 타입 오류가 해결되었습니다. 주요 성과: 1) any 타입 제거 및 안전한 타입 가드 적용, 2) BlockTemplateData 인터페이스에 creator 속성 추가, 3) 개발서버 정상 시작 확인(포트 3002), 4) Next.js 15.5.3 및 React 19 호환성 검증. ESLint 경고는 있지만 빌드에 영향을 주지 않으며, 웹빌더 기능이 정상적으로 작동할 준비가 완료되었습니다.",
-      "completedAt": "2025-09-19T04:13:03.785Z"
+      "implementationGuide": "1. Run complete ESLint check: npx eslint . --ext .ts,.tsx --max-warnings 0\\n2. Run TypeScript compilation: npx tsc --noEmit\\n3. Run Next.js build: npm run build\\n4. Generate build analysis report\\n5. Document improvements achieved:\\n   - Before/after ESLint error counts\\n   - TypeScript strict mode compliance\\n   - Performance improvements from Image optimization\\n   - Bundle size reduction from cleanup\\n6. Test webbuilder functionality to ensure no regressions\\n\\nPseudocode:\\n```\\neslint_result = RUN_ESLINT_CHECK()\\ntypescript_result = RUN_TYPESCRIPT_CHECK()\\nbuild_result = RUN_NEXTJS_BUILD()\\nperformance_metrics = GENERATE_BUILD_ANALYSIS()\\n\\nIF ALL_CHECKS_PASS(eslint, typescript, build):\\n  success_report = GENERATE_SUCCESS_REPORT(metrics)\\nELSE:\\n  remaining_issues = IDENTIFY_REMAINING_ISSUES()\\n  ESCALATE_FOR_RESOLUTION(remaining_issues)\\n```",
+      "verificationCriteria": "ESLint reports exactly 0 errors and 0 warnings. TypeScript compilation succeeds with strict mode. npm run build completes successfully. Webbuilder functionality fully operational. Performance metrics show improvement from optimizations. Complete success documentation generated.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors."
     }
   ]
 }
