@@ -23,22 +23,28 @@ model User {
   updatedAt DateTime @updatedAt
 
   // 관계
-  uploadedFiles FileUpload[]
+  uploadedFiles   FileUpload[]
+  contentVersions ContentVersion[]
+  blockTemplates  BlockTemplate[]
 
   @@map("users")
 }
 
 // 페이지 모델
 model Page {
-  id          String   @id @default(cuid())
-  slug        String   @unique
+  id          String      @id @default(cuid())
+  slug        String      @unique
   title       String
-  content     Json     // 구조화된 섹션 데이터
-  metadata    Json?    // SEO 메타데이터
-  isPublished Boolean  @default(false)
-  version     Int      @default(1)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  content     Json        // 구조화된 섹션 데이터
+  metadata    Json?       // SEO 메타데이터
+  isPublished Boolean     @default(false)
+  version     Int         @default(1)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // 관계
+  pageBlocks  PageBlock[]
+  seoSetting  SEOSetting?
 
   @@map("pages")
 }
@@ -170,4 +176,144 @@ model FileUpload {
   @@index([uploadedById])
   @@index([category])
   @@map("file_uploads")
+}
+
+// ============= 웹빌더 관련 모델 =============
+
+// 콘텐츠 블록 모델 (재사용 가능한 콘텐츠 단위)
+model ContentBlock {
+  id          String      @id @default(cuid())
+  name        String      // 블록 이름 (관리용)
+  type        BlockType   // 블록 타입 (text, image, video, etc.)
+  content     Json        // 블록 콘텐츠 데이터
+  styles      Json?       // 커스텀 스타일
+  settings    Json?       // 블록별 설정
+  isActive    Boolean     @default(true)
+  isGlobal    Boolean     @default(false) // 전역 블록 여부
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // 관계
+  pageBlocks  PageBlock[]
+  versions    ContentVersion[]
+
+  @@index([type])
+  @@index([isGlobal])
+  @@map("content_blocks")
+}
+
+// 페이지-블록 연결 모델
+model PageBlock {
+  id           String       @id @default(cuid())
+  pageId       String       // 연결된 페이지 ID
+  blockId      String       // 연결된 블록 ID
+  sectionName  String       // 섹션 식별자 (e.g., "main-banner", "inc01")
+  order        Int          // 섹션 내 순서
+  isVisible    Boolean      @default(true)
+  customStyles Json?        // 페이지별 스타일 오버라이드
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // 관계
+  page         Page         @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  block        ContentBlock @relation(fields: [blockId], references: [id])
+
+  @@unique([pageId, sectionName, order])
+  @@index([pageId])
+  @@index([blockId])
+  @@map("page_blocks")
+}
+
+// SEO 설정 모델
+model SEOSetting {
+  id              String   @id @default(cuid())
+  pageId          String   @unique
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String[]
+  ogTitle         String?
+  ogDescription   String?
+  ogImage         String?
+  canonicalUrl    String?
+  structuredData  Json?    // Schema.org 구조화 데이터
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // 관계
+  page            Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@map("seo_settings")
+}
+
+// 콘텐츠 버전 관리 모델
+model ContentVersion {
+  id          String       @id @default(cuid())
+  blockId     String       // 원본 블록 ID
+  version     Int          // 버전 번호
+  content     Json         // 버전의 콘텐츠
+  styles      Json?        // 버전의 스타일
+  settings    Json?        // 버전의 설정
+  changedBy   String       // 수정한 사용자 ID
+  changeNote  String?      // 변경 사항 메모
+  createdAt   DateTime     @default(now())
+
+  // 관계
+  block       ContentBlock @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [changedBy], references: [id])
+
+  @@unique([blockId, version])
+  @@index([blockId])
+  @@index([changedBy])
+  @@map("content_versions")
+}
+
+// 블록 템플릿 모델 (재사용 가능한 블록 템플릿)
+model BlockTemplate {
+  id           String           @id @default(cuid())
+  name         String           // 템플릿 이름
+  description  String?          // 템플릿 설명
+  category     TemplateCategory // 템플릿 카테고리
+  thumbnailUrl String?          // 썸네일 이미지 URL
+  isPublic     Boolean          @default(false) // 공개 템플릿 여부
+  createdBy    String           // 생성한 사용자 ID
+  templateData Json             // ContentBlock 구조 데이터
+  tags         String[]         // 검색용 태그
+  usageCount   Int              @default(0) // 사용 횟수
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  // 관계
+  creator      User             @relation(fields: [createdBy], references: [id])
+
+  @@index([category])
+  @@index([isPublic])
+  @@index([createdBy])
+  @@map("block_templates")
+}
+
+// 템플릿 카테고리 열거형
+enum TemplateCategory {
+  UI          // UI 컴포넌트 (버튼, 폼, 네비게이션 등)
+  LAYOUT      // 레이아웃 (그리드, 섹션 등)
+  CONTENT     // 콘텐츠 (텍스트, 이미지, 갤러리 등)
+  FORM        // 폼 및 입력 요소
+  MEDIA       // 미디어 (비디오, 오디오, 캐러셀 등)
+  NAVIGATION  // 네비게이션 및 메뉴
+  MARKETING   // 마케팅 요소 (배너, CTA, 프로모션 등)
+  SOCIAL      // 소셜 미디어 및 공유 요소
+  OTHER       // 기타
+}
+
+// 블록 타입 열거형
+enum BlockType {
+  TEXT        // 텍스트 블록
+  IMAGE       // 이미지 블록
+  VIDEO       // 비디오 블록
+  CAROUSEL    // 캐러셀/슬라이더 블록
+  GRID        // 그리드 레이아웃 블록
+  BUTTON      // 버튼 블록
+  FORM        // 폼 블록
+  MAP         // 지도 블록
+  HTML        // 커스텀 HTML 블록
+  COMPONENT   // React 컴포넌트 블록
 }
