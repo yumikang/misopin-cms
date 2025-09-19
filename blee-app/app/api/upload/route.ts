@@ -2,11 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import sharp from 'sharp';
 
-// Supabase 클라이언트 초기화
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Supabase 클라이언트 초기화 (환경 변수 검증 포함)
+function createSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Supabase configuration is missing. Please check environment variables.');
+  }
+
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 // 허용된 이미지 형식
 const ALLOWED_FORMATS = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -43,6 +49,9 @@ interface UploadResponse {
 
 export async function POST(request: NextRequest): Promise<NextResponse<UploadResponse>> {
   try {
+    // Supabase 클라이언트 생성
+    const supabase = createSupabaseClient();
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const folder = formData.get('folder') as string || 'webbuilder';
@@ -176,6 +185,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
 // 이미지 삭제 엔드포인트
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
+    // Supabase 클라이언트 생성
+    const supabase = createSupabaseClient();
+
     const { searchParams } = new URL(request.url);
     const path = searchParams.get('path');
 
