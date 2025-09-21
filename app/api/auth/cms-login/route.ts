@@ -8,11 +8,14 @@ export async function POST(request: NextRequest) {
     const { email, password } = await request.json();
 
     // Find user in Supabase
-    const { data: user, error: fetchError } = await supabaseAdmin
+    const result = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('email', email)
       .single();
+
+    const user = result.data;
+    const fetchError = result.error;
 
     if (fetchError || !user) {
       return NextResponse.json(
@@ -21,8 +24,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check password
-    const validPassword = await bcrypt.compare(password, user.password);
+    // Check password - user is guaranteed to exist here
+    const validPassword = await bcrypt.compare(password, (user as any)?.password || '');
     if (!validPassword) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
@@ -31,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is active
-    if (!user.is_active) {
+    if (!(user as any).is_active) {
       return NextResponse.json(
         { error: 'Account is disabled' },
         { status: 403 }
@@ -41,10 +44,10 @@ export async function POST(request: NextRequest) {
     // Generate token
     const token = jwt.sign(
       {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        name: user.name
+        id: (user as any).id,
+        email: (user as any).email,
+        role: (user as any).role,
+        name: (user as any).name
       },
       process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
@@ -55,7 +58,7 @@ export async function POST(request: NextRequest) {
       await supabaseAdmin
         .from('users')
         .update({ last_login: new Date().toISOString() })
-        .eq('id', user.id)
+        .eq('id', (user as any).id)
         .select()
         .single();
     } catch {
@@ -64,10 +67,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role
+        id: (user as any).id,
+        email: (user as any).email,
+        name: (user as any).name,
+        role: (user as any).role
       },
       token,
       success: true
