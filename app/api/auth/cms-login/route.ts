@@ -7,15 +7,12 @@ export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
-    // Find user in Supabase
-    const result = await supabaseAdmin
+    // Find user in Supabase with proper typing
+    const { data: user, error: fetchError } = await supabaseAdmin
       .from('users')
-      .select('*')
+      .select('id, email, name, password, role, is_active')
       .eq('email', email)
       .single();
-
-    const user = result.data;
-    const fetchError = result.error;
 
     if (fetchError || !user) {
       return NextResponse.json(
@@ -24,8 +21,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check password - user is guaranteed to exist here
-    const validPassword = await bcrypt.compare(password, (user as any)?.password || '');
+    // Type assertion for user - we know the structure from our select
+    const typedUser = user as {
+      id: string;
+      email: string;
+      name: string;
+      password: string;
+      role: string;
+      is_active: boolean;
+    };
+
+    // Check password
+    const validPassword = await bcrypt.compare(password, typedUser.password);
     if (!validPassword) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
@@ -34,7 +41,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is active
-    if (!(user as any).is_active) {
+    if (!typedUser.is_active) {
       return NextResponse.json(
         { error: 'Account is disabled' },
         { status: 403 }
@@ -44,33 +51,21 @@ export async function POST(request: NextRequest) {
     // Generate token
     const token = jwt.sign(
       {
-        id: (user as any).id,
-        email: (user as any).email,
-        role: (user as any).role,
-        name: (user as any).name
+        id: typedUser.id,
+        email: typedUser.email,
+        role: typedUser.role,
+        name: typedUser.name
       },
       process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
 
-    // Update last login (ignore errors if column doesn't exist)
-    try {
-      await supabaseAdmin
-        .from('users')
-        .update({ last_login: new Date().toISOString() })
-        .eq('id', (user as any).id)
-        .select()
-        .single();
-    } catch {
-      // Ignore if column doesn't exist
-    }
-
     return NextResponse.json({
       user: {
-        id: (user as any).id,
-        email: (user as any).email,
-        name: (user as any).name,
-        role: (user as any).role
+        id: typedUser.id,
+        email: typedUser.email,
+        name: typedUser.name,
+        role: typedUser.role
       },
       token,
       success: true
