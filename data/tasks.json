@@ -1,160 +1,249 @@
 {
   "tasks": [
     {
-      "id": "ac6a0937-ed1b-4012-9ab0-5ca9f1bfb079",
-      "name": "shadcn/ui 설치 및 기본 컴포넌트 설정",
-      "description": "shadcn/ui를 프로젝트에 설치하고 필요한 컴포넌트들을 추가. Tailwind CSS 설정 확인 및 컴포넌트 테마 설정",
+      "id": "2d06be8d-8e98-4073-b0a2-816d3bd0b2de",
+      "name": "Fix JSX parsing errors in webbuilder renderer files",
+      "description": "Resolve 11 JSX syntax errors in lib/webbuilder/renderers/ factory pattern files causing \"'>' expected\" compilation errors. Each renderer file (TEXT, IMAGE, GRID, etc.) contains malformed JSX that breaks TypeScript compilation and prevents proper webbuilder functionality.",
+      "notes": "Critical priority as these errors prevent successful TypeScript compilation. Must maintain existing Factory pattern architecture and BlockRenderer interface contracts.",
       "status": "completed",
       "dependencies": [],
-      "createdAt": "2025-09-17T06:18:14.452Z",
-      "updatedAt": "2025-09-17T06:19:30.018Z",
+      "createdAt": "2025-09-19T05:59:09.380Z",
+      "updatedAt": "2025-09-19T06:03:35.543Z",
       "relatedFiles": [
         {
-          "path": "tailwind.config.ts",
+          "path": "lib/webbuilder/renderers/TextRenderer.tsx",
           "type": "TO_MODIFY",
-          "description": "Tailwind 설정"
+          "description": "Text block renderer with JSX parsing errors",
+          "lineStart": 1,
+          "lineEnd": 50
         },
         {
-          "path": "components.json",
-          "type": "CREATE",
-          "description": "shadcn/ui 설정 파일"
+          "path": "lib/webbuilder/renderers/ImageRenderer.tsx",
+          "type": "TO_MODIFY",
+          "description": "Image block renderer with JSX parsing errors",
+          "lineStart": 1,
+          "lineEnd": 50
         },
         {
-          "path": "app/globals.css",
+          "path": "lib/webbuilder/renderers/GridRenderer.tsx",
           "type": "TO_MODIFY",
-          "description": "전역 스타일"
+          "description": "Grid layout renderer with JSX parsing errors",
+          "lineStart": 1,
+          "lineEnd": 50
+        },
+        {
+          "path": "lib/webbuilder/renderers/",
+          "type": "TO_MODIFY",
+          "description": "All renderer files in directory with JSX issues",
+          "lineStart": 1,
+          "lineEnd": 100
         }
       ],
-      "implementationGuide": "1. npx shadcn-ui@latest init 실행\n2. TypeScript, Tailwind CSS 설정 확인\n3. 필요 컴포넌트 추가: button, card, dialog, form, input, select, table, tabs, textarea, badge, alert, dropdown-menu, calendar",
-      "verificationCriteria": "shadcn/ui 컴포넌트들이 정상적으로 import되고 렌더링되는지 확인",
-      "analysisResult": "Next.js 15 + Supabase + shadcn/ui를 활용한 CMS 관리자 시스템 구축. 기존 Express.js 워크플로우를 참고하여 모든 관리 모듈(팝업, 게시판, 페이지, 파일, 설정, 사용자)을 구현.",
-      "summary": "shadcn/ui가 성공적으로 설치되고 필요한 모든 컴포넌트(button, card, dialog, form, input, select, table, tabs, textarea, badge, alert, dropdown-menu, calendar)가 추가되었습니다. lib/utils.ts와 components.json 파일이 생성되었고 Tailwind CSS v4와 호환되도록 설정되었습니다.",
-      "completedAt": "2025-09-17T06:19:30.017Z"
+      "implementationGuide": "1. Read each renderer file in lib/webbuilder/renderers/ to identify specific JSX syntax issues\\n2. Use context7 to reference React 19 + Next.js 15 JSX best practices\\n3. Apply proper JSX formatting: correct tag closures, proper attribute syntax, valid React element structure\\n4. Ensure TypeScript strict mode compliance in JSX expressions\\n5. Validate each fix with TypeScript compiler before proceeding to next file\\n\\nPseudocode:\\n```\\nFOR each_file in ['lib/webbuilder/renderers/*.tsx']:\\n  content = READ_FILE(file_path)\\n  jsx_errors = IDENTIFY_JSX_SYNTAX_ISSUES(content)\\n  FOR each_error in jsx_errors:\\n    fixed_content = APPLY_JSX_FIX(content, error)\\n    VALIDATE_TYPESCRIPT_COMPILATION(fixed_content)\\n  WRITE_FILE(file_path, fixed_content)\\n```",
+      "verificationCriteria": "All 11 renderer files compile successfully with TypeScript strict mode. Zero JSX syntax errors in ESLint output. Webbuilder Factory pattern functionality remains intact. npm run build succeeds without renderer-related errors.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors.",
+      "summary": "Successfully fixed all JSX parsing errors by renaming 12 TypeScript files containing JSX from .ts to .tsx extension. All \"'>' expected\" parsing errors eliminated. Root cause identified: TypeScript files with JSX syntax require .tsx extension for proper ESLint and TypeScript parsing. Solution systematically applied to all webbuilder renderer files plus useAutoSave hook. Zero JSX syntax errors remain in ESLint output. Webbuilder Factory pattern architecture preserved. All files compile successfully with TypeScript strict mode.",
+      "completedAt": "2025-09-19T06:03:35.542Z"
     },
     {
-      "id": "44881b6d-d781-41c7-8b5e-6c293ec15d06",
-      "name": "Supabase 데이터베이스 스키마 완성",
-      "description": "모든 필요한 테이블(popups, board_categories, board_posts, pages, files, settings) 생성 및 RLS 정책 설정",
-      "status": "completed",
-      "dependencies": [],
-      "createdAt": "2025-09-17T06:18:14.452Z",
-      "updatedAt": "2025-09-17T06:24:58.248Z",
+      "id": "f880a05e-7585-4aa2-b59b-7a91f651e285",
+      "name": "Replace all any types with proper TypeScript interfaces",
+      "description": "Eliminate 7 instances of explicit 'any' type usage throughout the codebase, replacing with specific TypeScript interfaces, generics, or union types. This violates TypeScript strict mode and compromises type safety in the Next.js application.",
+      "notes": "Absolute requirement per user instructions. Must leverage existing type definitions from Supabase database.types.ts and shadcn/ui component types where applicable.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "2d06be8d-8e98-4073-b0a2-816d3bd0b2de"
+        }
+      ],
+      "createdAt": "2025-09-19T05:59:09.380Z",
+      "updatedAt": "2025-09-19T05:59:09.380Z",
       "relatedFiles": [
         {
-          "path": "app/api/init/route.ts",
-          "type": "TO_MODIFY",
-          "description": "DB 초기화 스크립트"
-        },
-        {
-          "path": "lib/supabase-admin.ts",
+          "path": "lib/types.ts",
           "type": "REFERENCE",
-          "description": "Supabase Admin 클라이언트"
-        }
-      ],
-      "implementationGuide": "1. /api/init/route.ts 업데이트하여 전체 스키마 포함\n2. 각 테이블별 인덱스 생성\n3. RLS 정책 설정 (Service Role Key 활용)\n4. 초기 데이터 시드 추가",
-      "verificationCriteria": "Supabase 대시보드에서 모든 테이블이 생성되고 RLS 정책이 적용되었는지 확인",
-      "analysisResult": "Next.js 15 + Supabase + shadcn/ui를 활용한 CMS 관리자 시스템 구축. 기존 Express.js 워크플로우를 참고하여 모든 관리 모듈(팝업, 게시판, 페이지, 파일, 설정, 사용자)을 구현.",
-      "summary": "Supabase 데이터베이스 스키마가 완벽하게 구현되었습니다. 8개의 테이블(users, reservations, popups, board_categories, board_posts, pages, files, settings)이 모두 생성되었고, 적절한 인덱스와 RLS 정책이 설정되었으며, 기본 카테고리와 설정값도 추가되었습니다. TypeScript 타입 정의도 any 타입 없이 완벽하게 작성되었습니다.",
-      "completedAt": "2025-09-17T06:24:58.247Z"
-    },
-    {
-      "id": "b3a05dad-9b54-435e-a7e5-0e34b7d7ad0e",
-      "name": "페이지 관리 UI 컴포넌트 구현",
-      "description": "페이지 목록 테이블, 생성/수정 다이얼로그, SEO 메타데이터 입력 필드를 포함한 완전한 페이지 관리 인터페이스 구현",
-      "status": "completed",
-      "dependencies": [],
-      "createdAt": "2025-09-17T06:38:28.847Z",
-      "updatedAt": "2025-09-17T06:40:02.542Z",
-      "relatedFiles": [
-        {
-          "path": "/app/admin/pages/page.tsx",
-          "type": "CREATE",
-          "description": "페이지 관리 UI 메인 파일"
-        }
-      ],
-      "implementationGuide": "shadcn/ui의 Table, Dialog, Form 컴포넌트 사용. 슬러그 자동 생성 함수 구현. 템플릿 선택 드롭다운 추가",
-      "verificationCriteria": "페이지 목록 표시, CRUD 다이얼로그 작동, 슬러그 자동 생성 확인",
-      "analysisResult": "CMS 페이지 관리 모듈을 shadcn/ui 컴포넌트로 구현. 페이지 CRUD, SEO 메타데이터, 템플릿 시스템, 슬러그 관리 기능 포함",
-      "summary": "페이지 관리 UI 컴포넌트를 성공적으로 구현. 페이지 CRUD 기능, 슬러그 자동 생성, SEO 메타데이터 관리, 템플릿 선택 기능 모두 완벽하게 작동",
-      "completedAt": "2025-09-17T06:40:02.541Z"
-    },
-    {
-      "id": "7527d00d-3fe7-4555-b5d1-ef5262f95b29",
-      "name": "파일 관리 모듈 구현",
-      "description": "파일 업로드, 목록 보기, 삭제 기능을 가진 파일 관리 시스템 구현",
-      "status": "completed",
-      "dependencies": [],
-      "createdAt": "2025-09-17T06:38:28.847Z",
-      "updatedAt": "2025-09-17T06:47:37.102Z",
-      "relatedFiles": [
-        {
-          "path": "/app/api/files/route.ts",
-          "type": "CREATE",
-          "description": "파일 관리 Mock API"
+          "description": "Existing type definitions to extend",
+          "lineStart": 1,
+          "lineEnd": 100
         },
         {
-          "path": "/app/admin/files/page.tsx",
-          "type": "CREATE",
-          "description": "파일 관리 UI"
-        }
-      ],
-      "implementationGuide": "Mock API로 파일 메타데이터 관리. 실제 업로드는 나중에 구현 예정. 파일 타입별 아이콘, 크기 표시",
-      "verificationCriteria": "파일 목록 표시, 파일 정보 관리, 삭제 기능 확인",
-      "analysisResult": "CMS 페이지 관리 모듈을 shadcn/ui 컴포넌트로 구현. 페이지 CRUD, SEO 메타데이터, 템플릿 시스템, 슬러그 관리 기능 포함",
-      "summary": "파일 관리 모듈 성공적으로 구현. 파일 업로드 시뮬레이션, 목록 표시, 필터링, 다중 선택 삭제, 파일 타입별 아이콘 표시, WebP 이미지 변환 준비 완료",
-      "completedAt": "2025-09-17T06:47:37.100Z"
-    },
-    {
-      "id": "3206d967-175e-40cc-a5a7-ef28051844f6",
-      "name": "설정 관리 모듈 구현",
-      "description": "사이트 설정, 연락처 정보, 시스템 설정을 관리하는 설정 페이지 구현",
-      "status": "completed",
-      "dependencies": [],
-      "createdAt": "2025-09-17T06:38:28.847Z",
-      "updatedAt": "2025-09-17T06:50:16.069Z",
-      "relatedFiles": [
-        {
-          "path": "/app/api/settings/route.ts",
-          "type": "CREATE",
-          "description": "설정 관리 Mock API"
+          "path": "lib/database.types.ts",
+          "type": "REFERENCE",
+          "description": "Supabase generated types for database entities",
+          "lineStart": 1,
+          "lineEnd": 200
         },
         {
-          "path": "/app/admin/settings/page.tsx",
-          "type": "CREATE",
-          "description": "설정 관리 UI"
+          "path": "components/webbuilder/",
+          "type": "TO_MODIFY",
+          "description": "Webbuilder components potentially using any types",
+          "lineStart": 1,
+          "lineEnd": 100
         }
       ],
-      "implementationGuide": "카테고리별 탭 구성. key-value 형태의 설정 관리. 폼 유효성 검사 추가",
-      "verificationCriteria": "설정 카테고리별 표시, 값 수정 및 저장 기능 확인",
-      "analysisResult": "CMS 페이지 관리 모듈을 shadcn/ui 컴포넌트로 구현. 페이지 CRUD, SEO 메타데이터, 템플릿 시스템, 슬러그 관리 기능 포함",
-      "summary": "설정 관리 모듈을 완벽하게 구현했습니다. 5개 카테고리(일반, 연락처, SEO, 사업자, API)로 탭 구성, key-value 형태의 18개 설정 항목, 다양한 입력 타입 지원(text, textarea, email, tel, url, boolean), 수정 사항 추적 및 일괄 저장, 카테고리별 기본값 초기화 기능을 모두 구현했습니다.",
-      "completedAt": "2025-09-17T06:50:16.067Z"
+      "implementationGuide": "1. Locate all 7 instances of 'any' type usage using grep search\\n2. For each instance, analyze context and usage pattern\\n3. Use context7 to reference TypeScript best practices and existing project type patterns\\n4. Create or extend existing interfaces from lib/types.ts or database.types.ts\\n5. Replace any with specific types: interfaces for objects, generics for reusable components, union types for multiple possibilities\\n6. Validate type safety with TypeScript compiler\\n\\nPseudocode:\\n```\\nany_locations = GREP_SEARCH('any', ['*.ts', '*.tsx'])\\nFOR each_location in any_locations:\\n  context = ANALYZE_USAGE_CONTEXT(location)\\n  IF context.type == 'object':\\n    interface = CREATE_SPECIFIC_INTERFACE(context)\\n  ELIF context.type == 'generic':\\n    generic_type = CREATE_GENERIC_TYPE(context)\\n  ELIF context.type == 'union':\\n    union_type = CREATE_UNION_TYPE(context)\\n  REPLACE_ANY_WITH_SPECIFIC_TYPE(location, new_type)\\n```",
+      "verificationCriteria": "Zero instances of 'any' type in codebase grep search results. All replaced types provide proper IntelliSense and type checking. TypeScript strict mode compilation succeeds. No regression in component functionality.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors."
     },
     {
-      "id": "fb54043d-409f-4be8-adc6-2d3009c168cb",
-      "name": "사용자 관리 모듈 구현",
-      "description": "사용자 목록, 권한 관리, 활성화 상태 관리 기능을 가진 사용자 관리 시스템",
-      "status": "completed",
-      "dependencies": [],
-      "createdAt": "2025-09-17T06:38:28.847Z",
-      "updatedAt": "2025-09-17T06:54:12.257Z",
-      "relatedFiles": [
+      "id": "3798c78b-07f6-4ac2-b796-1e884fb3ef38",
+      "name": "Optimize images with Next.js Image component",
+      "description": "Replace regular img tags with Next.js optimized Image component to improve Core Web Vitals, reduce bundle size, and enhance performance. This addresses performance-related ESLint warnings and follows Next.js 15 best practices.",
+      "notes": "Focus on user-facing images in webbuilder components and UI elements. Consider existing responsive design patterns from shadcn/ui components.",
+      "status": "pending",
+      "dependencies": [
         {
-          "path": "/app/api/users/route.ts",
-          "type": "CREATE",
-          "description": "사용자 관리 Mock API"
-        },
-        {
-          "path": "/app/admin/users/page.tsx",
-          "type": "CREATE",
-          "description": "사용자 관리 UI"
+          "taskId": "f880a05e-7585-4aa2-b59b-7a91f651e285"
         }
       ],
-      "implementationGuide": "역할 기반 권한 표시. 비밀번호 재설정 기능. 마지막 로그인 시간 표시",
-      "verificationCriteria": "사용자 목록 표시, 권한 수정, 활성화 토글 기능 확인",
-      "analysisResult": "CMS 페이지 관리 모듈을 shadcn/ui 컴포넌트로 구현. 페이지 CRUD, SEO 메타데이터, 템플릿 시스템, 슬러그 관리 기능 포함",
-      "summary": "사용자 관리 모듈을 완벽하게 구현했습니다. 6명의 Mock 사용자 데이터, 역할 기반 권한 시스템(SUPER_ADMIN, ADMIN, EDITOR, USER), 활성화 토글, 비밀번호 재설정, 마지막 로그인 시간 표시, 검색 및 필터링 기능, 임시 비밀번호 생성 기능을 모두 구현했습니다.",
-      "completedAt": "2025-09-17T06:54:12.255Z"
+      "createdAt": "2025-09-19T05:59:09.381Z",
+      "updatedAt": "2025-09-19T05:59:09.381Z",
+      "relatedFiles": [
+        {
+          "path": "next.config.ts",
+          "type": "TO_MODIFY",
+          "description": "Next.js configuration for image optimization domains",
+          "lineStart": 1,
+          "lineEnd": 50
+        },
+        {
+          "path": "components/",
+          "type": "TO_MODIFY",
+          "description": "Component files potentially using img tags",
+          "lineStart": 1,
+          "lineEnd": 100
+        },
+        {
+          "path": "app/",
+          "type": "TO_MODIFY",
+          "description": "App directory components with image usage",
+          "lineStart": 1,
+          "lineEnd": 100
+        }
+      ],
+      "implementationGuide": "1. Use context7 to reference Next.js 15 Image component documentation and optimization patterns\\n2. Search codebase for img tag usage using grep or file analysis\\n3. Replace img elements with Next.js Image component:\\n   - Import Image from 'next/image'\\n   - Convert src, alt, width, height attributes\\n   - Add proper sizing strategy (fill, responsive, etc.)\\n   - Configure loading optimization (lazy, eager)\\n4. Update next.config.ts to configure image domains if external images are used\\n5. Validate image loading and responsive behavior\\n\\nPseudocode:\\n```\\nimg_locations = GREP_SEARCH('<img', ['*.tsx', '*.jsx'])\\nFOR each_img in img_locations:\\n  img_props = EXTRACT_IMG_ATTRIBUTES(img)\\n  next_image_props = CONVERT_TO_NEXT_IMAGE(img_props)\\n  REPLACE_IMG_WITH_NEXT_IMAGE(location, next_image_props)\\n  ADD_IMAGE_IMPORT_IF_NEEDED(file)\\nUPDATE_NEXT_CONFIG_FOR_DOMAINS()\\n```",
+      "verificationCriteria": "All img tags replaced with Next.js Image components. Images load with proper optimization and responsive behavior. next.config.ts correctly configured for image domains. ESLint warnings related to image optimization resolved.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors."
+    },
+    {
+      "id": "08559680-3f99-45f3-98db-e4171ca278e8",
+      "name": "Fix React hooks dependency arrays and warnings",
+      "description": "Resolve React hooks ESLint warnings including missing dependencies in useEffect, useCallback, and useMemo arrays. This ensures proper React 19 compliance and prevents potential bugs from stale closures.",
+      "notes": "Critical for React 19 compliance and preventing subtle runtime bugs. Pay special attention to webbuilder components with complex state management.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "3798c78b-07f6-4ac2-b796-1e884fb3ef38"
+        }
+      ],
+      "createdAt": "2025-09-19T05:59:09.381Z",
+      "updatedAt": "2025-09-19T05:59:09.381Z",
+      "relatedFiles": [
+        {
+          "path": "components/webbuilder/BlockEditor.tsx",
+          "type": "TO_MODIFY",
+          "description": "Complex webbuilder component likely having hooks issues",
+          "lineStart": 1,
+          "lineEnd": 200
+        },
+        {
+          "path": "components/",
+          "type": "TO_MODIFY",
+          "description": "All component files with React hooks usage",
+          "lineStart": 1,
+          "lineEnd": 100
+        },
+        {
+          "path": "app/",
+          "type": "TO_MODIFY",
+          "description": "App directory components with hooks",
+          "lineStart": 1,
+          "lineEnd": 100
+        }
+      ],
+      "implementationGuide": "1. Use ESLint output to identify specific React hooks warnings\\n2. For each useEffect, useCallback, useMemo with missing dependencies:\\n   - Analyze which variables from component scope are used\\n   - Add missing dependencies to dependency array\\n   - Use useCallback for function dependencies if needed\\n   - Consider moving stable values outside component or using useRef\\n3. Use context7 to reference React 19 hooks best practices\\n4. Validate that fixes don't cause infinite re-renders\\n\\nPseudocode:\\n```\\nhooks_warnings = EXTRACT_REACT_HOOKS_WARNINGS(eslint_output)\\nFOR each_warning in hooks_warnings:\\n  hook_location = LOCATE_HOOK(warning.file, warning.line)\\n  used_vars = ANALYZE_HOOK_DEPENDENCIES(hook_location)\\n  current_deps = GET_CURRENT_DEPENDENCIES(hook_location)\\n  missing_deps = CALCULATE_MISSING_DEPS(used_vars, current_deps)\\n  UPDATE_DEPENDENCY_ARRAY(hook_location, missing_deps)\\n```",
+      "verificationCriteria": "Zero React hooks ESLint warnings in output. All dependency arrays correctly include used variables. No infinite re-render loops introduced. Component functionality preserved and optimized.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors."
+    },
+    {
+      "id": "fb34578e-b965-4a46-a4e9-78f2a35bc4f8",
+      "name": "Clean up unused variables and imports",
+      "description": "Remove approximately 107 ESLint warnings related to unused variables, unused imports, and unreachable code. This improves code maintainability and reduces bundle size.",
+      "notes": "Use ESLint autofix capability where possible to speed up process. Be cautious with dynamic imports and conditionally used variables in webbuilder context.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "08559680-3f99-45f3-98db-e4171ca278e8"
+        }
+      ],
+      "createdAt": "2025-09-19T05:59:09.381Z",
+      "updatedAt": "2025-09-19T05:59:09.381Z",
+      "relatedFiles": [
+        {
+          "path": "**/*.ts",
+          "type": "TO_MODIFY",
+          "description": "All TypeScript files with potential unused items",
+          "lineStart": 1,
+          "lineEnd": 100
+        },
+        {
+          "path": "**/*.tsx",
+          "type": "TO_MODIFY",
+          "description": "All React component files with potential unused items",
+          "lineStart": 1,
+          "lineEnd": 100
+        },
+        {
+          "path": "eslint.config.mjs",
+          "type": "REFERENCE",
+          "description": "ESLint configuration for autofix capabilities",
+          "lineStart": 1,
+          "lineEnd": 50
+        }
+      ],
+      "implementationGuide": "1. Run ESLint with detailed output to get complete list of unused variable/import warnings\\n2. Use sequential-thinking to categorize warnings:\\n   - Safe auto-removable: clearly unused imports and variables\\n   - Requires analysis: potentially used in dynamic contexts\\n   - Development artifacts: console.logs, debug variables\\n3. Apply ESLint autofix for safe removals: npx eslint --fix\\n4. Manually review and remove remaining unused items\\n5. Verify no runtime functionality is broken\\n\\nPseudocode:\\n```\\nunused_warnings = FILTER_ESLINT_WARNINGS('unused-vars', 'unused-imports')\\nsafe_removals = IDENTIFY_SAFE_AUTO_REMOVALS(unused_warnings)\\nAPPLY_ESLINT_AUTOFIX(safe_removals)\\nmanual_items = REMAINING_UNUSED_ITEMS()\\nFOR each_item in manual_items:\\n  IF SAFE_TO_REMOVE(item):\\n    REMOVE_UNUSED_ITEM(item)\\n  ELSE:\\n    MARK_FOR_REVIEW(item)\\n```",
+      "verificationCriteria": "ESLint output shows 0 unused variable and import warnings. Bundle size analysis shows reduction in unused code. All application functionality preserved after cleanup. Clean eslint report with only 0 errors and 0 warnings.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors."
+    },
+    {
+      "id": "71e5bbf5-7e7a-4cd6-a515-1fc9126a045b",
+      "name": "Validate zero ESLint errors and build success",
+      "description": "Final validation phase to ensure all 138 code quality issues have been resolved. Run comprehensive build and linting checks to confirm complete success and document the improvements achieved.",
+      "notes": "This is the final quality gate to confirm complete success. Must achieve absolute zero ESLint errors as explicitly required by user.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "fb34578e-b965-4a46-a4e9-78f2a35bc4f8"
+        }
+      ],
+      "createdAt": "2025-09-19T05:59:09.381Z",
+      "updatedAt": "2025-09-19T05:59:09.381Z",
+      "relatedFiles": [
+        {
+          "path": "package.json",
+          "type": "REFERENCE",
+          "description": "Build scripts and linting commands",
+          "lineStart": 1,
+          "lineEnd": 50
+        },
+        {
+          "path": "eslint.config.mjs",
+          "type": "REFERENCE",
+          "description": "ESLint configuration for final validation",
+          "lineStart": 1,
+          "lineEnd": 50
+        },
+        {
+          "path": "tsconfig.json",
+          "type": "REFERENCE",
+          "description": "TypeScript configuration for compilation check",
+          "lineStart": 1,
+          "lineEnd": 50
+        }
+      ],
+      "implementationGuide": "1. Run complete ESLint check: npx eslint . --ext .ts,.tsx --max-warnings 0\\n2. Run TypeScript compilation: npx tsc --noEmit\\n3. Run Next.js build: npm run build\\n4. Generate build analysis report\\n5. Document improvements achieved:\\n   - Before/after ESLint error counts\\n   - TypeScript strict mode compliance\\n   - Performance improvements from Image optimization\\n   - Bundle size reduction from cleanup\\n6. Test webbuilder functionality to ensure no regressions\\n\\nPseudocode:\\n```\\neslint_result = RUN_ESLINT_CHECK()\\ntypescript_result = RUN_TYPESCRIPT_CHECK()\\nbuild_result = RUN_NEXTJS_BUILD()\\nperformance_metrics = GENERATE_BUILD_ANALYSIS()\\n\\nIF ALL_CHECKS_PASS(eslint, typescript, build):\\n  success_report = GENERATE_SUCCESS_REPORT(metrics)\\nELSE:\\n  remaining_issues = IDENTIFY_REMAINING_ISSUES()\\n  ESCALATE_FOR_RESOLUTION(remaining_issues)\\n```",
+      "verificationCriteria": "ESLint reports exactly 0 errors and 0 warnings. TypeScript compilation succeeds with strict mode. npm run build completes successfully. Webbuilder functionality fully operational. Performance metrics show improvement from optimizations. Complete success documentation generated.",
+      "analysisResult": "Fix 138 code quality issues in Next.js 15.5.3 webbuilder application with absolute prohibition of any types, using sequential-thinking, shrimp-task-manager, and context7 for comprehensive resolution. Strategy: 4-phase systematic approach (JSX fixes, TypeScript safety, performance optimization, code cleanup) maintaining architectural integrity while achieving zero ESLint errors."
     }
   ]
 }
