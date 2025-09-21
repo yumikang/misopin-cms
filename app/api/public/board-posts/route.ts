@@ -4,28 +4,22 @@ import prisma from '@/lib/prisma';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const boardSlug = searchParams.get('board');
+    const boardType = searchParams.get('type') as 'NOTICE' | 'EVENT' | null;
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // 게시글 조회 조건 설정
     interface WhereCondition {
       isPublished: boolean;
-      boardId?: string;
+      boardType?: 'NOTICE' | 'EVENT';
     }
 
     const whereCondition: WhereCondition = {
       isPublished: true,
     };
 
-    if (boardSlug) {
-      const board = await prisma.board.findUnique({
-        where: { slug: boardSlug },
-      });
-
-      if (board) {
-        whereCondition.boardId = board.id;
-      }
+    if (boardType && (boardType === 'NOTICE' || boardType === 'EVENT')) {
+      whereCondition.boardType = boardType;
     }
 
     // 게시글 조회
@@ -36,20 +30,20 @@ export async function GET(request: NextRequest) {
         title: true,
         content: true,
         excerpt: true,
-        thumbnailUrl: true,
+        imageUrl: true,
         viewCount: true,
+        boardType: true,
+        author: true,
+        isPinned: true,
+        tags: true,
         createdAt: true,
         updatedAt: true,
-        board: {
-          select: {
-            name: true,
-            slug: true,
-          },
-        },
+        publishedAt: true,
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: [
+        { isPinned: 'desc' },
+        { createdAt: 'desc' },
+      ],
       take: limit,
       skip: offset,
     });
