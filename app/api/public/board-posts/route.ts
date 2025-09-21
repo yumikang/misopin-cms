@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import prisma from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,12 +9,17 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // 게시글 조회 조건 설정
-    const whereCondition: any = {
+    interface WhereCondition {
+      isPublished: boolean;
+      boardId?: string;
+    }
+
+    const whereCondition: WhereCondition = {
       isPublished: true,
     };
 
     if (boardSlug) {
-      const board = await db.board.findUnique({
+      const board = await prisma.board.findUnique({
         where: { slug: boardSlug },
       });
 
@@ -24,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 게시글 조회
-    const posts = await db.boardPost.findMany({
+    const posts = await prisma.boardPost.findMany({
       where: whereCondition,
       select: {
         id: true,
@@ -50,7 +55,7 @@ export async function GET(request: NextRequest) {
     });
 
     // 전체 게시글 수
-    const total = await db.boardPost.count({
+    const total = await prisma.boardPost.count({
       where: whereCondition,
     });
 

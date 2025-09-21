@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // 공개 페이지 콘텐츠 조회
-    const pages = await db.page.findMany({
+    const pages = await prisma.page.findMany({
       where: {
         isPublished: true,
       },

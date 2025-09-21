@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const now = new Date();
 
     // 현재 활성화된 팝업 조회
-    const popups = await db.popup.findMany({
+    const popups = await prisma.popup.findMany({
       where: {
         isActive: true,
         startDate: {
