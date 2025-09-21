@@ -1,40 +1,25 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function GET() {
   try {
-    const now = new Date();
+    const now = new Date().toISOString();
 
-    // 현재 활성화된 팝업 조회
-    const popups = await prisma.popup.findMany({
-      where: {
-        isActive: true,
-        startDate: {
-          lte: now,
-        },
-        endDate: {
-          gte: now,
-        },
-      },
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        imageUrl: true,
-        linkUrl: true,
-        displayType: true,
-        position: true,
-        showOnPages: true,
-        priority: true,
-        startDate: true,
-        endDate: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+    // Query active popups
+    const { data: popups, error } = await supabaseAdmin
+      .from('popups')
+      .select('*')
+      .eq('is_active', true)
+      .lte('start_date', now)
+      .gte('end_date', now)
+      .order('priority', { ascending: false })
+      .order('created_at', { ascending: false });
 
-    return NextResponse.json(popups, {
+    if (error) {
+      throw error;
+    }
+
+    return NextResponse.json(popups || [], {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',

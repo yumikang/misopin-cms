@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,55 +8,31 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // 게시글 조회 조건 설정
-    interface WhereCondition {
-      isPublished: boolean;
-      boardType?: 'NOTICE' | 'EVENT';
-    }
+    // Build query
+    let query = supabaseAdmin
+      .from('board_posts')
+      .select('*', { count: 'exact' })
+      .eq('is_published', true)
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
-    const whereCondition: WhereCondition = {
-      isPublished: true,
-    };
-
+    // Add board type filter if specified
     if (boardType && (boardType === 'NOTICE' || boardType === 'EVENT')) {
-      whereCondition.boardType = boardType;
+      query = query.eq('board_type', boardType);
     }
 
-    // 게시글 조회
-    const posts = await prisma.boardPost.findMany({
-      where: whereCondition,
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        excerpt: true,
-        imageUrl: true,
-        viewCount: true,
-        boardType: true,
-        author: true,
-        isPinned: true,
-        tags: true,
-        createdAt: true,
-        updatedAt: true,
-        publishedAt: true,
-      },
-      orderBy: [
-        { isPinned: 'desc' },
-        { createdAt: 'desc' },
-      ],
-      take: limit,
-      skip: offset,
-    });
+    // Execute query
+    const { data: posts, error, count } = await query;
 
-    // 전체 게시글 수
-    const total = await prisma.boardPost.count({
-      where: whereCondition,
-    });
+    if (error) {
+      throw error;
+    }
 
     return NextResponse.json(
       {
-        posts,
-        total,
+        posts: posts || [],
+        total: count || 0,
         limit,
         offset,
       },
