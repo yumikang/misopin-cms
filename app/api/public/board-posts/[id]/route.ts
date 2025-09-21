@@ -10,9 +10,6 @@ export async function GET(
 
     const post = await prisma.boardPost.findUnique({
       where: { id },
-      include: {
-        attachments: true,
-      },
     });
 
     if (!post) {
@@ -25,12 +22,25 @@ export async function GET(
     // Increment view count
     await prisma.boardPost.update({
       where: { id },
-      data: { view_count: { increment: 1 } },
+      data: { viewCount: { increment: 1 } },
     });
 
+    // Transform to match frontend expectations
     return NextResponse.json({
-      ...post,
-      view_count: post.view_count + 1,
+      id: post.id,
+      board_type: post.boardType,
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt,
+      author: post.author,
+      is_published: post.isPublished,
+      is_pinned: post.isPinned,
+      view_count: post.viewCount + 1,
+      tags: post.tags,
+      image_url: post.imageUrl,
+      created_at: post.createdAt,
+      updated_at: post.updatedAt,
+      published_at: post.publishedAt,
     });
   } catch (error) {
     console.error('Error fetching board post:', error);
