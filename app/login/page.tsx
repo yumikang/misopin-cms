@@ -140,16 +140,16 @@ export default function LoginPage() {
             <p className="text-center text-sm text-gray-600 mb-3">테스트 계정:</p>
             <div className="space-y-2 text-xs text-gray-500">
               <div className="flex justify-between px-2">
-                <span className="font-semibold">슈퍼 관리자:</span>
-                <span>admin@misopin.com / admin123</span>
+                <span className="font-semibold">최고 관리자:</span>
+                <span>super@misopin.com / Admin123</span>
               </div>
               <div className="flex justify-between px-2">
                 <span className="font-semibold">일반 관리자:</span>
-                <span>manager@misopin.com / admin123</span>
+                <span>admin@misopin.com / Admin123</span>
               </div>
               <div className="flex justify-between px-2">
-                <span className="font-semibold">직원:</span>
-                <span>editor@misopin.com / editor123</span>
+                <span className="font-semibold">편집자:</span>
+                <span>editor@misopin.com / Admin123</span>
               </div>
             </div>
           </div>
