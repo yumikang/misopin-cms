@@ -1,4 +1,5 @@
 import React, { ReactElement } from 'react';
+import Image from 'next/image';
 import { ContentBlockData, ImageBlockContent } from '@/app/types/webbuilder';
 import { BaseBlockRenderer, RenderUtils } from './BlockRenderer';
 
@@ -100,14 +101,17 @@ export class ImageBlockRenderer extends BaseBlockRenderer {
       const className = `cms-image-block ${tailwindClasses}`;
       const inlineStyles = this.generateInlineStyles(block);
 
-      // 이미지 컴포넌트
+      // 이미지 컴포넌트 - Next.js Image 사용
       const imageComponent = (
-        <img
+        <Image
           src={src}
           alt={alt}
+          width={800}
+          height={600}
           className={RenderUtils.getResponsiveImageClasses()}
-          loading="lazy"
-          decoding="async"
+          style={{ width: '100%', height: 'auto' }}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority={false}
         />
       );
 

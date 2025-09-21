@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { BlockTemplateData } from '@/app/types/webbuilder';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -65,10 +66,12 @@ export default function TemplateCard({
         {/* 썸네일 영역 */}
         <div className="relative aspect-video bg-gray-100 rounded-md overflow-hidden mb-3">
           {template.thumbnailUrl ? (
-            <img
+            <Image
               src={template.thumbnailUrl}
               alt={template.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-200"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { BlockTemplateData } from '@/app/types/webbuilder';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -81,10 +82,13 @@ export default function TemplatePreview({
           <div className="p-4 border rounded-lg bg-white">
             <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center">
               {'src' in templateData.content && templateData.content.src ? (
-                <img
+                <Image
                   src={templateData.content.src}
                   alt={'alt' in templateData.content ? templateData.content.alt || '이미지' : '이미지'}
-                  className="max-w-full max-h-full object-contain"
+                  width={600}
+                  height={400}
+                  className="object-contain"
+                  style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto' }}
                 />
               ) : (
                 <div className="text-gray-400 text-center">

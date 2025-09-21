@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -261,10 +262,13 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         <div className="space-y-2">
           <Label>현재 이미지</Label>
           <div className="relative inline-block">
-            <img
+            <Image
               src={value}
               alt="Selected image"
-              className="max-w-full max-h-48 rounded border bg-white"
+              width={400}
+              height={300}
+              className="rounded border bg-white"
+              style={{ maxWidth: '100%', maxHeight: '12rem', width: 'auto', height: 'auto' }}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
