@@ -8,13 +8,13 @@ export async function POST(request: NextRequest) {
     const { email, password } = await request.json();
 
     // Find user in Supabase
-    const { data: users, error: fetchError } = await supabaseAdmin
+    const { data: user, error: fetchError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('email', email)
       .single();
 
-    if (fetchError || !users) {
+    if (fetchError || !user) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check password
-    const validPassword = await bcrypt.compare(password, users.password);
+    const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is active
-    if (!users.isActive) {
+    if (!user.is_active) {
       return NextResponse.json(
         { error: 'Account is disabled' },
         { status: 403 }
@@ -41,10 +41,10 @@ export async function POST(request: NextRequest) {
     // Generate token
     const token = jwt.sign(
       {
-        id: users.id,
-        email: users.email,
-        role: users.role,
-        name: users.name
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.name
       },
       process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       await supabaseAdmin
         .from('users')
         .update({ last_login: new Date().toISOString() })
-        .eq('id', users.id)
+        .eq('id', user.id)
         .select()
         .single();
     } catch {
@@ -64,10 +64,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       user: {
-        id: users.id,
-        email: users.email,
-        name: users.name,
-        role: users.role
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role
       },
       token,
       success: true
