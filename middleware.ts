@@ -15,6 +15,7 @@ export function middleware(request: NextRequest) {
       'http://localhost:3001',
       'http://localhost:5500', // Live Server default port
       'http://127.0.0.1:5500',
+      'https://misopin-renew.vercel.app', // Current static site domain
       'https://misopin.com',
       'https://www.misopin.com',
       process.env.NEXT_PUBLIC_STATIC_SITE_URL,
