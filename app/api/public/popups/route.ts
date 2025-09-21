@@ -4,16 +4,33 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 export async function GET() {
   try {
     const now = new Date().toISOString();
+    console.log('Current time for popup query:', now);
 
-    // Query active popups
-    const { data: popups, error } = await supabaseAdmin
+    // Query active popups - 일단 활성화된 모든 팝업 가져오기 (디버깅용)
+    const { data: allPopups, error: fetchError } = await supabaseAdmin
       .from('popups')
       .select('*')
-      .eq('is_active', true)
-      .lte('start_date', now)
-      .gte('end_date', now)
-      .order('priority', { ascending: false })
-      .order('created_at', { ascending: false });
+      .eq('is_active', true);
+
+    console.log('All active popups:', allPopups);
+
+    // 날짜 필터링
+    const popups = allPopups?.filter(popup => {
+      const startDate = new Date(popup.start_date);
+      const endDate = new Date(popup.end_date);
+      const currentDate = new Date(now);
+
+      // end_date의 23:59:59로 설정
+      endDate.setHours(23, 59, 59, 999);
+
+      const isValid = startDate <= currentDate && currentDate <= endDate;
+      console.log(`Popup ${popup.id}: start=${startDate}, end=${endDate}, current=${currentDate}, valid=${isValid}`);
+      return isValid;
+    }) || [];
+
+    const error = fetchError;
+
+    console.log('Found popups:', popups);
 
     if (error) {
       throw error;
