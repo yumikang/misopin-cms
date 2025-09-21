@@ -1,6 +1,22 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 
+// Define the shape of data from Supabase
+interface SupabaseReservation {
+  id: string;
+  patient_name: string;
+  phone: string;
+  email?: string;
+  preferred_date: string;
+  preferred_time: string;
+  service: string;
+  treatment_type: string;
+  status: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export async function GET() {
   try {
     // Get reservations from Supabase
@@ -18,7 +34,7 @@ export async function GET() {
     }
 
     // Transform data to match frontend expectations
-    const transformedData = (data || []).map(reservation => ({
+    const transformedData = ((data as SupabaseReservation[]) || []).map(reservation => ({
       id: reservation.id,
       patient_name: reservation.patient_name,
       patient_phone: reservation.phone,
