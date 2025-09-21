@@ -3,11 +3,13 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     const post = await prisma.boardPost.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         attachments: true,
       },
@@ -22,7 +24,7 @@ export async function GET(
 
     // Increment view count
     await prisma.boardPost.update({
-      where: { id: params.id },
+      where: { id },
       data: { view_count: { increment: 1 } },
     });
 
