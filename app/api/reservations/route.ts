@@ -1,5 +1,50 @@
 import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
+export async function GET() {
+  try {
+    // Get reservations from Supabase
+    const { data, error } = await supabaseAdmin
+      .from('reservations')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching reservations:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch reservations' },
+        { status: 500 }
+      );
+    }
+
+    // Transform data to match frontend expectations
+    const transformedData = (data || []).map(reservation => ({
+      id: reservation.id,
+      patient_name: reservation.patient_name,
+      patient_phone: reservation.phone,
+      patient_email: reservation.email,
+      reservation_date: reservation.preferred_date,
+      reservation_time: reservation.preferred_time,
+      department: reservation.service,
+      doctor_name: '',
+      purpose: reservation.treatment_type === 'FIRST_VISIT' ? '초진' : '재진',
+      status: reservation.status,
+      notes: reservation.notes,
+      created_at: reservation.created_at,
+      updated_at: reservation.updated_at
+    }));
+
+    return NextResponse.json(transformedData);
+  } catch (error) {
+    console.error('Error in reservations GET:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+// Keep mock data for reference
 interface Reservation {
   id: string;
   patient_name: string;
@@ -19,7 +64,7 @@ interface Reservation {
   cancel_reason?: string;
 }
 
-// Mock data for reservations
+// Mock data for reservations (kept for reference)
 const mockReservations: Reservation[] = [
   {
     id: '1',
@@ -147,49 +192,6 @@ const timeSlots = [
   '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
   '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
 ];
-
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const date = searchParams.get('date');
-  const status = searchParams.get('status');
-  const search = searchParams.get('search');
-  const department = searchParams.get('department');
-
-  let filtered = [...mockReservations];
-
-  // Filter by date
-  if (date) {
-    filtered = filtered.filter(r => r.reservation_date === date);
-  }
-
-  // Filter by status
-  if (status && status !== 'all') {
-    filtered = filtered.filter(r => r.status === status);
-  }
-
-  // Filter by department
-  if (department && department !== 'all') {
-    filtered = filtered.filter(r => r.department === department);
-  }
-
-  // Search by patient name or phone
-  if (search) {
-    const searchLower = search.toLowerCase();
-    filtered = filtered.filter(r =>
-      r.patient_name.toLowerCase().includes(searchLower) ||
-      r.patient_phone.includes(search)
-    );
-  }
-
-  // Sort by date and time
-  filtered.sort((a, b) => {
-    const dateCompare = a.reservation_date.localeCompare(b.reservation_date);
-    if (dateCompare !== 0) return dateCompare;
-    return a.reservation_time.localeCompare(b.reservation_time);
-  });
-
-  return NextResponse.json(filtered);
-}
 
 export async function POST(request: Request) {
   const body = await request.json();

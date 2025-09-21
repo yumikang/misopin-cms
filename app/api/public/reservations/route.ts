@@ -81,7 +81,11 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error creating reservation:', error);
       return NextResponse.json(
-        { error: 'Failed to create reservation' },
+        {
+          error: 'Failed to create reservation',
+          details: error.message,
+          code: error.code
+        },
         {
           status: 500,
           headers: {
