@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function GET(
   request: Request,
@@ -8,11 +8,14 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const post = await prisma.boardPost.findUnique({
-      where: { id },
-    });
+    // Fetch the post
+    const { data: post, error: fetchError } = await supabaseAdmin
+      .from('board_posts')
+      .select('*')
+      .eq('id', id)
+      .single();
 
-    if (!post) {
+    if (fetchError || !post) {
       return NextResponse.json(
         { error: 'Post not found' },
         { status: 404 }
@@ -20,27 +23,15 @@ export async function GET(
     }
 
     // Increment view count
-    await prisma.boardPost.update({
-      where: { id },
-      data: { viewCount: { increment: 1 } },
-    });
+    await supabaseAdmin
+      .from('board_posts')
+      .update({ view_count: (post.view_count || 0) + 1 })
+      .eq('id', id);
 
-    // Transform to match frontend expectations
+    // Return the post with updated view count
     return NextResponse.json({
-      id: post.id,
-      board_type: post.boardType,
-      title: post.title,
-      content: post.content,
-      excerpt: post.excerpt,
-      author: post.author,
-      is_published: post.isPublished,
-      is_pinned: post.isPinned,
-      view_count: post.viewCount + 1,
-      tags: post.tags,
-      image_url: post.imageUrl,
-      created_at: post.createdAt,
-      updated_at: post.updatedAt,
-      published_at: post.publishedAt,
+      ...post,
+      view_count: (post.view_count || 0) + 1
     });
   } catch (error) {
     console.error('Error fetching board post:', error);
