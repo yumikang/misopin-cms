@@ -37,13 +37,11 @@ type BoardPost = Database['public']['Tables']['board_posts']['Row'];
 type BoardPostInsert = Database['public']['Tables']['board_posts']['Insert'];
 
 // Board type enum values
-type BoardType = "NOTICE" | "EVENT" | "HEALTH" | "FAQ";
+type BoardType = "NOTICE" | "EVENT";
 
 const BOARD_TYPES: { value: BoardType; label: string }[] = [
   { value: "NOTICE", label: "공지사항" },
   { value: "EVENT", label: "이벤트" },
-  { value: "HEALTH", label: "건강정보" },
-  { value: "FAQ", label: "자주묻는질문" },
 ];
 
 export default function BoardPage() {

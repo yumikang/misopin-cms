@@ -29,24 +29,6 @@ const boardTypes: BoardType[] = [
     description: '진행중인 이벤트',
     display_order: 2,
     is_active: true
-  },
-  {
-    id: 'HEALTH',
-    name: '건강정보',
-    slug: 'health',
-    value: 'HEALTH',
-    description: '건강 관련 정보',
-    display_order: 3,
-    is_active: true
-  },
-  {
-    id: 'FAQ',
-    name: 'FAQ',
-    slug: 'faq',
-    value: 'FAQ',
-    description: '자주 묻는 질문',
-    display_order: 4,
-    is_active: true
   }
 ];
 
