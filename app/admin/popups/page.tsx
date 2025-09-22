@@ -331,7 +331,7 @@ export default function PopupsPage() {
                 </Label>
                 <Textarea
                   id="content"
-                  value={formData.content}
+                  value={formData.content || ""}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                   className="col-span-3"
                   rows={4}
@@ -344,7 +344,7 @@ export default function PopupsPage() {
                 </Label>
                 <Input
                   id="image_url"
-                  value={formData.image_url}
+                  value={formData.image_url || ""}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                   className="col-span-3"
                   placeholder="https://example.com/image.jpg"
@@ -357,7 +357,7 @@ export default function PopupsPage() {
                 </Label>
                 <Input
                   id="link_url"
-                  value={formData.link_url}
+                  value={formData.link_url || ""}
                   onChange={(e) => setFormData({ ...formData, link_url: e.target.value })}
                   className="col-span-3"
                   placeholder="https://example.com/page"
@@ -415,7 +415,7 @@ export default function PopupsPage() {
                 <Input
                   id="start_date"
                   type="datetime-local"
-                  value={formData.start_date}
+                  value={formData.start_date || ""}
                   onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                   className="col-span-3"
                 />
@@ -428,7 +428,7 @@ export default function PopupsPage() {
                 <Input
                   id="end_date"
                   type="datetime-local"
-                  value={formData.end_date}
+                  value={formData.end_date || ""}
                   onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                   className="col-span-3"
                 />
