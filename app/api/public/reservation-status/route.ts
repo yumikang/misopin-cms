@@ -1,8 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { createCorsResponse } from '@/lib/cors';
 
 const prisma = new PrismaClient();
+
+interface ReservationSlot {
+  time: string;
+  status: string;
+}
+
+interface DayAvailability {
+  status: 'available' | 'full' | 'closed';
+  availableSlots: string[];
+  totalSlots: number;
+  bookedSlots?: number;
+  message: string;
+}
 
 export async function GET(request: NextRequest) {
 
@@ -43,7 +56,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Group reservations by date
-    const reservationsByDate: Record<string, any[]> = {};
+    const reservationsByDate: Record<string, ReservationSlot[]> = {};
     reservations.forEach(reservation => {
       if (!reservationsByDate[reservation.reservation_date]) {
         reservationsByDate[reservation.reservation_date] = [];
@@ -61,7 +74,7 @@ export async function GET(request: NextRequest) {
     ];
 
     // Calculate availability for each day
-    const availability: Record<string, any> = {};
+    const availability: Record<string, DayAvailability> = {};
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -101,9 +114,9 @@ export async function GET(request: NextRequest) {
       availability,
       summary: {
         totalDays: Object.keys(availability).length,
-        availableDays: Object.values(availability).filter((a: any) => a.status === 'available').length,
-        fullDays: Object.values(availability).filter((a: any) => a.status === 'full').length,
-        closedDays: Object.values(availability).filter((a: any) => a.status === 'closed').length
+        availableDays: Object.values(availability).filter((a) => a.status === 'available').length,
+        fullDays: Object.values(availability).filter((a) => a.status === 'full').length,
+        closedDays: Object.values(availability).filter((a) => a.status === 'closed').length
       }
     });
   } catch (error) {
@@ -116,6 +129,6 @@ export async function GET(request: NextRequest) {
 }
 
 // OPTIONS request for CORS
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
   return createCorsResponse(null, 200);
 }

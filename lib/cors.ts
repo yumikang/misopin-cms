@@ -15,7 +15,7 @@ export function cors(request: NextRequest, response: NextResponse) {
 }
 
 // Helper function to create CORS response
-export function createCorsResponse(data: any, status: number = 200) {
+export function createCorsResponse<T = unknown>(data: T, status: number = 200) {
   const response = NextResponse.json(data, { status });
 
   // Set CORS headers
