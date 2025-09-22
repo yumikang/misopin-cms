@@ -31,7 +31,10 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import type { Popup, PopupInput } from "@/lib/types/database";
+import type { Database } from "@/lib/database.types";
+
+type Popup = Database['public']['Tables']['popups']['Row'];
+type PopupInsert = Database['public']['Tables']['popups']['Insert'];
 
 export default function PopupsPage() {
   const [popups, setPopups] = useState<Popup[]>([]);
@@ -41,7 +44,7 @@ export default function PopupsPage() {
   const [error, setError] = useState<string | null>(null);
   // const router = useRouter(); // 추후 페이지 전환 기능 구현 시 사용
 
-  const [formData, setFormData] = useState<PopupInput>({
+  const [formData, setFormData] = useState<PopupInsert>({
     title: "",
     content: "",
     image_url: "",
@@ -50,10 +53,9 @@ export default function PopupsPage() {
     start_date: "",
     end_date: "",
     is_active: true,
-    show_today_close: true,
     position: "CENTER",
-    width: undefined,
-    height: undefined,
+    priority: 1,
+    show_on_pages: null,
   });
 
   useEffect(() => {
@@ -142,14 +144,13 @@ export default function PopupsPage() {
         content: popup.content || "",
         image_url: popup.image_url || "",
         link_url: popup.link_url || "",
-        display_type: popup.display_type as "MODAL" | "LAYER" | "BANNER",
+        display_type: popup.display_type,
         start_date: popup.start_date || "",
         end_date: popup.end_date || "",
         is_active: popup.is_active,
-        show_today_close: popup.show_today_close,
-        position: popup.position as "CENTER" | "TOP" | "BOTTOM" | "LEFT" | "RIGHT",
-        width: popup.width || undefined,
-        height: popup.height || undefined,
+        position: popup.position,
+        priority: popup.priority || 1,
+        show_on_pages: popup.show_on_pages,
       });
     } else {
       setEditingPopup(null);
@@ -162,10 +163,9 @@ export default function PopupsPage() {
         start_date: "",
         end_date: "",
         is_active: true,
-        show_today_close: true,
         position: "CENTER",
-        width: undefined,
-        height: undefined,
+        priority: 1,
+        show_on_pages: null,
       });
     }
     setDialogOpen(true);
@@ -183,10 +183,9 @@ export default function PopupsPage() {
       start_date: "",
       end_date: "",
       is_active: true,
-      show_today_close: true,
       position: "CENTER",
-      width: undefined,
-      height: undefined,
+      priority: 1,
+      show_on_pages: null,
     });
   };
 
@@ -371,7 +370,7 @@ export default function PopupsPage() {
                 </Label>
                 <Select
                   value={formData.display_type}
-                  onValueChange={(value: "MODAL" | "LAYER" | "BANNER") =>
+                  onValueChange={(value) =>
                     setFormData({ ...formData, display_type: value })
                   }
                 >
@@ -392,7 +391,7 @@ export default function PopupsPage() {
                 </Label>
                 <Select
                   value={formData.position}
-                  onValueChange={(value: "CENTER" | "TOP" | "BOTTOM" | "LEFT" | "RIGHT") =>
+                  onValueChange={(value) =>
                     setFormData({ ...formData, position: value })
                   }
                 >
@@ -436,30 +435,18 @@ export default function PopupsPage() {
               </div>
 
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="width" className="text-right">
-                  너비 (px)
+                <Label htmlFor="priority" className="text-right">
+                  우선순위
                 </Label>
                 <Input
-                  id="width"
+                  id="priority"
                   type="number"
-                  value={formData.width || ""}
-                  onChange={(e) => setFormData({ ...formData, width: e.target.value ? parseInt(e.target.value) : undefined })}
+                  value={formData.priority || 1}
+                  onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) || 1 })}
                   className="col-span-3"
-                  placeholder="500"
-                />
-              </div>
-
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="height" className="text-right">
-                  높이 (px)
-                </Label>
-                <Input
-                  id="height"
-                  type="number"
-                  value={formData.height || ""}
-                  onChange={(e) => setFormData({ ...formData, height: e.target.value ? parseInt(e.target.value) : undefined })}
-                  className="col-span-3"
-                  placeholder="400"
+                  placeholder="1"
+                  min="1"
+                  max="999"
                 />
               </div>
 
@@ -475,16 +462,6 @@ export default function PopupsPage() {
                       className="rounded"
                     />
                     <Label htmlFor="is_active">활성화</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="show_today_close"
-                      checked={formData.show_today_close}
-                      onChange={(e) => setFormData({ ...formData, show_today_close: e.target.checked })}
-                      className="rounded"
-                    />
-                    <Label htmlFor="show_today_close">오늘 하루 닫기 표시</Label>
                   </div>
                 </div>
               </div>
