@@ -54,7 +54,7 @@ export async function GET() {
   return NextResponse.json(boardTypes);
 }
 
-export async function POST(request: Request) {
+export async function POST() {
   // Board types are predefined, no creation allowed
   return NextResponse.json(
     { error: 'Board types are predefined and cannot be created' },
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
   );
 }
 
-export async function PUT(request: Request) {
+export async function PUT() {
   // Board types are predefined, no modification allowed
   return NextResponse.json(
     { error: 'Board types are predefined and cannot be modified' },
@@ -70,7 +70,7 @@ export async function PUT(request: Request) {
   );
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE() {
   // Board types are predefined, no deletion allowed
   return NextResponse.json(
     { error: 'Board types are predefined and cannot be deleted' },

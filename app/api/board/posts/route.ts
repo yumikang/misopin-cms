@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import type { Database } from '@/lib/database.types';
 
-type BoardPost = Database['public']['Tables']['board_posts']['Row'];
 type BoardPostInsert = Database['public']['Tables']['board_posts']['Insert'];
 type BoardPostUpdate = Database['public']['Tables']['board_posts']['Update'];
 
