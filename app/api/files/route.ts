@@ -1,86 +1,5 @@
 import { NextResponse } from 'next/server';
-import type { File as DatabaseFile } from '@/lib/types/database';
-
-// Mock data for testing
-const mockFiles: DatabaseFile[] = [
-  {
-    id: '1',
-    filename: 'banner-main.webp',
-    original_name: 'banner-main.jpg',
-    mime_type: 'image/webp',
-    size: 245678,
-    url: 'https://via.placeholder.com/1920x600',
-    folder: 'banners',
-    uploaded_by: null,
-    created_at: '2025-01-10T09:00:00'
-  },
-  {
-    id: '2',
-    filename: 'doctor-profile.webp',
-    original_name: 'doctor-profile.png',
-    mime_type: 'image/webp',
-    size: 156234,
-    url: 'https://via.placeholder.com/400x400',
-    folder: 'profiles',
-    uploaded_by: null,
-    created_at: '2025-01-11T10:30:00'
-  },
-  {
-    id: '3',
-    filename: 'treatment-before.webp',
-    original_name: 'before.jpg',
-    mime_type: 'image/webp',
-    size: 189456,
-    url: 'https://via.placeholder.com/600x400',
-    folder: 'treatments',
-    uploaded_by: null,
-    created_at: '2025-01-12T14:20:00'
-  },
-  {
-    id: '4',
-    filename: 'treatment-after.webp',
-    original_name: 'after.jpg',
-    mime_type: 'image/webp',
-    size: 195678,
-    url: 'https://via.placeholder.com/600x400',
-    folder: 'treatments',
-    uploaded_by: null,
-    created_at: '2025-01-12T14:25:00'
-  },
-  {
-    id: '5',
-    filename: 'clinic-interior.webp',
-    original_name: 'clinic-interior.jpg',
-    mime_type: 'image/webp',
-    size: 312456,
-    url: 'https://via.placeholder.com/800x600',
-    folder: 'gallery',
-    uploaded_by: null,
-    created_at: '2025-01-13T16:00:00'
-  },
-  {
-    id: '6',
-    filename: 'terms-of-service.pdf',
-    original_name: '이용약관.pdf',
-    mime_type: 'application/pdf',
-    size: 524288,
-    url: '/documents/terms.pdf',
-    folder: 'documents',
-    uploaded_by: null,
-    created_at: '2025-01-14T09:00:00'
-  },
-  {
-    id: '7',
-    filename: 'privacy-policy.pdf',
-    original_name: '개인정보처리방침.pdf',
-    mime_type: 'application/pdf',
-    size: 456789,
-    url: '/documents/privacy.pdf',
-    folder: 'documents',
-    uploaded_by: null,
-    created_at: '2025-01-14T09:30:00'
-  }
-];
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 // Helper function to format file size
 function formatFileSize(bytes: number): string {
@@ -91,35 +10,66 @@ function formatFileSize(bytes: number): string {
   return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 }
 
+// Helper function to determine folder based on mime type
+function getFolderByMimeType(mimeType: string): string {
+  if (mimeType.includes('image')) return 'images';
+  if (mimeType.includes('pdf')) return 'documents';
+  if (mimeType.includes('video')) return 'videos';
+  if (mimeType.includes('audio')) return 'audio';
+  return 'uploads';
+}
+
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const folder = searchParams.get('folder');
-  const mimeType = searchParams.get('mime_type');
+  try {
+    const { searchParams } = new URL(request.url);
+    const folder = searchParams.get('folder');
+    const mimeType = searchParams.get('mime_type');
 
-  let filtered = [...mockFiles];
+    // Build query
+    let query = supabaseAdmin
+      .from('files')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (folder) {
-    filtered = filtered.filter(file => file.folder === folder);
+    // Apply filters
+    if (folder && folder !== 'all') {
+      query = query.eq('folder', folder);
+    }
+
+    if (mimeType && mimeType !== 'all') {
+      // Filter by mime type prefix
+      query = query.ilike('mime_type', `${mimeType}%`);
+    }
+
+    const { data: files, error } = await query;
+
+    if (error) {
+      console.error('Error fetching files from database:', error);
+      // Fallback to empty array
+      return NextResponse.json([]);
+    }
+
+    // Add formatted size to each file
+    const filesWithFormattedSize = (files || []).map(file => ({
+      ...file,
+      formattedSize: formatFileSize(file.size || 0)
+    }));
+
+    return NextResponse.json(filesWithFormattedSize);
+  } catch (error) {
+    console.error('Error fetching files:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch files' },
+      { status: 500 }
+    );
   }
-
-  if (mimeType) {
-    filtered = filtered.filter(file => file.mime_type?.includes(mimeType));
-  }
-
-  // Add formatted size to response
-  const filesWithFormattedSize = filtered.map(file => ({
-    ...file,
-    formattedSize: file.size ? formatFileSize(file.size) : 'Unknown'
-  }));
-
-  return NextResponse.json(filesWithFormattedSize);
 }
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const folder = formData.get('folder') as string || 'uploads';
+    let folder = formData.get('folder') as string;
 
     if (!file) {
       return NextResponse.json(
@@ -128,26 +78,82 @@ export async function POST(request: Request) {
       );
     }
 
-    // Mock file upload - in real implementation, upload to S3/Cloudinary
-    const newFile: DatabaseFile = {
-      id: Date.now().toString(),
-      filename: `${Date.now()}-${file.name.replace(/\.[^/.]+$/, '')}.webp`,
-      original_name: file.name,
-      mime_type: file.type,
-      size: file.size,
-      url: `https://via.placeholder.com/800x600?text=${encodeURIComponent(file.name)}`,
-      folder: folder,
-      uploaded_by: null,
-      created_at: new Date().toISOString()
-    };
+    // Determine folder based on file type if not provided
+    if (!folder) {
+      folder = getFolderByMimeType(file.type);
+    }
 
-    mockFiles.push(newFile);
+    // Generate unique filename
+    const timestamp = Date.now();
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${timestamp}-${file.name.replace(/\.[^/.]+$/, '')}.${fileExt}`;
+    const filePath = `${folder}/${fileName}`;
+
+    // Convert File to ArrayBuffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Upload to Supabase Storage
+    const { data, error } = await supabaseAdmin
+      .storage
+      .from('uploads')
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (error) {
+      console.error('Upload error:', error);
+      return NextResponse.json(
+        { error: 'Failed to upload file' },
+        { status: 500 }
+      );
+    }
+
+    // Get public URL
+    const { data: urlData } = supabaseAdmin
+      .storage
+      .from('uploads')
+      .getPublicUrl(filePath);
+
+    // Save file metadata to database
+    const { data: fileRecord, error: dbError } = await supabaseAdmin
+      .from('files')
+      .insert({
+        filename: fileName,
+        original_name: file.name,
+        mime_type: file.type,
+        size: file.size,
+        url: urlData.publicUrl,
+        folder: folder,
+        uploaded_by: null
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error('Database error:', dbError);
+      // File uploaded but metadata not saved - return URL anyway
+      return NextResponse.json({
+        id: timestamp.toString(),
+        filename: fileName,
+        original_name: file.name,
+        mime_type: file.type,
+        size: file.size,
+        url: urlData.publicUrl,
+        folder: folder,
+        uploaded_by: null,
+        created_at: new Date().toISOString(),
+        formattedSize: formatFileSize(file.size)
+      }, { status: 201 });
+    }
 
     return NextResponse.json({
-      ...newFile,
-      formattedSize: formatFileSize(newFile.size || 0)
+      ...fileRecord,
+      formattedSize: formatFileSize(fileRecord.size || 0)
     }, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error('Upload error:', error);
     return NextResponse.json(
       { error: 'Failed to upload file' },
       { status: 500 }
@@ -156,52 +162,113 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const filename = searchParams.get('filename');
+    const folder = searchParams.get('folder');
 
-  if (!id) {
+    if (!id && !filename) {
+      return NextResponse.json(
+        { error: 'File ID or filename is required' },
+        { status: 400 }
+      );
+    }
+
+    // Try to delete from database first
+    if (id) {
+      const { error: dbError } = await supabaseAdmin
+        .from('files')
+        .delete()
+        .eq('id', id);
+
+      if (dbError) {
+        console.error('Database delete error:', dbError);
+      }
+    }
+
+    // Delete from storage if filename is provided
+    if (filename && folder) {
+      const filePath = `${folder}/${filename}`;
+      const { error: storageError } = await supabaseAdmin
+        .storage
+        .from('uploads')
+        .remove([filePath]);
+
+      if (storageError) {
+        console.error('Storage delete error:', storageError);
+        return NextResponse.json(
+          { error: 'Failed to delete file from storage' },
+          { status: 500 }
+        );
+      }
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Delete error:', error);
     return NextResponse.json(
-      { error: 'File ID is required' },
-      { status: 400 }
+      { error: 'Failed to delete file' },
+      { status: 500 }
     );
   }
-
-  const index = mockFiles.findIndex(f => f.id === id);
-
-  if (index === -1) {
-    return NextResponse.json(
-      { error: 'File not found' },
-      { status: 404 }
-    );
-  }
-
-  mockFiles.splice(index, 1);
-  return NextResponse.json({ success: true });
 }
 
 // Batch delete endpoint
 export async function PUT(request: Request) {
-  const { ids } = await request.json();
+  try {
+    const { ids, files } = await request.json();
 
-  if (!ids || !Array.isArray(ids)) {
+    if (!ids && !files) {
+      return NextResponse.json(
+        { error: 'File IDs or files array is required' },
+        { status: 400 }
+      );
+    }
+
+    let deletedCount = 0;
+
+    // Delete from database if IDs provided
+    if (ids && Array.isArray(ids)) {
+      for (const id of ids) {
+        const { error } = await supabaseAdmin
+          .from('files')
+          .delete()
+          .eq('id', id);
+
+        if (!error) {
+          deletedCount++;
+        }
+      }
+    }
+
+    // Delete from storage if files provided
+    if (files && Array.isArray(files)) {
+      for (const file of files) {
+        if (file.filename && file.folder) {
+          const filePath = `${file.folder}/${file.filename}`;
+          const { error } = await supabaseAdmin
+            .storage
+            .from('uploads')
+            .remove([filePath]);
+
+          if (!error) {
+            deletedCount++;
+          }
+        }
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      deletedCount,
+      message: `${deletedCount}개 파일이 삭제되었습니다.`
+    });
+  } catch (error) {
+    console.error('Batch delete error:', error);
     return NextResponse.json(
-      { error: 'File IDs array is required' },
-      { status: 400 }
+      { error: 'Failed to delete files' },
+      { status: 500 }
     );
   }
-
-  let deletedCount = 0;
-  for (const id of ids) {
-    const index = mockFiles.findIndex(f => f.id === id);
-    if (index !== -1) {
-      mockFiles.splice(index, 1);
-      deletedCount++;
-    }
-  }
-
-  return NextResponse.json({
-    success: true,
-    deletedCount,
-    message: `${deletedCount}개 파일이 삭제되었습니다.`
-  });
 }

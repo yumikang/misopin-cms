@@ -152,7 +152,15 @@ export default function FilesPage() {
     if (!confirm("정말 이 파일을 삭제하시겠습니까?")) return;
 
     try {
-      const response = await fetch(`/api/files?id=${id}`, {
+      // Find the file to get filename and folder for storage deletion
+      const file = files.find(f => f.id === id);
+      const params = new URLSearchParams({ id });
+      if (file) {
+        params.append('filename', file.filename);
+        params.append('folder', file.folder || 'uploads');
+      }
+
+      const response = await fetch(`/api/files?${params}`, {
         method: "DELETE",
       });
 
