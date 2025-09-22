@@ -49,11 +49,13 @@ export async function GET(request: Request) {
       return NextResponse.json([]);
     }
 
-    // Add formatted size to each file
-    const filesWithFormattedSize = (files || []).map(file => ({
-      ...file,
-      formattedSize: formatFileSize(file.size || 0)
-    }));
+    // Filter out mock/placeholder files and add formatted size
+    const filesWithFormattedSize = (files || [])
+      .filter(file => !file.url?.includes('placeholder.com'))
+      .map(file => ({
+        ...file,
+        formattedSize: formatFileSize(file.size || 0)
+      }));
 
     return NextResponse.json(filesWithFormattedSize);
   } catch (error) {
