@@ -1,140 +1,170 @@
 import { NextResponse } from 'next/server';
-import type { BoardPost } from '@/lib/types/database';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import type { Database } from '@/lib/database.types';
 
-// Mock data for testing
-const mockPosts: BoardPost[] = [
-  {
-    id: '1',
-    category_id: '1',
-    title: '1월 진료 일정 안내',
-    content: '안녕하세요. 미소핀의원입니다. 1월 진료 일정을 안내드립니다.',
-    excerpt: '1월 진료 일정 안내',
-    thumbnail_url: 'https://via.placeholder.com/300x200',
-    view_count: 152,
-    is_published: true,
-    is_featured: true,
-    author_id: null,
-    published_at: '2025-01-05T00:00:00',
-    created_at: '2025-01-05T00:00:00',
-    updated_at: '2025-01-05T00:00:00'
-  },
-  {
-    id: '2',
-    category_id: '2',
-    title: '신년 건강검진 이벤트',
-    content: '새해를 맞아 건강검진 할인 이벤트를 진행합니다.',
-    excerpt: '건강검진 할인 이벤트',
-    thumbnail_url: 'https://via.placeholder.com/300x200',
-    view_count: 89,
-    is_published: true,
-    is_featured: false,
-    author_id: null,
-    published_at: '2025-01-10T00:00:00',
-    created_at: '2025-01-10T00:00:00',
-    updated_at: '2025-01-10T00:00:00'
-  },
-  {
-    id: '3',
-    category_id: '3',
-    title: '겨울철 건강관리 팁',
-    content: '겨울철 건강을 지키는 방법을 소개합니다.',
-    excerpt: '겨울철 건강관리',
-    thumbnail_url: null,
-    view_count: 45,
-    is_published: true,
-    is_featured: false,
-    author_id: null,
-    published_at: '2025-01-12T00:00:00',
-    created_at: '2025-01-12T00:00:00',
-    updated_at: '2025-01-12T00:00:00'
-  }
-];
+type BoardPost = Database['public']['Tables']['board_posts']['Row'];
+type BoardPostInsert = Database['public']['Tables']['board_posts']['Insert'];
+type BoardPostUpdate = Database['public']['Tables']['board_posts']['Update'];
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const categoryId = searchParams.get('category_id');
-  const isPublished = searchParams.get('is_published');
+  try {
+    const { searchParams } = new URL(request.url);
+    const boardType = searchParams.get('board_type');
+    const isPublished = searchParams.get('is_published');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = parseInt(searchParams.get('offset') || '0');
 
-  let filtered = [...mockPosts];
+    // Build query
+    let query = supabaseAdmin
+      .from('board_posts')
+      .select('*')
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
-  if (categoryId) {
-    filtered = filtered.filter(post => post.category_id === categoryId);
+    // Add filters
+    if (boardType) {
+      query = query.eq('board_type', boardType);
+    }
+
+    if (isPublished !== null) {
+      query = query.eq('is_published', isPublished === 'true');
+    }
+
+    const { data: posts, error } = await query;
+
+    if (error) {
+      console.error('Error fetching board posts:', error);
+      throw error;
+    }
+
+    return NextResponse.json(posts || []);
+  } catch (error) {
+    console.error('Error in GET /api/board/posts:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch board posts' },
+      { status: 500 }
+    );
   }
-
-  if (isPublished !== null) {
-    filtered = filtered.filter(post => post.is_published === (isPublished === 'true'));
-  }
-
-  return NextResponse.json(filtered);
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const newPost: BoardPost = {
-    id: Date.now().toString(),
-    view_count: 0,
-    is_published: true,
-    is_featured: false,
-    published_at: new Date().toISOString(),
-    ...body,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
+  try {
+    const body = await request.json();
 
-  mockPosts.push(newPost);
-  return NextResponse.json(newPost, { status: 201 });
+    // Set default values for new post
+    const postData: BoardPostInsert = {
+      ...body,
+      view_count: body.view_count ?? 0,
+      is_published: body.is_published ?? false,
+      is_pinned: body.is_pinned ?? false,
+      published_at: body.is_published ? new Date().toISOString() : null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    const { data, error } = await supabaseAdmin
+      .from('board_posts')
+      .insert([postData])
+      .select();
+
+    const post = data ? data[0] : null;
+
+    if (error) {
+      console.error('Error creating board post:', error);
+      throw error;
+    }
+
+    return NextResponse.json(post, { status: 201 });
+  } catch (error) {
+    console.error('Error in POST /api/board/posts:', error);
+    return NextResponse.json(
+      { error: 'Failed to create board post' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PUT(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
 
-  if (!id) {
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Post ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+
+    // Update post with new data
+    const updateData: BoardPostUpdate = {
+      ...body,
+      updated_at: new Date().toISOString(),
+      // Update published_at if publishing
+      ...(body.is_published && !body.published_at ? { published_at: new Date().toISOString() } : {})
+    };
+
+    const { data, error } = await supabaseAdmin
+      .from('board_posts')
+      .update(updateData)
+      .eq('id', id)
+      .select();
+
+    const post = data ? data[0] : null;
+
+    if (error) {
+      console.error('Error updating board post:', error);
+      throw error;
+    }
+
+    if (!post) {
+      return NextResponse.json(
+        { error: 'Post not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(post);
+  } catch (error) {
+    console.error('Error in PUT /api/board/posts:', error);
     return NextResponse.json(
-      { error: 'Post ID is required' },
-      { status: 400 }
+      { error: 'Failed to update board post' },
+      { status: 500 }
     );
   }
-
-  const body = await request.json();
-  const index = mockPosts.findIndex(p => p.id === id);
-
-  if (index === -1) {
-    return NextResponse.json(
-      { error: 'Post not found' },
-      { status: 404 }
-    );
-  }
-
-  mockPosts[index] = {
-    ...mockPosts[index],
-    ...body,
-    updated_at: new Date().toISOString()
-  };
-
-  return NextResponse.json(mockPosts[index]);
 }
 
 export async function DELETE(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
 
-  if (!id) {
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Post ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const { error } = await supabaseAdmin
+      .from('board_posts')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting board post:', error);
+      throw error;
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error in DELETE /api/board/posts:', error);
     return NextResponse.json(
-      { error: 'Post ID is required' },
-      { status: 400 }
+      { error: 'Failed to delete board post' },
+      { status: 500 }
     );
   }
-
-  const index = mockPosts.findIndex(p => p.id === id);
-
-  if (index === -1) {
-    return NextResponse.json(
-      { error: 'Post not found' },
-      { status: 404 }
-    );
-  }
-
-  mockPosts.splice(index, 1);
-  return NextResponse.json({ success: true });
 }
