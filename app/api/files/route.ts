@@ -27,7 +27,19 @@ export async function GET(request: Request) {
 
     // Get files from Storage directly
     const folders = ['images', 'documents', 'videos', 'audio', 'uploads'];
-    let allFiles: any[] = [];
+    interface FileItem {
+      id: string;
+      filename: string;
+      original_name: string;
+      mime_type: string;
+      size: number;
+      url: string;
+      folder: string;
+      uploaded_by: string | null;
+      created_at: string;
+      formattedSize: string;
+    }
+    let allFiles: FileItem[] = [];
 
     for (const folderName of folders) {
       if (folder && folder !== 'all' && folder !== folderName) continue;
@@ -127,7 +139,7 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(arrayBuffer);
 
     // Upload to Supabase Storage
-    const { data, error } = await supabaseAdmin
+    const { error } = await supabaseAdmin
       .storage
       .from('uploads')
       .upload(filePath, buffer, {
@@ -149,41 +161,18 @@ export async function POST(request: Request) {
       .from('uploads')
       .getPublicUrl(filePath);
 
-    // Save file metadata to database
-    const { data: fileRecord, error: dbError } = await supabaseAdmin
-      .from('files')
-      .insert({
-        filename: fileName,
-        original_name: file.name,
-        mime_type: file.type,
-        size: file.size,
-        url: urlData.publicUrl,
-        folder: folder,
-        uploaded_by: null
-      })
-      .select()
-      .single();
-
-    if (dbError) {
-      console.error('Database error:', dbError);
-      // File uploaded but metadata not saved - return URL anyway
-      return NextResponse.json({
-        id: timestamp.toString(),
-        filename: fileName,
-        original_name: file.name,
-        mime_type: file.type,
-        size: file.size,
-        url: urlData.publicUrl,
-        folder: folder,
-        uploaded_by: null,
-        created_at: new Date().toISOString(),
-        formattedSize: formatFileSize(file.size)
-      }, { status: 201 });
-    }
-
+    // Return file info
     return NextResponse.json({
-      ...fileRecord,
-      formattedSize: formatFileSize(fileRecord.size || 0)
+      id: timestamp.toString(),
+      filename: fileName,
+      original_name: file.name,
+      mime_type: file.type,
+      size: file.size,
+      url: urlData.publicUrl,
+      folder: folder,
+      uploaded_by: null,
+      created_at: new Date().toISOString(),
+      formattedSize: formatFileSize(file.size)
     }, { status: 201 });
   } catch (error) {
     console.error('Upload error:', error);
@@ -197,44 +186,29 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
     const filename = searchParams.get('filename');
     const folder = searchParams.get('folder');
 
-    if (!id && !filename) {
+    if (!filename || !folder) {
       return NextResponse.json(
-        { error: 'File ID or filename is required' },
+        { error: 'Filename and folder are required' },
         { status: 400 }
       );
     }
 
-    // Try to delete from database first
-    if (id) {
-      const { error: dbError } = await supabaseAdmin
-        .from('files')
-        .delete()
-        .eq('id', id);
+    // Delete from storage
+    const filePath = `${folder}/${filename}`;
+    const { error: storageError } = await supabaseAdmin
+      .storage
+      .from('uploads')
+      .remove([filePath]);
 
-      if (dbError) {
-        console.error('Database delete error:', dbError);
-      }
-    }
-
-    // Delete from storage if filename is provided
-    if (filename && folder) {
-      const filePath = `${folder}/${filename}`;
-      const { error: storageError } = await supabaseAdmin
-        .storage
-        .from('uploads')
-        .remove([filePath]);
-
-      if (storageError) {
-        console.error('Storage delete error:', storageError);
-        return NextResponse.json(
-          { error: 'Failed to delete file from storage' },
-          { status: 500 }
-        );
-      }
+    if (storageError) {
+      console.error('Storage delete error:', storageError);
+      return NextResponse.json(
+        { error: 'Failed to delete file from storage' },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ success: true });
@@ -250,44 +224,28 @@ export async function DELETE(request: Request) {
 // Batch delete endpoint
 export async function PUT(request: Request) {
   try {
-    const { ids, files } = await request.json();
+    const { files } = await request.json();
 
-    if (!ids && !files) {
+    if (!files || !Array.isArray(files)) {
       return NextResponse.json(
-        { error: 'File IDs or files array is required' },
+        { error: 'Files array is required' },
         { status: 400 }
       );
     }
 
     let deletedCount = 0;
 
-    // Delete from database if IDs provided
-    if (ids && Array.isArray(ids)) {
-      for (const id of ids) {
+    // Delete from storage
+    for (const file of files) {
+      if (file.filename && file.folder) {
+        const filePath = `${file.folder}/${file.filename}`;
         const { error } = await supabaseAdmin
-          .from('files')
-          .delete()
-          .eq('id', id);
+          .storage
+          .from('uploads')
+          .remove([filePath]);
 
         if (!error) {
           deletedCount++;
-        }
-      }
-    }
-
-    // Delete from storage if files provided
-    if (files && Array.isArray(files)) {
-      for (const file of files) {
-        if (file.filename && file.folder) {
-          const filePath = `${file.folder}/${file.filename}`;
-          const { error } = await supabaseAdmin
-            .storage
-            .from('uploads')
-            .remove([filePath]);
-
-          if (!error) {
-            deletedCount++;
-          }
         }
       }
     }
