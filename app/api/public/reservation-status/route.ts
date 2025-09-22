@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { cors } from '@/lib/cors';
+import { createCorsResponse } from '@/lib/cors';
 
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
-  // Handle CORS
-  const response = NextResponse.next();
-  cors(request, response);
 
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -15,9 +12,9 @@ export async function GET(request: NextRequest) {
     const month = searchParams.get('month');
 
     if (!year || !month) {
-      return NextResponse.json(
+      return createCorsResponse(
         { error: 'Year and month parameters are required' },
-        { status: 400 }
+        400
       );
     }
 
@@ -98,7 +95,7 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    return NextResponse.json({
+    return createCorsResponse({
       year,
       month,
       availability,
@@ -111,16 +108,14 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching reservation status:', error);
-    return NextResponse.json(
+    return createCorsResponse(
       { error: 'Failed to fetch reservation status' },
-      { status: 500 }
+      500
     );
   }
 }
 
 // OPTIONS request for CORS
 export async function OPTIONS(request: NextRequest) {
-  const response = new NextResponse(null, { status: 200 });
-  cors(request, response);
-  return response;
+  return createCorsResponse(null, 200);
 }
