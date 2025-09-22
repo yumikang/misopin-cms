@@ -62,8 +62,7 @@ export default function PopupsPage() {
 
   const fetchPopups = async () => {
     try {
-      // TODO: Switch back to /api/popups once database is created
-      const response = await fetch("/api/popups-mock");
+      const response = await fetch("/api/popups");
       if (!response.ok) throw new Error("Failed to fetch popups");
       const data = await response.json();
       setPopups(data);
@@ -78,10 +77,9 @@ export default function PopupsPage() {
     e.preventDefault();
 
     try {
-      // TODO: Switch back to /api/popups once database is created
       const url = editingPopup
-        ? `/api/popups-mock?id=${editingPopup.id}`
-        : "/api/popups-mock";
+        ? `/api/popups?id=${editingPopup.id}`
+        : "/api/popups";
 
       const method = editingPopup ? "PUT" : "POST";
 
@@ -106,8 +104,7 @@ export default function PopupsPage() {
     if (!confirm("정말 이 팝업을 삭제하시겠습니까?")) return;
 
     try {
-      // TODO: Switch back to /api/popups once database is created
-      const response = await fetch(`/api/popups-mock?id=${id}`, {
+      const response = await fetch(`/api/popups?id=${id}`, {
         method: "DELETE",
       });
 
@@ -121,8 +118,7 @@ export default function PopupsPage() {
 
   const handleToggleActive = async (popup: Popup) => {
     try {
-      // TODO: Switch back to /api/popups once database is created
-      const response = await fetch(`/api/popups-mock?id=${popup.id}`, {
+      const response = await fetch(`/api/popups?id=${popup.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

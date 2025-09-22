@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from './supabase'
+import type { Database } from './database.types'
 
 // Supabase Admin 클라이언트 (서버 사이드 전용)
 // Service Role Key를 사용하여 RLS를 우회합니다
