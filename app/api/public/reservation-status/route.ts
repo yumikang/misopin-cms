@@ -40,17 +40,17 @@ export async function GET(request: NextRequest) {
     // Fetch reservations for the month
     const reservations = await prisma.reservation.findMany({
       where: {
-        reservation_date: {
-          gte: startDate.toISOString().split('T')[0],
-          lte: endDate.toISOString().split('T')[0]
+        preferredDate: {
+          gte: startDate,
+          lte: endDate
         },
         status: {
           not: 'CANCELLED'
         }
       },
       select: {
-        reservation_date: true,
-        reservation_time: true,
+        preferredDate: true,
+        preferredTime: true,
         status: true
       }
     });
@@ -58,11 +58,12 @@ export async function GET(request: NextRequest) {
     // Group reservations by date
     const reservationsByDate: Record<string, ReservationSlot[]> = {};
     reservations.forEach(reservation => {
-      if (!reservationsByDate[reservation.reservation_date]) {
-        reservationsByDate[reservation.reservation_date] = [];
+      const dateStr = reservation.preferredDate.toISOString().split('T')[0];
+      if (!reservationsByDate[dateStr]) {
+        reservationsByDate[dateStr] = [];
       }
-      reservationsByDate[reservation.reservation_date].push({
-        time: reservation.reservation_time,
+      reservationsByDate[dateStr].push({
+        time: reservation.preferredTime,
         status: reservation.status
       });
     });
