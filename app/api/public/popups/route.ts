@@ -1,6 +1,22 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 
+interface Popup {
+  id: string;
+  title: string;
+  content: string;
+  image_url?: string;
+  link_url?: string;
+  display_type: string;
+  position: string;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
+  priority?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export async function GET() {
   try {
     const now = new Date().toISOString();
@@ -10,12 +26,13 @@ export async function GET() {
     const { data: allPopups, error: fetchError } = await supabaseAdmin
       .from('popups')
       .select('*')
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .returns<Popup[]>();
 
     console.log('All active popups:', allPopups);
 
     // 날짜 필터링
-    const popups = allPopups?.filter(popup => {
+    const popups = allPopups?.filter((popup: Popup) => {
       const startDate = new Date(popup.start_date);
       const endDate = new Date(popup.end_date);
       const currentDate = new Date(now);
