@@ -25,39 +25,70 @@ export async function GET(request: Request) {
     const folder = searchParams.get('folder');
     const mimeType = searchParams.get('mime_type');
 
-    // Build query
-    let query = supabaseAdmin
-      .from('files')
-      .select('*')
-      .order('created_at', { ascending: false });
+    // Get files from Storage directly
+    const folders = ['images', 'documents', 'videos', 'audio', 'uploads'];
+    let allFiles: any[] = [];
 
-    // Apply filters
-    if (folder && folder !== 'all') {
-      query = query.eq('folder', folder);
+    for (const folderName of folders) {
+      if (folder && folder !== 'all' && folder !== folderName) continue;
+
+      const { data: storageFiles, error } = await supabaseAdmin
+        .storage
+        .from('uploads')
+        .list(folderName, {
+          limit: 100,
+          offset: 0,
+        });
+
+      if (!error && storageFiles) {
+        const filesWithUrls = storageFiles
+          .filter(file => !file.name.startsWith('.')) // Skip hidden files
+          .map(file => {
+            const { data } = supabaseAdmin
+              .storage
+              .from('uploads')
+              .getPublicUrl(`${folderName}/${file.name}`);
+
+            // Determine mime type from extension
+            const ext = file.name.split('.').pop()?.toLowerCase();
+            let mimeType = 'application/octet-stream';
+            if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext || '')) {
+              mimeType = `image/${ext === 'jpg' ? 'jpeg' : ext}`;
+            } else if (ext === 'pdf') {
+              mimeType = 'application/pdf';
+            }
+
+            return {
+              id: file.id || `${folderName}-${file.name}`,
+              filename: file.name,
+              original_name: file.name,
+              mime_type: mimeType,
+              size: file.metadata?.size || 0,
+              url: data.publicUrl,
+              folder: folderName,
+              uploaded_by: null,
+              created_at: file.created_at || new Date().toISOString(),
+              formattedSize: formatFileSize(file.metadata?.size || 0)
+            };
+          });
+
+        allFiles = [...allFiles, ...filesWithUrls];
+      }
     }
 
+    // Filter by mime type if needed
     if (mimeType && mimeType !== 'all') {
-      // Filter by mime type prefix
-      query = query.ilike('mime_type', `${mimeType}%`);
+      allFiles = allFiles.filter(file =>
+        file.mime_type?.toLowerCase().includes(mimeType.toLowerCase())
+      );
     }
 
-    const { data: files, error } = await query;
+    // Sort by created_at descending
+    allFiles.sort((a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
 
-    if (error) {
-      console.error('Error fetching files from database:', error);
-      // Fallback to empty array
-      return NextResponse.json([]);
-    }
-
-    // Filter out mock/placeholder files and add formatted size
-    const filesWithFormattedSize = (files || [])
-      .filter(file => !file.url?.includes('placeholder.com'))
-      .map(file => ({
-        ...file,
-        formattedSize: formatFileSize(file.size || 0)
-      }));
-
-    return NextResponse.json(filesWithFormattedSize);
+    return NextResponse.json(allFiles);
   } catch (error) {
     console.error('Error fetching files:', error);
     return NextResponse.json(
