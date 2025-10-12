@@ -44,8 +44,9 @@ export class HTMLUpdater {
         };
       }
 
-      // 2. 백업 생성
-      const backupPath = fullPath.replace('.html', '.backup.html');
+      // 2. 백업 생성 (타임스탬프 포함)
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      const backupPath = fullPath.replace('.html', `.backup-${timestamp}.html`);
       try {
         fs.copyFileSync(fullPath, backupPath);
       } catch (backupError) {
@@ -55,6 +56,9 @@ export class HTMLUpdater {
           error: 'BACKUP_FAILED',
         };
       }
+
+      // 3. 오래된 백업 정리 (최근 20개만 유지)
+      await this.cleanupOldBackups(fullPath, 20);
 
       // 3. HTML 로드
       const originalHTML = fs.readFileSync(fullPath, 'utf-8');
@@ -114,18 +118,18 @@ export class HTMLUpdater {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
 
-      // 오류 발생 시 백업에서 복원 시도
+      // 오류 발생 시 최신 백업에서 복원 시도
       try {
         const fullPath = path.join(this.staticSitePath, filePath);
-        const backupPath = fullPath.replace('.html', '.backup.html');
+        const latestBackup = this.getLatestBackup(fullPath);
 
-        if (fs.existsSync(backupPath)) {
-          fs.copyFileSync(backupPath, fullPath);
+        if (latestBackup) {
+          fs.copyFileSync(latestBackup, fullPath);
           return {
             success: false,
             message: `업데이트 실패. 백업에서 복원했습니다: ${errorMessage}`,
             error: errorMessage,
-            backupPath,
+            backupPath: latestBackup,
           };
         }
       } catch (restoreError) {
@@ -191,6 +195,68 @@ export class HTMLUpdater {
           }
         }
         break;
+    }
+  }
+
+  /**
+   * 최신 백업 파일 경로 가져오기
+   */
+  private getLatestBackup(fullPath: string): string | null {
+    try {
+      const dir = path.dirname(fullPath);
+      const filename = path.basename(fullPath, '.html');
+      const files = fs.readdirSync(dir);
+
+      const backups = files
+        .filter(f => f.startsWith(`${filename}.backup-`) && f.endsWith('.html'))
+        .map(f => ({
+          path: path.join(dir, f),
+          mtime: fs.statSync(path.join(dir, f)).mtime.getTime()
+        }))
+        .sort((a, b) => b.mtime - a.mtime);
+
+      return backups.length > 0 ? backups[0].path : null;
+    } catch (error) {
+      console.error('최신 백업 찾기 실패:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 오래된 백업 파일 정리 (최근 N개만 유지)
+   */
+  private async cleanupOldBackups(fullPath: string, keepCount: number): Promise<void> {
+    try {
+      const dir = path.dirname(fullPath);
+      const filename = path.basename(fullPath, '.html');
+
+      // 디렉토리의 모든 파일 읽기
+      const files = fs.readdirSync(dir);
+
+      // 해당 파일의 백업 파일만 필터링 및 정렬 (최신순)
+      const backups = files
+        .filter(f => f.startsWith(`${filename}.backup-`) && f.endsWith('.html'))
+        .map(f => ({
+          name: f,
+          path: path.join(dir, f),
+          mtime: fs.statSync(path.join(dir, f)).mtime.getTime()
+        }))
+        .sort((a, b) => b.mtime - a.mtime); // 최신순 정렬
+
+      // keepCount개 이상이면 오래된 것 삭제
+      if (backups.length > keepCount) {
+        for (let i = keepCount; i < backups.length; i++) {
+          try {
+            fs.unlinkSync(backups[i].path);
+            console.log(`🗑️  오래된 백업 삭제: ${backups[i].name}`);
+          } catch (unlinkError) {
+            console.error(`백업 삭제 실패: ${backups[i].name}`, unlinkError);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('백업 정리 중 오류:', error);
+      // 정리 실패해도 메인 작업에는 영향 없음
     }
   }
 

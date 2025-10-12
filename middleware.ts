@@ -13,12 +13,16 @@ export function middleware(request: NextRequest) {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:3002',
+      'http://localhost:3003',
       'http://localhost:5500', // Live Server default port
       'http://127.0.0.1:5500',
       'https://misopin-renew.vercel.app', // Current static site domain
+      'https://misopin-cms.vercel.app', // CMS domain
       'https://misopin.com',
       'https://www.misopin.com',
       process.env.NEXT_PUBLIC_STATIC_SITE_URL,
+      process.env.NEXT_PUBLIC_CMS_URL,
     ].filter(Boolean);
 
     // Check if the origin is allowed

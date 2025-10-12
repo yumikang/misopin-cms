@@ -85,8 +85,7 @@ export default function EditStaticPage() {
 
   const fetchPage = async () => {
     try {
-      // TODO: 데이터베이스 연결 후 /api/static-pages/${pageId} 로 변경
-      const response = await fetch(`/api/static-pages-mock/${pageId}`);
+      const response = await fetch(`/api/static-pages/${pageId}`);
       if (!response.ok) throw new Error("Failed to fetch page");
 
       const data = await response.json();
@@ -118,8 +117,7 @@ export default function EditStaticPage() {
     setSuccessMessage(null);
 
     try {
-      // TODO: 데이터베이스 연결 후 /api/static-pages/${pageId} 로 변경
-      const response = await fetch(`/api/static-pages-mock/${pageId}`, {
+      const response = await fetch(`/api/static-pages/${pageId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

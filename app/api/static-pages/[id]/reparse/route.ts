@@ -14,12 +14,13 @@ const htmlParser = new HTMLParser(STATIC_SITE_PATH);
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // 페이지 조회
     const page = await prisma.staticPage.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!page) {
@@ -44,7 +45,7 @@ export async function POST(
 
     // 데이터베이스 업데이트
     const updatedPage = await prisma.staticPage.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         sections: parseResult.sections,
         lastEdited: new Date(),

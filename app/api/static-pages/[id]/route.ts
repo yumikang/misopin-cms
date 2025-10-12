@@ -16,11 +16,12 @@ const htmlParser = new HTMLParser(STATIC_SITE_PATH);
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const page = await prisma.staticPage.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         versions: {
           orderBy: { version: 'desc' },
@@ -54,9 +55,10 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { sections, changedBy, changeNote } = body;
 
@@ -69,7 +71,7 @@ export async function PUT(
 
     // 페이지 조회
     const page = await prisma.staticPage.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         versions: {
           orderBy: { version: 'desc' },
@@ -104,7 +106,7 @@ export async function PUT(
 
     // 페이지 업데이트
     const updatedPage = await prisma.staticPage.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         sections,
         lastEdited: new Date(),
@@ -114,7 +116,7 @@ export async function PUT(
     // 새 버전 생성
     await prisma.staticPageVersion.create({
       data: {
-        pageId: params.id,
+        pageId: id,
         version: newVersion,
         sections,
         changedBy: changedBy || 'unknown',
@@ -149,12 +151,13 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // 페이지 존재 확인
     const page = await prisma.staticPage.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!page) {
@@ -166,7 +169,7 @@ export async function DELETE(
 
     // 페이지 삭제 (Cascade로 버전도 함께 삭제)
     await prisma.staticPage.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({

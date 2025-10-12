@@ -3,6 +3,27 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+interface DashboardData {
+  stats: Array<{
+    title: string;
+    value: string;
+    change: string;
+    color: string;
+    description: string;
+  }>;
+  reservationDetails: {
+    total: number;
+    pending: number;
+    completed: number;
+  };
+  recentActivities: string[];
+  contentStats: {
+    notices: number;
+    events: number;
+    faqs: number;
+  };
+}
+
 export default function AdminPage() {
   const [user, setUser] = useState<{
     id: string;
@@ -10,6 +31,8 @@ export default function AdminPage() {
     name: string;
     role: string;
   } | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -23,7 +46,29 @@ export default function AdminPage() {
     }
 
     setUser(JSON.parse(userData));
+    fetchDashboardData(token);
   }, [router]);
+
+  const fetchDashboardData = async (token: string) => {
+    try {
+      const response = await fetch('/api/dashboard/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDashboardData(data);
+      } else {
+        console.error('Failed to fetch dashboard data');
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getRoleDisplay = (role: string) => {
     switch (role) {
@@ -38,34 +83,38 @@ export default function AdminPage() {
     }
   };
 
-  const stats = [
+  const stats = dashboardData?.stats || [
     {
       title: "오늘 예약",
-      value: "12",
-      change: "+2",
+      value: "0",
+      change: "0",
       color: "bg-blue-100 text-blue-600",
+      description: "로딩 중"
     },
     {
       title: "활성 팝업",
-      value: "3",
+      value: "0",
       change: "0",
       color: "bg-green-100 text-green-600",
+      description: "로딩 중"
     },
     {
       title: "최근 게시물",
-      value: "8",
-      change: "+1",
+      value: "0",
+      change: "0",
       color: "bg-purple-100 text-purple-600",
+      description: "로딩 중"
     },
     {
-      title: "총 방문자",
-      value: "1,234",
-      change: "+89",
+      title: "총 사용자",
+      value: "0",
+      change: "0",
       color: "bg-orange-100 text-orange-600",
+      description: "로딩 중"
     },
   ];
 
-  if (!user) {
+  if (!user || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -117,7 +166,7 @@ export default function AdminPage() {
                 </span>
               </div>
               <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-              <p className="text-xs text-gray-500 mt-1">어제 대비</p>
+              <p className="text-xs text-gray-500 mt-1">{stat.description || '어제 대비'}</p>
             </div>
           ))}
         </div>
@@ -132,15 +181,15 @@ export default function AdminPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">오늘 예약</span>
-                <span className="text-sm font-medium text-gray-900">12건</span>
+                <span className="text-sm font-medium text-gray-900">{dashboardData?.reservationDetails.total || 0}건</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">대기 중</span>
-                <span className="text-sm font-medium text-gray-900">3건</span>
+                <span className="text-sm font-medium text-gray-900">{dashboardData?.reservationDetails.pending || 0}건</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">완료</span>
-                <span className="text-sm font-medium text-gray-900">9건</span>
+                <span className="text-sm font-medium text-gray-900">{dashboardData?.reservationDetails.completed || 0}건</span>
               </div>
             </div>
           </div>
@@ -151,18 +200,19 @@ export default function AdminPage() {
               시스템의 최근 활동을 확인하세요
             </p>
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">새 예약이 등록되었습니다</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">팝업이 활성화되었습니다</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span className="text-sm text-gray-600">공지사항이 게시되었습니다</span>
-              </div>
+              {dashboardData?.recentActivities.length ? (
+                dashboardData.recentActivities.map((activity, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${
+                      index === 0 ? 'bg-green-500' :
+                      index === 1 ? 'bg-blue-500' : 'bg-purple-500'
+                    }`}></div>
+                    <span className="text-sm text-gray-600 truncate">{activity}</span>
+                  </div>
+                ))
+              ) : (
+                <span className="text-sm text-gray-500">최근 활동이 없습니다</span>
+              )}
             </div>
           </div>
 
@@ -174,15 +224,15 @@ export default function AdminPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">공지사항</span>
-                <span className="text-sm font-medium text-gray-900">5개</span>
+                <span className="text-sm font-medium text-gray-900">{dashboardData?.contentStats.notices || 0}개</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">이벤트</span>
-                <span className="text-sm font-medium text-gray-900">2개</span>
+                <span className="text-sm font-medium text-gray-900">{dashboardData?.contentStats.events || 0}개</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">FAQ</span>
-                <span className="text-sm font-medium text-gray-900">12개</span>
+                <span className="text-sm font-medium text-gray-900">{dashboardData?.contentStats.faqs || 0}개</span>
               </div>
             </div>
           </div>

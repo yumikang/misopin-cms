@@ -36,8 +36,7 @@ export default function StaticPagesPage() {
 
   const fetchPages = async () => {
     try {
-      // TODO: 데이터베이스 연결 후 /api/static-pages 로 변경
-      const response = await fetch("/api/static-pages-mock");
+      const response = await fetch("/api/static-pages");
       if (!response.ok) throw new Error("Failed to fetch pages");
       const data = await response.json();
       setPages(data.pages || []);
