@@ -47,7 +47,7 @@ export async function POST(
     const updatedPage = await prisma.staticPage.update({
       where: { id },
       data: {
-        sections: parseResult.sections,
+        sections: parseResult.sections as any, // Prisma Json type
         lastEdited: new Date(),
       },
     });
