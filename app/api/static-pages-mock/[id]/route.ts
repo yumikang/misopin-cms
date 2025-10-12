@@ -21,10 +21,11 @@ const mockPagesInfo: Record<string, { title: string; filePath: string }> = {
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const pageInfo = mockPagesInfo[params.id];
+    const { id } = await params;
+    const pageInfo = mockPagesInfo[id];
 
     if (!pageInfo) {
       return NextResponse.json(
@@ -49,7 +50,7 @@ export async function GET(
 
     // Mock 페이지 데이터 생성
     const page = {
-      id: params.id,
+      id,
       slug: pageInfo.filePath.replace('.html', '').replace(/\//g, '-'),
       title: pageInfo.title,
       filePath: pageInfo.filePath,
@@ -91,9 +92,10 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { sections, changedBy, changeNote } = body;
 
@@ -101,7 +103,7 @@ export async function PUT(
     return NextResponse.json({
       success: true,
       page: {
-        id: params.id,
+        id,
         sections,
         lastEdited: new Date().toISOString(),
       },
