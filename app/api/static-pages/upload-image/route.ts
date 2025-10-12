@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 
@@ -179,8 +179,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const fs = require('fs');
-    const files = fs.readdirSync(uploadDir);
+    const files = readdirSync(uploadDir);
 
     // WebP 파일만 필터링 (썸네일 제외)
     const images = files
