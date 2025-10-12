@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Standalone output for optimized production deployment
+  output: 'standalone',
+
   images: {
     remotePatterns: [
       {
@@ -15,6 +18,34 @@ const nextConfig: NextConfig = {
     ],
     unoptimized: process.env.NODE_ENV === 'development',
   },
+
+  // Security headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
+  },
+
   eslint: {
     ignoreDuringBuilds: false,
   },
