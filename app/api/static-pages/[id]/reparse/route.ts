@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { HTMLParser } from '@/lib/static-pages/html-parser';
+import { sectionsToJson } from '@/lib/static-pages/types';
 import path from 'path';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const STATIC_SITE_PATH = path.join(process.cwd(), '../Misopin-renew');
+// 환경 변수에서 정적 사이트 경로 가져오기
+const STATIC_SITE_PATH = process.env.STATIC_PAGES_DIR || path.join(process.cwd(), '../Misopin-renew');
 const htmlParser = new HTMLParser(STATIC_SITE_PATH);
 
 /**
@@ -47,7 +49,7 @@ export async function POST(
     const updatedPage = await prisma.staticPage.update({
       where: { id },
       data: {
-        sections: parseResult.sections as any, // Prisma Json type
+        sections: sectionsToJson(parseResult.sections),
         lastEdited: new Date(),
       },
     });

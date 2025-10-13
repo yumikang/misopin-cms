@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { HTMLUpdater } from '@/lib/static-pages/html-updater';
 import { HTMLParser } from '@/lib/static-pages/html-parser';
+import { sectionsToJson, parseSectionsFromJson, type StaticPageUpdateRequest } from '@/lib/static-pages/types';
 import path from 'path';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const STATIC_SITE_PATH = path.join(process.cwd(), '../Misopin-renew');
+// 환경 변수에서 정적 사이트 경로 가져오기
+const STATIC_SITE_PATH = process.env.STATIC_PAGES_DIR || path.join(process.cwd(), '../Misopin-renew');
 const htmlUpdater = new HTMLUpdater(STATIC_SITE_PATH);
 const htmlParser = new HTMLParser(STATIC_SITE_PATH);
 
@@ -59,7 +61,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const body = await request.json();
+    const body: StaticPageUpdateRequest = await request.json();
     const { sections, changedBy, changeNote } = body;
 
     if (!sections || !Array.isArray(sections)) {
@@ -108,7 +110,7 @@ export async function PUT(
     const updatedPage = await prisma.staticPage.update({
       where: { id },
       data: {
-        sections,
+        sections: sectionsToJson(sections),
         lastEdited: new Date(),
       },
     });
@@ -118,7 +120,7 @@ export async function PUT(
       data: {
         pageId: id,
         version: newVersion,
-        sections,
+        sections: sectionsToJson(sections),
         changedBy: changedBy || 'unknown',
         changeNote: changeNote || '페이지 업데이트',
       },

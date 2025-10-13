@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { HTMLParser } from '@/lib/static-pages/html-parser';
+import { sectionsToJson, type StaticPageCreateRequest } from '@/lib/static-pages/types';
 import path from 'path';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const STATIC_SITE_PATH = path.join(process.cwd(), '../Misopin-renew');
+// 환경 변수에서 정적 사이트 경로 가져오기
+const STATIC_SITE_PATH = process.env.STATIC_PAGES_DIR || path.join(process.cwd(), '../Misopin-renew');
 const htmlParser = new HTMLParser(STATIC_SITE_PATH);
 
 /**
@@ -80,7 +82,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body: StaticPageCreateRequest = await request.json();
     const { slug, title, filePath } = body;
 
     if (!slug || !title || !filePath) {
@@ -109,7 +111,7 @@ export async function POST(request: NextRequest) {
         slug,
         title,
         filePath,
-        sections: parseResult.sections,
+        sections: sectionsToJson(parseResult.sections),
         isPublished: false,
       },
     });
@@ -119,7 +121,7 @@ export async function POST(request: NextRequest) {
       data: {
         pageId: page.id,
         version: 1,
-        sections: parseResult.sections,
+        sections: sectionsToJson(parseResult.sections),
         changedBy: 'system',
         changeNote: '초기 페이지 등록',
       },
