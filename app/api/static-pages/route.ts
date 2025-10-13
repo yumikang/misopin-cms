@@ -52,7 +52,6 @@ export async function GET(request: NextRequest) {
         slug: true,
         title: true,
         filePath: true,
-        isPublished: true,
         lastEdited: true,
         createdAt: true,
       },
@@ -112,7 +111,6 @@ export async function POST(request: NextRequest) {
         title,
         filePath,
         sections: sectionsToJson(parseResult.sections),
-        isPublished: false,
       },
     });
 
