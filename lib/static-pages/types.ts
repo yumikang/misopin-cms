@@ -39,14 +39,14 @@ export function parseSectionsFromJson(json: Prisma.JsonValue): ParsedSection[] {
   if (!Array.isArray(json)) {
     return [];
   }
-  return json as ParsedSection[];
+  return json as unknown as ParsedSection[];
 }
 
 /**
  * ParsedSection 배열을 Prisma Json 타입으로 변환하는 유틸리티
  */
-export function sectionsToJson(sections: ParsedSection[]): Prisma.JsonValue {
-  return sections as Prisma.JsonValue;
+export function sectionsToJson(sections: ParsedSection[]): Prisma.InputJsonValue {
+  return sections as unknown as Prisma.InputJsonValue;
 }
 
 /**
