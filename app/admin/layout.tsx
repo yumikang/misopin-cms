@@ -44,6 +44,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "팝업 관리", href: "/admin/popups", icon: "🔔" },
     { name: "게시판 관리", href: "/admin/board", icon: "📝" },
     { name: "페이지 관리", href: "/admin/pages", icon: "📄" },
+    { name: "정적 페이지 관리", href: "/admin/static-pages", icon: "🌐" },
     { name: "파일 관리", href: "/admin/files", icon: "📁" },
     { name: "시스템 설정", href: "/admin/settings", icon: "⚙️" },
   ];
