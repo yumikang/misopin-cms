@@ -1,11 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { HTMLParser } from '../lib/static-pages/html-parser';
 import path from 'path';
 import fs from 'fs';
 
 const prisma = new PrismaClient();
 
-// 우선순위 5개 페이지
+// 실제 서버의 HTML 파일 목록
 const PRIORITY_PAGES = [
   {
     slug: 'index',
@@ -18,23 +18,63 @@ const PRIORITY_PAGES = [
     filePath: 'about.html',
   },
   {
-    slug: 'botox',
-    title: '보톡스 시술',
-    filePath: 'contents/treatments/botox.html',
+    slug: 'directions',
+    title: '오시는 길',
+    filePath: 'directions.html',
   },
   {
-    slug: 'filler',
-    title: '필러 시술',
-    filePath: 'contents/treatments/filler.html',
+    slug: 'fee-schedule',
+    title: '진료 비용',
+    filePath: 'fee-schedule.html',
   },
   {
-    slug: 'lifting',
-    title: '리프팅 시술',
-    filePath: 'contents/treatments/lifting.html',
+    slug: 'privacy',
+    title: '개인정보 처리방침',
+    filePath: 'privacy.html',
+  },
+  {
+    slug: 'stipulation',
+    title: '이용약관',
+    filePath: 'stipulation.html',
+  },
+  {
+    slug: 'board-event',
+    title: '이벤트 게시판',
+    filePath: 'board-event.html',
+  },
+  {
+    slug: 'board-notice',
+    title: '공지사항 게시판',
+    filePath: 'board-notice.html',
+  },
+  {
+    slug: 'board-page',
+    title: '일반 게시판',
+    filePath: 'board-page.html',
+  },
+  {
+    slug: 'board-detail',
+    title: '게시판 상세',
+    filePath: 'board-detail.html',
+  },
+  {
+    slug: 'calendar-page',
+    title: '달력 페이지',
+    filePath: 'calendar-page.html',
+  },
+  {
+    slug: 'quickmenu',
+    title: '퀵 메뉴',
+    filePath: 'quickmenu.html',
+  },
+  {
+    slug: 'auto-clear-popups',
+    title: '팝업 자동 닫기',
+    filePath: 'auto-clear-popups.html',
   },
 ];
 
-const STATIC_SITE_PATH = path.join(process.cwd(), '../Misopin-renew');
+const STATIC_SITE_PATH = process.env.STATIC_PAGES_DIR || path.join(process.cwd(), '../Misopin-renew');
 
 async function main() {
   console.log('🌱 정적 페이지 시딩 시작...\n');
@@ -82,7 +122,7 @@ async function main() {
           slug: pageInfo.slug,
           title: pageInfo.title,
           filePath: pageInfo.filePath,
-          sections: parseResult.sections,
+          sections: parseResult.sections as unknown as Prisma.InputJsonValue,
           isPublished: false,
         },
       });
@@ -92,7 +132,7 @@ async function main() {
         data: {
           pageId: page.id,
           version: 1,
-          sections: parseResult.sections,
+          sections: parseResult.sections as unknown as Prisma.InputJsonValue,
           changedBy: 'system',
           changeNote: '초기 시딩',
         },
