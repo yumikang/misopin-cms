@@ -327,7 +327,6 @@ model StaticPage {
   title       String              // 페이지 제목
   filePath    String              // 실제 HTML 파일 경로
   sections    Json                // 편집 가능한 섹션 정보
-  isPublished Boolean             @default(false) // 배포 여부
   lastEdited  DateTime            @updatedAt // 마지막 수정 시간
   createdAt   DateTime            @default(now())
 
