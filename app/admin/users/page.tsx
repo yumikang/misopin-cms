@@ -43,23 +43,18 @@ interface User {
   id: string;
   email: string;
   name: string;
-  role: 'SUPER_ADMIN' | 'ADMIN' | 'EDITOR' | 'USER';
-  department?: string;
-  phone?: string;
-  is_active: boolean;
-  email_verified: boolean;
-  last_login?: string;
-  created_at: string;
-  updated_at: string;
+  role: 'SUPER_ADMIN' | 'ADMIN' | 'EDITOR';
+  isActive: boolean;
+  lastLogin?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface UserInput {
   email: string;
   name: string;
-  role: 'SUPER_ADMIN' | 'ADMIN' | 'EDITOR' | 'USER';
-  department?: string;
-  phone?: string;
-  is_active: boolean;
+  role: 'SUPER_ADMIN' | 'ADMIN' | 'EDITOR';
+  isActive: boolean;
 }
 
 // 역할별 정보
@@ -78,11 +73,6 @@ const roleInfo = {
     label: '편집자',
     color: 'secondary' as const,
     description: '콘텐츠 편집 권한'
-  },
-  USER: {
-    label: '사용자',
-    color: 'outline' as const,
-    description: '읽기 권한'
   }
 };
 
@@ -101,10 +91,8 @@ export default function UsersPage() {
   const [formData, setFormData] = useState<UserInput>({
     email: "",
     name: "",
-    role: "USER",
-    department: "",
-    phone: "",
-    is_active: true,
+    role: "EDITOR",
+    isActive: true,
   });
 
   const fetchUsers = useCallback(async () => {
@@ -179,12 +167,12 @@ export default function UsersPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ is_active: !user.is_active }),
+        body: JSON.stringify({ isActive: !user.isActive }),
       });
 
       if (!response.ok) throw new Error("Failed to update user");
 
-      setSuccess(`사용자가 ${!user.is_active ? '활성화' : '비활성화'}되었습니다.`);
+      setSuccess(`사용자가 ${!user.isActive ? '활성화' : '비활성화'}되었습니다.`);
       await fetchUsers();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update user");
@@ -237,19 +225,15 @@ export default function UsersPage() {
         email: user.email,
         name: user.name,
         role: user.role,
-        department: user.department || "",
-        phone: user.phone || "",
-        is_active: user.is_active,
+        isActive: user.isActive,
       });
     } else {
       setEditingUser(null);
       setFormData({
         email: "",
         name: "",
-        role: "USER",
-        department: "",
-        phone: "",
-        is_active: true,
+        role: "EDITOR",
+        isActive: true,
       });
     }
     setTempPassword(null);
@@ -263,14 +247,12 @@ export default function UsersPage() {
     setFormData({
       email: "",
       name: "",
-      role: "USER",
-      department: "",
-      phone: "",
-      is_active: true,
+      role: "EDITOR",
+      isActive: true,
     });
   };
 
-  const formatLastLogin = (lastLogin?: string) => {
+  const formatLastLogin = (lastLogin?: string | null) => {
     if (!lastLogin) return "없음";
     const date = new Date(lastLogin);
     const now = new Date();
@@ -330,7 +312,6 @@ export default function UsersPage() {
             <SelectItem value="SUPER_ADMIN">최고관리자</SelectItem>
             <SelectItem value="ADMIN">관리자</SelectItem>
             <SelectItem value="EDITOR">편집자</SelectItem>
-            <SelectItem value="USER">사용자</SelectItem>
           </SelectContent>
         </Select>
 
@@ -362,7 +343,6 @@ export default function UsersPage() {
               <TableRow>
                 <TableHead>사용자</TableHead>
                 <TableHead>역할</TableHead>
-                <TableHead>부서</TableHead>
                 <TableHead>상태</TableHead>
                 <TableHead>마지막 로그인</TableHead>
                 <TableHead>가입일</TableHead>
@@ -375,15 +355,7 @@ export default function UsersPage() {
                   <TableCell>
                     <div>
                       <div className="font-medium">{user.name}</div>
-                      <div className="text-sm text-gray-500 flex items-center gap-1">
-                        {user.email}
-                        {user.email_verified && (
-                          <Mail className="h-3 w-3 text-green-600" />
-                        )}
-                      </div>
-                      {user.phone && (
-                        <div className="text-xs text-gray-400">{user.phone}</div>
-                      )}
+                      <div className="text-sm text-gray-500">{user.email}</div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -391,20 +363,19 @@ export default function UsersPage() {
                       {roleInfo[user.role].label}
                     </Badge>
                   </TableCell>
-                  <TableCell>{user.department || "-"}</TableCell>
                   <TableCell>
                     <Switch
-                      checked={user.is_active}
+                      checked={user.isActive}
                       onCheckedChange={() => handleToggleActive(user)}
                     />
                   </TableCell>
                   <TableCell>
-                    <span className={user.last_login ? "" : "text-gray-400"}>
-                      {formatLastLogin(user.last_login)}
+                    <span className={user.lastLogin ? "" : "text-gray-400"}>
+                      {formatLastLogin(user.lastLogin)}
                     </span>
                   </TableCell>
                   <TableCell>
-                    {new Date(user.created_at).toLocaleDateString()}
+                    {new Date(user.createdAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -508,47 +479,20 @@ export default function UsersPage() {
                     <SelectItem value="SUPER_ADMIN">최고관리자</SelectItem>
                     <SelectItem value="ADMIN">관리자</SelectItem>
                     <SelectItem value="EDITOR">편집자</SelectItem>
-                    <SelectItem value="USER">사용자</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="department" className="text-right">
-                  부서
-                </Label>
-                <Input
-                  id="department"
-                  value={formData.department}
-                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                  className="col-span-3"
-                />
-              </div>
-
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="phone" className="text-right">
-                  전화번호
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="col-span-3"
-                  placeholder="010-0000-0000"
-                />
-              </div>
-
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="is_active" className="text-right">
+                <Label htmlFor="isActive" className="text-right">
                   활성화
                 </Label>
                 <div className="col-span-3">
                   <Switch
-                    id="is_active"
-                    checked={formData.is_active}
+                    id="isActive"
+                    checked={formData.isActive}
                     onCheckedChange={(checked) =>
-                      setFormData({ ...formData, is_active: checked })
+                      setFormData({ ...formData, isActive: checked })
                     }
                   />
                 </div>

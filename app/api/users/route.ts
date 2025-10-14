@@ -1,100 +1,19 @@
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+
+const prisma = new PrismaClient();
 
 interface User {
   id: string;
   email: string;
   name: string;
-  role: 'SUPER_ADMIN' | 'ADMIN' | 'EDITOR' | 'USER';
-  department?: string;
-  phone?: string;
-  is_active: boolean;
-  email_verified: boolean;
-  last_login?: string;
-  created_at: string;
-  updated_at: string;
+  role: 'SUPER_ADMIN' | 'ADMIN' | 'EDITOR';
+  isActive: boolean;
+  lastLogin?: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
-
-// Mock data for users
-const mockUsers: User[] = [
-  {
-    id: '1',
-    email: 'admin@misopin.com',
-    name: '김관리자',
-    role: 'SUPER_ADMIN',
-    department: '경영지원부',
-    phone: '010-1234-5678',
-    is_active: true,
-    email_verified: true,
-    last_login: '2025-01-17T10:30:00',
-    created_at: '2024-01-01T00:00:00',
-    updated_at: '2025-01-17T10:30:00'
-  },
-  {
-    id: '2',
-    email: 'doctor.lee@misopin.com',
-    name: '이의사',
-    role: 'ADMIN',
-    department: '진료부',
-    phone: '010-2345-6789',
-    is_active: true,
-    email_verified: true,
-    last_login: '2025-01-17T09:15:00',
-    created_at: '2024-02-15T00:00:00',
-    updated_at: '2025-01-17T09:15:00'
-  },
-  {
-    id: '3',
-    email: 'nurse.park@misopin.com',
-    name: '박간호사',
-    role: 'EDITOR',
-    department: '간호부',
-    phone: '010-3456-7890',
-    is_active: true,
-    email_verified: true,
-    last_login: '2025-01-16T14:20:00',
-    created_at: '2024-03-10T00:00:00',
-    updated_at: '2025-01-16T14:20:00'
-  },
-  {
-    id: '4',
-    email: 'staff.kim@misopin.com',
-    name: '김직원',
-    role: 'EDITOR',
-    department: '원무부',
-    phone: '010-4567-8901',
-    is_active: true,
-    email_verified: true,
-    last_login: '2025-01-17T08:00:00',
-    created_at: '2024-04-20T00:00:00',
-    updated_at: '2025-01-17T08:00:00'
-  },
-  {
-    id: '5',
-    email: 'inactive@misopin.com',
-    name: '최퇴사',
-    role: 'USER',
-    department: '경영지원부',
-    phone: '010-5678-9012',
-    is_active: false,
-    email_verified: true,
-    last_login: '2024-12-31T17:30:00',
-    created_at: '2024-01-15T00:00:00',
-    updated_at: '2024-12-31T17:30:00'
-  },
-  {
-    id: '6',
-    email: 'new.staff@misopin.com',
-    name: '신입직원',
-    role: 'USER',
-    department: '마케팅부',
-    phone: '010-6789-0123',
-    is_active: true,
-    email_verified: false,
-    last_login: undefined,
-    created_at: '2025-01-15T00:00:00',
-    updated_at: '2025-01-15T00:00:00'
-  }
-];
 
 // Helper to generate temporary password
 function generateTempPassword(): string {
@@ -102,144 +21,213 @@ function generateTempPassword(): string {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const role = searchParams.get('role');
-  const isActive = searchParams.get('is_active');
-  const search = searchParams.get('search');
+  try {
+    const { searchParams } = new URL(request.url);
+    const role = searchParams.get('role');
+    const isActive = searchParams.get('is_active');
+    const search = searchParams.get('search');
 
-  let filtered = [...mockUsers];
+    const users = await prisma.user.findMany({
+      where: {
+        ...(role && role !== 'all' && { role: role as 'SUPER_ADMIN' | 'ADMIN' | 'EDITOR' }),
+        ...(isActive !== null && isActive !== 'all' && { isActive: isActive === 'true' }),
+        ...(search && {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { email: { contains: search, mode: 'insensitive' } },
+          ],
+        }),
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        lastLogin: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: { lastLogin: 'desc' },
+    });
 
-  // Filter by role
-  if (role && role !== 'all') {
-    filtered = filtered.filter(user => user.role === role);
-  }
-
-  // Filter by active status
-  if (isActive !== null) {
-    filtered = filtered.filter(user => user.is_active === (isActive === 'true'));
-  }
-
-  // Search by name or email
-  if (search) {
-    const searchLower = search.toLowerCase();
-    filtered = filtered.filter(user =>
-      user.name.toLowerCase().includes(searchLower) ||
-      user.email.toLowerCase().includes(searchLower) ||
-      user.department?.toLowerCase().includes(searchLower)
+    return NextResponse.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch users' },
+      { status: 500 }
     );
   }
-
-  // Sort by last login (most recent first)
-  filtered.sort((a, b) => {
-    if (!a.last_login) return 1;
-    if (!b.last_login) return -1;
-    return new Date(b.last_login).getTime() - new Date(a.last_login).getTime();
-  });
-
-  return NextResponse.json(filtered);
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  try {
+    const body = await request.json();
 
-  // Check if email already exists
-  if (mockUsers.some(u => u.email === body.email)) {
+    // Check if email already exists
+    const existing = await prisma.user.findUnique({
+      where: { email: body.email }
+    });
+
+    if (existing) {
+      return NextResponse.json(
+        { error: 'Email already exists' },
+        { status: 400 }
+      );
+    }
+
+    // Generate temp password and hash
+    const tempPassword = generateTempPassword();
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+    // Create user
+    const newUser = await prisma.user.create({
+      data: {
+        email: body.email,
+        name: body.name,
+        password: hashedPassword,
+        role: body.role || 'EDITOR',
+        isActive: body.isActive !== false,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        lastLogin: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return NextResponse.json({
+      user: newUser,
+      tempPassword,
+      message: '사용자가 생성되었습니다.'
+    }, { status: 201 });
+  } catch (error) {
+    console.error('Error creating user:', error);
     return NextResponse.json(
-      { error: 'Email already exists' },
-      { status: 400 }
+      { error: 'Failed to create user' },
+      { status: 500 }
     );
   }
-
-  const newUser: User = {
-    id: Date.now().toString(),
-    email: body.email,
-    name: body.name,
-    role: body.role || 'USER',
-    department: body.department,
-    phone: body.phone,
-    is_active: body.is_active !== false,
-    email_verified: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
-
-  mockUsers.push(newUser);
-
-  // Return user with temporary password
-  return NextResponse.json({
-    user: newUser,
-    tempPassword: generateTempPassword(),
-    message: '사용자가 생성되었습니다. 임시 비밀번호가 이메일로 전송됩니다.'
-  }, { status: 201 });
 }
 
 export async function PUT(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
 
-  if (!id) {
-    return NextResponse.json(
-      { error: 'User ID is required' },
-      { status: 400 }
-    );
-  }
+    if (!id) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      );
+    }
 
-  const body = await request.json();
-  const index = mockUsers.findIndex(u => u.id === id);
+    const body = await request.json();
 
-  if (index === -1) {
-    return NextResponse.json(
-      { error: 'User not found' },
-      { status: 404 }
-    );
-  }
-
-  // Handle password reset
-  if (body.resetPassword) {
-    const tempPassword = generateTempPassword();
-    return NextResponse.json({
-      message: '비밀번호가 재설정되었습니다.',
-      tempPassword,
-      email: mockUsers[index].email
+    // Check if user exists
+    const existing = await prisma.user.findUnique({
+      where: { id }
     });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Handle password reset
+    if (body.resetPassword) {
+      const tempPassword = generateTempPassword();
+      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+      await prisma.user.update({
+        where: { id },
+        data: { password: hashedPassword },
+      });
+
+      return NextResponse.json({
+        message: '비밀번호가 재설정되었습니다.',
+        tempPassword,
+        email: existing.email
+      });
+    }
+
+    // Update user data
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        ...(body.name && { name: body.name }),
+        ...(body.role && { role: body.role }),
+        ...(body.isActive !== undefined && { isActive: body.isActive }),
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        lastLogin: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return NextResponse.json(updatedUser);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return NextResponse.json(
+      { error: 'Failed to update user' },
+      { status: 500 }
+    );
   }
-
-  // Update user data
-  mockUsers[index] = {
-    ...mockUsers[index],
-    ...body,
-    updated_at: new Date().toISOString()
-  };
-
-  return NextResponse.json(mockUsers[index]);
 }
 
 export async function DELETE(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
 
-  if (!id) {
+    if (!id) {
+      return NextResponse.json(
+        { error: 'User ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if user exists
+    const existing = await prisma.user.findUnique({
+      where: { id }
+    });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      );
+    }
+
+    // Don't actually delete, just deactivate
+    await prisma.user.update({
+      where: { id },
+      data: { isActive: false },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: '사용자가 비활성화되었습니다.'
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
     return NextResponse.json(
-      { error: 'User ID is required' },
-      { status: 400 }
+      { error: 'Failed to delete user' },
+      { status: 500 }
     );
   }
-
-  const index = mockUsers.findIndex(u => u.id === id);
-
-  if (index === -1) {
-    return NextResponse.json(
-      { error: 'User not found' },
-      { status: 404 }
-    );
-  }
-
-  // Don't actually delete, just deactivate
-  mockUsers[index].is_active = false;
-  mockUsers[index].updated_at = new Date().toISOString();
-
-  return NextResponse.json({
-    success: true,
-    message: '사용자가 비활성화되었습니다.'
-  });
 }
