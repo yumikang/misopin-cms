@@ -141,15 +141,15 @@ export default function LoginPage() {
             <div className="space-y-2 text-xs text-gray-500">
               <div className="flex justify-between px-2">
                 <span className="font-semibold">최고 관리자:</span>
-                <span>wonjang@misopin.com / Misopin123!</span>
+                <span>wonjang@misopin.com / Misopin2025</span>
               </div>
               <div className="flex justify-between px-2">
                 <span className="font-semibold">일반 관리자:</span>
-                <span>teamlead@misopin.com / Misopin123!</span>
+                <span>teamlead@misopin.com / Misopin2025</span>
               </div>
               <div className="flex justify-between px-2">
                 <span className="font-semibold">편집자:</span>
-                <span>editor@misopin.com / Misopin123!</span>
+                <span>editor@misopin.com / Misopin2025</span>
               </div>
             </div>
           </div>
