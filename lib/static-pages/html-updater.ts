@@ -64,11 +64,8 @@ export class HTMLUpdater {
       const originalHTML = fs.readFileSync(fullPath, 'utf-8');
       const originalLength = originalHTML.length;
 
-      // 4. Cheerio로 파싱 (중요: 올바른 옵션 설정)
-      const $ = cheerio.load(originalHTML, {
-        xmlMode: false, // HTML 모드 (XML 자동 수정 방지)
-        decodeEntities: false, // 특수문자 인코딩 방지
-      });
+      // 4. Cheerio로 파싱
+      const $ = cheerio.load(originalHTML);
 
       // 5. 섹션별 업데이트
       for (const section of sections) {

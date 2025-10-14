@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import type { AnyNode } from 'domhandler';
 import fs from 'fs';
 import path from 'path';
 
@@ -42,10 +43,7 @@ export class HTMLParser {
       }
 
       const html = fs.readFileSync(fullPath, 'utf-8');
-      const $ = cheerio.load(html, {
-        xmlMode: false,
-        decodeEntities: false,
-      });
+      const $ = cheerio.load(html);
 
       const sections: ParsedSection[] = [];
 
@@ -273,8 +271,8 @@ export class HTMLParser {
    * CSS 선택자 생성 (고유하고 안정적인 선택자)
    */
   private generateSelector(
-    $parent: cheerio.Cheerio<cheerio.Element>,
-    $element: cheerio.Cheerio<cheerio.Element>
+    $parent: cheerio.Cheerio<AnyNode>,
+    $element: cheerio.Cheerio<AnyNode>
   ): string {
     // 1. ID가 있으면 ID 사용
     const id = $element.attr('id');

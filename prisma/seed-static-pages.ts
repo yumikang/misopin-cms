@@ -123,7 +123,6 @@ async function main() {
           title: pageInfo.title,
           filePath: pageInfo.filePath,
           sections: parseResult.sections as unknown as Prisma.InputJsonValue,
-          isPublished: false,
         },
       });
 
