@@ -1,38 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
-    // Find user in Supabase with proper typing
-    const { data: user, error: fetchError } = await supabaseAdmin
-      .from('users')
-      .select('id, email, name, password, role, is_active')
-      .eq('email', email)
-      .single();
+    // Find user in database
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        password: true,
+        role: true,
+        isActive: true,
+      },
+    });
 
-    if (fetchError || !user) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
-    // Type assertion for user - we know the structure from our select
-    const typedUser = user as {
-      id: string;
-      email: string;
-      name: string;
-      password: string;
-      role: string;
-      is_active: boolean;
-    };
-
     // Check password
-    const validPassword = await bcrypt.compare(password, typedUser.password);
+    const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
@@ -41,20 +39,26 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is active
-    if (!typedUser.is_active) {
+    if (!user.isActive) {
       return NextResponse.json(
         { error: 'Account is disabled' },
         { status: 403 }
       );
     }
 
+    // Update last login
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLogin: new Date() },
+    });
+
     // Generate token
     const token = jwt.sign(
       {
-        id: typedUser.id,
-        email: typedUser.email,
-        role: typedUser.role,
-        name: typedUser.name
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.name
       },
       process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
@@ -62,10 +66,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       user: {
-        id: typedUser.id,
-        email: typedUser.email,
-        name: typedUser.name,
-        role: typedUser.role
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role
       },
       token,
       success: true
