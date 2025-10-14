@@ -137,19 +137,19 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-center text-sm text-gray-600 mb-3">테스트 계정:</p>
+            <p className="text-center text-sm text-gray-600 mb-3">개발용 계정:</p>
             <div className="space-y-2 text-xs text-gray-500">
               <div className="flex justify-between px-2">
                 <span className="font-semibold">최고 관리자:</span>
-                <span>super@misopin.com / Admin123</span>
+                <span>wonjang@misopin.com / Misopin123!</span>
               </div>
               <div className="flex justify-between px-2">
                 <span className="font-semibold">일반 관리자:</span>
-                <span>admin@misopin.com / Admin123</span>
+                <span>teamlead@misopin.com / Misopin123!</span>
               </div>
               <div className="flex justify-between px-2">
                 <span className="font-semibold">편집자:</span>
-                <span>editor@misopin.com / Admin123</span>
+                <span>editor@misopin.com / Misopin123!</span>
               </div>
             </div>
           </div>
