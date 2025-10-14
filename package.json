@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
     "db:seed:static": "tsx prisma/seed-static-pages.ts",
-    "db:seed:users": "tsx prisma/seed-users.ts"
+    "db:seed:users": "tsx prisma/seed-users.ts",
+    "reset-password": "tsx scripts/reset-password.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
