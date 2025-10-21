@@ -115,10 +115,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
     const originalFilePath = path.join(folderPath, originalFileName);
     await fs.writeFile(originalFilePath, buffer);
 
-    // URL 생성 (프로덕션과 개발 환경 분리)
-    const baseUrl = process.env.NODE_ENV === 'production'
-      ? '/uploads'
-      : '/uploads';
+    // URL 생성 (절대 URL)
+    const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || '';
+    const baseUrl = apiBaseUrl ? `${apiBaseUrl}/api/uploads` : '/api/uploads';
 
     urls.original = `${baseUrl}/${folder}/${originalFileName}`;
 

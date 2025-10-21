@@ -67,8 +67,9 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
     await writeFile(filePath, buffer);
 
-    // 웹 접근 가능한 URL 반환
-    const fileUrl = `/uploads/${folder}/${fileName}`;
+    // 웹 접근 가능한 URL 반환 (절대 URL)
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || '';
+    const fileUrl = baseUrl ? `${baseUrl}/api/uploads/${folder}/${fileName}` : `/api/uploads/${folder}/${fileName}`;
 
     return NextResponse.json({
       success: true,
