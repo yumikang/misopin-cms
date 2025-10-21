@@ -163,6 +163,14 @@ jobs:
             echo "Checking for orphaned files in standalone:"
             find ${{ inputs.deploy_path }}/.next/standalone/public -name "*.png" -o -name "*.jpg" 2>/dev/null | head -10
 
+            # Fix permissions for uploads directory
+            echo ""
+            echo "=== Setting permissions for uploads directory ==="
+            chown -R root:caddy /var/www/misopin-cms-uploads
+            chmod -R 755 /var/www/misopin-cms-uploads
+            find /var/www/misopin-cms-uploads -type f -exec chmod 644 {} \;
+            echo "✅ Permissions set: root:caddy, dirs 755, files 644"
+
       - name: Restart PM2 application
         uses: appleboy/ssh-action@v1.0.0
         with:
