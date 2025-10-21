@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -11,92 +8,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 사용자 모델
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  password  String
-  role      UserRole @default(EDITOR)
-  isActive  Boolean  @default(true)
-  lastLogin DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model block_templates {
+  id           String           @id
+  name         String
+  description  String?
+  category     TemplateCategory
+  thumbnailUrl String?
+  isPublic     Boolean          @default(false)
+  createdBy    String
+  templateData Json
+  tags         String[]
+  usageCount   Int              @default(0)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime
+  users        users            @relation(fields: [createdBy], references: [id])
 
-  // 관계
-  uploadedFiles   FileUpload[]
-  contentVersions ContentVersion[]
-  blockTemplates  BlockTemplate[]
-
-  @@map("users")
+  @@index([category])
+  @@index([createdBy])
+  @@index([isPublic])
 }
 
-// 페이지 모델
-model Page {
-  id          String      @id @default(cuid())
-  slug        String      @unique
-  title       String
-  content     Json        // 구조화된 섹션 데이터
-  metadata    Json?       // SEO 메타데이터
-  isPublished Boolean     @default(false)
-  version     Int         @default(1)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  // 관계
-  pageBlocks  PageBlock[]
-  seoSetting  SEOSetting?
-
-  @@map("pages")
-}
-
-// 예약 모델
-model Reservation {
-  id            String            @id @default(cuid())
-  patientName   String
-  phone         String
-  email         String?
-  birthDate     DateTime
-  gender        Gender
-  treatmentType TreatmentType
-  service       ServiceType       // 진료 항목
-  preferredDate DateTime
-  preferredTime String
-  status        ReservationStatus @default(PENDING)
-  notes         String?
-  adminNotes    String?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-
-  @@map("reservations")
-}
-
-// 팝업 모델
-model Popup {
-  id          String    @id @default(cuid())
-  title       String
-  content     String
-  imageUrl    String?
-  linkUrl     String?
-  isActive    Boolean   @default(false)
-  startDate   DateTime
-  endDate     DateTime
-  position    Json      // {x, y, width, height}
-  showOnPages String[]  // 표시할 페이지들
-  displayType PopupType @default(MODAL)
-  priority    Int       @default(1)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  @@map("popups")
-}
-
-// 게시글 모델
-model BoardPost {
-  id          String    @id @default(cuid())
+model board_posts {
+  id          String    @id
   boardType   BoardType
   title       String
-  content     String    @db.Text
+  content     String
   excerpt     String?
   author      String
   isPublished Boolean   @default(false)
@@ -105,30 +41,236 @@ model BoardPost {
   tags        String[]
   imageUrl    String?
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  updatedAt   DateTime
   publishedAt DateTime?
-
-  @@map("board_posts")
 }
 
-// 열거형 정의
-enum UserRole {
-  SUPER_ADMIN
-  ADMIN
-  EDITOR
+model clinic_info {
+  id                   String   @id
+  phonePrimary         String
+  phoneSecondary       String?
+  addressFull          String
+  addressFloor         String?
+  hoursWeekday         String
+  hoursSaturday        String
+  hoursSunday          String
+  hoursLunch           String?
+  hoursSpecialNote     String?
+  snsInstagram         String?
+  snsKakao             String?
+  snsNaverBlog         String?
+  snsFacebook          String?
+  snsYoutube           String?
+  businessRegistration String
+  representativeName   String
+  medicalLicense       String?
+  isActive             Boolean  @default(true)
+  version              Int      @default(1)
+  lastUpdatedBy        String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime
+
+  @@index([isActive])
 }
 
-enum ReservationStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-  COMPLETED
+model content_blocks {
+  id               String             @id
+  name             String
+  type             BlockType
+  content          Json
+  styles           Json?
+  settings         Json?
+  isActive         Boolean            @default(true)
+  isGlobal         Boolean            @default(false)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  content_versions content_versions[]
+  page_blocks      page_blocks[]
+
+  @@index([isGlobal])
+  @@index([type])
 }
 
-enum PopupType {
-  MODAL
-  BANNER
-  SLIDE_IN
+model content_versions {
+  id             String         @id
+  blockId        String
+  version        Int
+  content        Json
+  styles         Json?
+  settings       Json?
+  changedBy      String
+  changeNote     String?
+  createdAt      DateTime       @default(now())
+  content_blocks content_blocks @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  users          users          @relation(fields: [changedBy], references: [id])
+
+  @@unique([blockId, version])
+  @@index([blockId])
+  @@index([changedBy])
+}
+
+model file_uploads {
+  id           String   @id
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  path         String
+  url          String
+  category     String   @default("general")
+  description  String?
+  uploadedById String
+  uploadedAt   DateTime @default(now())
+  updatedAt    DateTime
+  users        users    @relation(fields: [uploadedById], references: [id])
+
+  @@index([category])
+  @@index([uploadedById])
+}
+
+model page_blocks {
+  id             String         @id
+  pageId         String
+  blockId        String
+  sectionName    String
+  order          Int
+  isVisible      Boolean        @default(true)
+  customStyles   Json?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime
+  content_blocks content_blocks @relation(fields: [blockId], references: [id])
+  pages          pages          @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, sectionName, order])
+  @@index([blockId])
+  @@index([pageId])
+}
+
+model pages {
+  id           String        @id
+  slug         String        @unique
+  title        String
+  content      Json
+  metadata     Json?
+  isPublished  Boolean       @default(false)
+  version      Int           @default(1)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime
+  page_blocks  page_blocks[]
+  seo_settings seo_settings?
+}
+
+model popups {
+  id          String    @id
+  title       String
+  content     String
+  imageUrl    String?
+  linkUrl     String?
+  isActive    Boolean   @default(false)
+  startDate   DateTime
+  endDate     DateTime
+  position    String    @default("CENTER")
+  showOnPages String[]
+  displayType PopupType @default(MODAL)
+  priority    Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+}
+
+model reservations {
+  id            String            @id
+  patientName   String
+  phone         String
+  email         String?
+  birthDate     DateTime
+  gender        Gender
+  treatmentType TreatmentType
+  preferredDate DateTime
+  preferredTime String
+  status        ReservationStatus @default(PENDING)
+  notes         String?
+  adminNotes    String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime
+  service       ServiceType
+}
+
+model seo_settings {
+  id              String   @id
+  pageId          String   @unique
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String[]
+  ogTitle         String?
+  ogDescription   String?
+  ogImage         String?
+  canonicalUrl    String?
+  structuredData  Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+  pages           pages    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model static_page_versions {
+  id           String       @id
+  pageId       String
+  version      Int
+  sections     Json
+  changedBy    String
+  changeNote   String?
+  createdAt    DateTime     @default(now())
+  static_pages static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, version])
+  @@index([pageId])
+}
+
+model static_pages {
+  id                   String                 @id
+  slug                 String                 @unique
+  title                String
+  filePath             String
+  sections             Json
+  lastEdited           DateTime
+  createdAt            DateTime               @default(now())
+  static_page_versions static_page_versions[]
+}
+
+model system_settings {
+  id        String   @id
+  key       String   @unique
+  value     Json
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model users {
+  id               String             @id
+  email            String             @unique
+  name             String
+  password         String
+  role             UserRole           @default(EDITOR)
+  isActive         Boolean            @default(true)
+  lastLogin        DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  block_templates  block_templates[]
+  content_versions content_versions[]
+  file_uploads     file_uploads[]
+}
+
+enum BlockType {
+  TEXT
+  IMAGE
+  VIDEO
+  CAROUSEL
+  GRID
+  BUTTON
+  FORM
+  MAP
+  HTML
+  COMPONENT
 }
 
 enum BoardType {
@@ -141,269 +283,47 @@ enum Gender {
   FEMALE
 }
 
-enum TreatmentType {
-  FIRST_VISIT     // 초진
-  FOLLOW_UP       // 재진
+enum PopupType {
+  MODAL
+  BANNER
+  SLIDE_IN
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }
 
 enum ServiceType {
-  WRINKLE_BOTOX         // 주름/보톡스
-  VOLUME_LIFTING        // 볼륨/리프팅
-  SKIN_CARE             // 피부케어
-  REMOVAL_PROCEDURE     // 제거시술
-  BODY_CARE             // 바디케어
-  OTHER_CONSULTATION    // 기타 상담
+  WRINKLE_BOTOX
+  VOLUME_LIFTING
+  SKIN_CARE
+  REMOVAL_PROCEDURE
+  BODY_CARE
+  OTHER_CONSULTATION
 }
 
-// 시스템 설정 모델
-model SystemSetting {
-  id        String   @id @default(cuid())
-  key       String   @unique
-  value     Json
-  category  String   // general, email, security, etc.
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("system_settings")
-}
-
-// 파일 업로드 모델
-model FileUpload {
-  id           String   @id @default(cuid())
-  filename     String   // 저장된 파일명 (유니크하게 생성)
-  originalName String   // 원본 파일명
-  mimeType     String   // 파일 MIME 타입
-  size         Int      // 파일 크기 (bytes)
-  path         String   // 저장 경로
-  url          String   // 접근 URL
-  category     String   @default("general") // 파일 카테고리 (image, document, etc.)
-  description  String?  // 파일 설명
-  uploadedById String   // 업로드한 사용자 ID
-  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
-  uploadedAt   DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([uploadedById])
-  @@index([category])
-  @@map("file_uploads")
-}
-
-// ============= 웹빌더 관련 모델 =============
-
-// 콘텐츠 블록 모델 (재사용 가능한 콘텐츠 단위)
-model ContentBlock {
-  id          String      @id @default(cuid())
-  name        String      // 블록 이름 (관리용)
-  type        BlockType   // 블록 타입 (text, image, video, etc.)
-  content     Json        // 블록 콘텐츠 데이터
-  styles      Json?       // 커스텀 스타일
-  settings    Json?       // 블록별 설정
-  isActive    Boolean     @default(true)
-  isGlobal    Boolean     @default(false) // 전역 블록 여부
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  // 관계
-  pageBlocks  PageBlock[]
-  versions    ContentVersion[]
-
-  @@index([type])
-  @@index([isGlobal])
-  @@map("content_blocks")
-}
-
-// 페이지-블록 연결 모델
-model PageBlock {
-  id           String       @id @default(cuid())
-  pageId       String       // 연결된 페이지 ID
-  blockId      String       // 연결된 블록 ID
-  sectionName  String       // 섹션 식별자 (e.g., "main-banner", "inc01")
-  order        Int          // 섹션 내 순서
-  isVisible    Boolean      @default(true)
-  customStyles Json?        // 페이지별 스타일 오버라이드
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-
-  // 관계
-  page         Page         @relation(fields: [pageId], references: [id], onDelete: Cascade)
-  block        ContentBlock @relation(fields: [blockId], references: [id])
-
-  @@unique([pageId, sectionName, order])
-  @@index([pageId])
-  @@index([blockId])
-  @@map("page_blocks")
-}
-
-// SEO 설정 모델
-model SEOSetting {
-  id              String   @id @default(cuid())
-  pageId          String   @unique
-  metaTitle       String?
-  metaDescription String?
-  metaKeywords    String[]
-  ogTitle         String?
-  ogDescription   String?
-  ogImage         String?
-  canonicalUrl    String?
-  structuredData  Json?    // Schema.org 구조화 데이터
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  // 관계
-  page            Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
-
-  @@map("seo_settings")
-}
-
-// 콘텐츠 버전 관리 모델
-model ContentVersion {
-  id          String       @id @default(cuid())
-  blockId     String       // 원본 블록 ID
-  version     Int          // 버전 번호
-  content     Json         // 버전의 콘텐츠
-  styles      Json?        // 버전의 스타일
-  settings    Json?        // 버전의 설정
-  changedBy   String       // 수정한 사용자 ID
-  changeNote  String?      // 변경 사항 메모
-  createdAt   DateTime     @default(now())
-
-  // 관계
-  block       ContentBlock @relation(fields: [blockId], references: [id], onDelete: Cascade)
-  user        User         @relation(fields: [changedBy], references: [id])
-
-  @@unique([blockId, version])
-  @@index([blockId])
-  @@index([changedBy])
-  @@map("content_versions")
-}
-
-// 블록 템플릿 모델 (재사용 가능한 블록 템플릿)
-model BlockTemplate {
-  id           String           @id @default(cuid())
-  name         String           // 템플릿 이름
-  description  String?          // 템플릿 설명
-  category     TemplateCategory // 템플릿 카테고리
-  thumbnailUrl String?          // 썸네일 이미지 URL
-  isPublic     Boolean          @default(false) // 공개 템플릿 여부
-  createdBy    String           // 생성한 사용자 ID
-  templateData Json             // ContentBlock 구조 데이터
-  tags         String[]         // 검색용 태그
-  usageCount   Int              @default(0) // 사용 횟수
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-
-  // 관계
-  creator      User             @relation(fields: [createdBy], references: [id])
-
-  @@index([category])
-  @@index([isPublic])
-  @@index([createdBy])
-  @@map("block_templates")
-}
-
-// 템플릿 카테고리 열거형
 enum TemplateCategory {
-  UI          // UI 컴포넌트 (버튼, 폼, 네비게이션 등)
-  LAYOUT      // 레이아웃 (그리드, 섹션 등)
-  CONTENT     // 콘텐츠 (텍스트, 이미지, 갤러리 등)
-  FORM        // 폼 및 입력 요소
-  MEDIA       // 미디어 (비디오, 오디오, 캐러셀 등)
-  NAVIGATION  // 네비게이션 및 메뉴
-  MARKETING   // 마케팅 요소 (배너, CTA, 프로모션 등)
-  SOCIAL      // 소셜 미디어 및 공유 요소
-  OTHER       // 기타
+  UI
+  LAYOUT
+  CONTENT
+  FORM
+  MEDIA
+  NAVIGATION
+  MARKETING
+  SOCIAL
+  OTHER
 }
 
-// 블록 타입 열거형
-enum BlockType {
-  TEXT        // 텍스트 블록
-  IMAGE       // 이미지 블록
-  VIDEO       // 비디오 블록
-  CAROUSEL    // 캐러셀/슬라이더 블록
-  GRID        // 그리드 레이아웃 블록
-  BUTTON      // 버튼 블록
-  FORM        // 폼 블록
-  MAP         // 지도 블록
-  HTML        // 커스텀 HTML 블록
-  COMPONENT   // React 컴포넌트 블록
+enum TreatmentType {
+  FIRST_VISIT
+  FOLLOW_UP
 }
 
-// ============= 정적 페이지 관리 모델 =============
-
-// 정적 HTML 페이지 모델
-model StaticPage {
-  id          String              @id @default(cuid())
-  slug        String              @unique // 파일명 (예: about.html)
-  title       String              // 페이지 제목
-  filePath    String              // 실제 HTML 파일 경로
-  sections    Json                // 편집 가능한 섹션 정보
-  lastEdited  DateTime            @updatedAt // 마지막 수정 시간
-  createdAt   DateTime            @default(now())
-
-  // 관계
-  versions    StaticPageVersion[]
-
-  @@map("static_pages")
-}
-
-// ============= 클리닉 정보 관리 모델 =============
-
-// 클리닉 연락처 및 운영 정보 (단일 레코드 패턴)
-model ClinicInfo {
-  id                    String   @id @default(cuid())
-
-  // 연락처 정보
-  phonePrimary          String   // 대표 전화번호 (예: 061-277-1001)
-  phoneSecondary        String?  // 보조 전화번호 (선택)
-
-  // 주소 정보
-  addressFull           String   // 전체 주소
-  addressFloor          String?  // 층/호수 정보 (선택)
-
-  // 운영 시간 (유연한 문자열 형식으로 한글 지원)
-  hoursWeekday          String   // 평일 운영시간
-  hoursSaturday         String   // 토요일 운영시간
-  hoursSunday           String   // 일요일/공휴일 운영시간
-  hoursLunch            String?  // 점심시간 (선택)
-  hoursSpecialNote      String?  // 특이사항 (예: 마지막 수요일 휴진)
-
-  // SNS 링크
-  snsInstagram          String?
-  snsKakao              String?
-  snsNaverBlog          String?
-  snsFacebook           String?
-  snsYoutube            String?
-
-  // 사업자 정보
-  businessRegistration  String   // 사업자등록번호
-  representativeName    String   // 대표자명
-  medicalLicense        String?  // 의료기관 인허가번호 (선택)
-
-  // 시스템 필드
-  isActive              Boolean  @default(true)  // 활성 레코드 여부 (단일 레코드 패턴)
-  version               Int      @default(1)     // 낙관적 잠금용 버전
-  lastUpdatedBy         String?  // 마지막 수정자 ID
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  @@index([isActive])
-  @@map("clinic_info")
-}
-
-// 정적 페이지 버전 관리 모델
-model StaticPageVersion {
-  id         String     @id @default(cuid())
-  pageId     String     // 페이지 ID
-  version    Int        // 버전 번호
-  sections   Json       // 해당 버전의 섹션 데이터
-  changedBy  String     // 수정한 사용자 이름
-  changeNote String?    // 변경 사항 메모
-  createdAt  DateTime   @default(now())
-
-  // 관계
-  page       StaticPage @relation(fields: [pageId], references: [id], onDelete: Cascade)
-
-  @@unique([pageId, version])
-  @@index([pageId])
-  @@map("static_page_versions")
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
 }

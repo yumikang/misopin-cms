@@ -1,26 +1,16 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
-import type { Database } from '@/lib/database.types';
-
-type Popup = Database['public']['Tables']['popups']['Row'];
-type PopupInsert = Database['public']['Tables']['popups']['Insert'];
-type PopupUpdate = Database['public']['Tables']['popups']['Update'];
+import { prisma } from '@/lib/prisma';
 
 // GET all popups
 export async function GET() {
   try {
-    const { data: popups, error } = await supabaseAdmin
-      .from('popups')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .returns<Popup[]>();
+    const popups = await prisma.popups.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-    if (error) {
-      console.error('Error fetching popups:', error);
-      throw error;
-    }
-
-    return NextResponse.json(popups || []);
+    return NextResponse.json(popups);
   } catch (error) {
     console.error('Error in GET /api/popups:', error);
     return NextResponse.json(
@@ -35,26 +25,22 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Set default values for new popup
-    const popupData: PopupInsert = {
-      ...body,
-      is_active: body.is_active ?? true,
-      priority: body.priority ?? 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    const { data, error } = await supabaseAdmin
-      .from('popups')
-      .insert([popupData])
-      .select();
-
-    const popup = data ? data[0] : null;
-
-    if (error) {
-      console.error('Error creating popup:', error);
-      throw error;
-    }
+    const popup = await prisma.popups.create({
+      data: {
+        id: body.id || crypto.randomUUID(),
+        title: body.title,
+        content: body.content || '',
+        imageUrl: body.imageUrl || body.image_url,
+        linkUrl: body.linkUrl || body.link_url,
+        displayType: body.displayType || body.display_type || 'MODAL',
+        position: body.position || 'CENTER',
+        showOnPages: body.showOnPages || body.show_on_pages || [],
+        priority: body.priority ?? 1,
+        isActive: body.isActive ?? body.is_active ?? true,
+        startDate: new Date(body.startDate || body.start_date),
+        endDate: new Date(body.endDate || body.end_date),
+      },
+    });
 
     return NextResponse.json(popup, { status: 201 });
   } catch (error) {
@@ -81,31 +67,22 @@ export async function PUT(request: Request) {
 
     const body = await request.json();
 
-    // Update popup with new data
-    const updateData: PopupUpdate = {
-      ...body,
-      updated_at: new Date().toISOString()
-    };
-
-    const { data, error } = await supabaseAdmin
-      .from('popups')
-      .update(updateData)
-      .eq('id', id)
-      .select();
-
-    const popup = data ? data[0] : null;
-
-    if (error) {
-      console.error('Error updating popup:', error);
-      throw error;
-    }
-
-    if (!popup) {
-      return NextResponse.json(
-        { error: 'Popup not found' },
-        { status: 404 }
-      );
-    }
+    const popup = await prisma.popups.update({
+      where: { id },
+      data: {
+        title: body.title,
+        content: body.content,
+        imageUrl: body.imageUrl || body.image_url,
+        linkUrl: body.linkUrl || body.link_url,
+        displayType: body.displayType || body.display_type,
+        position: body.position,
+        showOnPages: body.showOnPages || body.show_on_pages,
+        priority: body.priority,
+        isActive: body.isActive ?? body.is_active,
+        startDate: body.startDate ? new Date(body.startDate) : undefined,
+        endDate: body.endDate ? new Date(body.endDate) : undefined,
+      },
+    });
 
     return NextResponse.json(popup);
   } catch (error) {
@@ -130,15 +107,9 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const { error } = await supabaseAdmin
-      .from('popups')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error deleting popup:', error);
-      throw error;
-    }
+    await prisma.popups.delete({
+      where: { id },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

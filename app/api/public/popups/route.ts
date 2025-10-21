@@ -1,59 +1,54 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
-
-interface Popup {
-  id: string;
-  title: string;
-  content: string;
-  image_url?: string;
-  link_url?: string;
-  display_type: string;
-  position: string;
-  start_date: string;
-  end_date: string;
-  is_active: boolean;
-  priority?: number;
-  created_at?: string;
-  updated_at?: string;
-}
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const now = new Date().toISOString();
-    console.log('Current time for popup query:', now);
+    const now = new Date();
+    console.log('Current time for popup query:', now.toISOString());
 
-    // Query active popups - 일단 활성화된 모든 팝업 가져오기 (디버깅용)
-    const { data: allPopups, error: fetchError } = await supabaseAdmin
-      .from('popups')
-      .select('*')
-      .eq('is_active', true)
-      .returns<Popup[]>();
+    // Query active popups
+    const allPopups = await prisma.popups.findMany({
+      where: {
+        isActive: true,
+      },
+    });
 
     console.log('All active popups:', allPopups);
 
     // 날짜 필터링
-    const popups = allPopups?.filter((popup: Popup) => {
-      const startDate = new Date(popup.start_date);
-      const endDate = new Date(popup.end_date);
-      const currentDate = new Date(now);
+    const popups = allPopups.filter((popup) => {
+      const startDate = new Date(popup.startDate);
+      const endDate = new Date(popup.endDate);
 
       // end_date의 23:59:59로 설정
       endDate.setHours(23, 59, 59, 999);
 
-      const isValid = startDate <= currentDate && currentDate <= endDate;
-      console.log(`Popup ${popup.id}: start=${startDate}, end=${endDate}, current=${currentDate}, valid=${isValid}`);
+      const isValid = startDate <= now && now <= endDate;
+      console.log(`Popup ${popup.id}: start=${startDate}, end=${endDate}, current=${now}, valid=${isValid}`);
       return isValid;
-    }) || [];
-
-    const error = fetchError;
+    });
 
     console.log('Found popups:', popups);
 
-    if (error) {
-      throw error;
-    }
+    // Convert to snake_case format for frontend compatibility
+    const formattedPopups = popups.map(popup => ({
+      id: popup.id,
+      title: popup.title,
+      content: popup.content,
+      image_url: popup.imageUrl,
+      link_url: popup.linkUrl,
+      display_type: popup.displayType,
+      position: popup.position,
+      show_on_pages: popup.showOnPages,
+      priority: popup.priority,
+      is_active: popup.isActive,
+      start_date: popup.startDate.toISOString(),
+      end_date: popup.endDate.toISOString(),
+      created_at: popup.createdAt.toISOString(),
+      updated_at: popup.updatedAt.toISOString(),
+    }));
 
-    return NextResponse.json(popups || [], {
+    return NextResponse.json(formattedPopups, {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',
