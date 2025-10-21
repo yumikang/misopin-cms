@@ -76,14 +76,18 @@ export async function GET(request: NextRequest) {
 
     // Calculate availability for each day
     const availability: Record<string, DayAvailability> = {};
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+
+    // 한국 시간 기준으로 오늘 날짜 계산 (UTC+9)
+    const now = new Date();
+    const koreaOffset = 9 * 60; // 9시간을 분으로
+    const koreaTime = new Date(now.getTime() + (now.getTimezoneOffset() + koreaOffset) * 60000);
+    const today = new Date(koreaTime.getFullYear(), koreaTime.getMonth(), koreaTime.getDate());
 
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const dateStr = d.toISOString().split('T')[0];
       const dayReservations = reservationsByDate[dateStr] || [];
 
-      // Check if date is in the past
+      // Check if date is in the past (한국 시간 기준)
       if (d < today) {
         availability[dateStr] = {
           status: 'closed',
