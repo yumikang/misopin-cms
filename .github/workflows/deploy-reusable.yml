@@ -149,6 +149,20 @@ jobs:
 
             echo "Upload files count: $(ls -1 /var/www/misopin-cms-uploads 2>/dev/null | wc -l)"
 
+            # DEBUG: Show file structure
+            echo "=== Debugging file structure ==="
+            echo "Files in /var/www/misopin-cms-uploads:"
+            find /var/www/misopin-cms-uploads -type f 2>/dev/null | head -20
+            echo ""
+            echo "Symlink status for CMS uploads:"
+            ls -la ${{ inputs.deploy_path }}/.next/standalone/public/uploads 2>/dev/null || echo "Not found"
+            echo ""
+            echo "Symlink status for static site uploads:"
+            ls -la /var/www/misopin.com/uploads 2>/dev/null || echo "Not found"
+            echo ""
+            echo "Checking for orphaned files in standalone:"
+            find ${{ inputs.deploy_path }}/.next/standalone/public -name "*.png" -o -name "*.jpg" 2>/dev/null | head -10
+
       - name: Restart PM2 application
         uses: appleboy/ssh-action@v1.0.0
         with:
