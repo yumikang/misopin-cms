@@ -123,8 +123,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            # Create symbolic link for uploads folder (for popups and board images)
-            ln -sf /var/www/misopin-cms/public/uploads /var/www/misopin.com/uploads || echo "Symlink already exists"
+            # Remove existing uploads folder/link and create fresh symbolic link
+            rm -rf /var/www/misopin.com/uploads
+            ln -s /var/www/misopin-cms/public/uploads /var/www/misopin.com/uploads
+            echo "Symlink created: /var/www/misopin.com/uploads -> /var/www/misopin-cms/public/uploads"
 
       - name: Restart PM2 application
         uses: appleboy/ssh-action@v1.0.0
