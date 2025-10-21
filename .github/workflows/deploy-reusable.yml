@@ -75,7 +75,7 @@ jobs:
           remote_user: ${{ secrets.SERVER_USER }}
           remote_key: ${{ secrets.SERVER_SSH_KEY }}
 
-      - name: Restart PM2 application
+      - name: Build and restart on server
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -83,7 +83,8 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd ${{ inputs.deploy_path }}
-            npm install --production
+            npm install
+            npm run build
             pm2 restart ${{ inputs.app_name }} || pm2 start ecosystem.config.js
             pm2 save
 
