@@ -5,6 +5,16 @@ import { existsSync } from 'fs';
 
 export const runtime = 'nodejs';
 
+// 업로드 디렉토리 (배포와 무관하게 보존됨)
+const UPLOAD_DIR = '/var/www/misopin-cms-uploads';
+
+// 로컬 개발 환경에서는 프로젝트 내 uploads 폴더 사용
+const getUploadDir = () => {
+  return process.env.NODE_ENV === 'production'
+    ? UPLOAD_DIR
+    : path.join(process.cwd(), 'public', 'uploads');
+};
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -44,7 +54,7 @@ export async function POST(request: NextRequest) {
     const fileName = `${timestamp}-${randomString}${fileExtension}`;
 
     // 업로드 디렉토리 경로
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', folder);
+    const uploadDir = path.join(getUploadDir(), folder);
 
     // 디렉토리가 없으면 생성
     if (!existsSync(uploadDir)) {
