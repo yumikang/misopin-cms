@@ -1,53 +1,31 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
-
-// Define the shape of data from Supabase
-interface SupabaseReservation {
-  id: string;
-  patient_name: string;
-  phone: string;
-  email?: string;
-  preferred_date: string;
-  preferred_time: string;
-  service: string;
-  treatment_type: string;
-  status: string;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-}
+import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function GET() {
   try {
-    // Get reservations from Supabase
-    const { data, error } = await supabaseAdmin
-      .from('reservations')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching reservations:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch reservations' },
-        { status: 500 }
-      );
-    }
+    // Get reservations from database using Prisma
+    const reservations = await prisma.reservation.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
 
     // Transform data to match frontend expectations
-    const transformedData = ((data as SupabaseReservation[]) || []).map(reservation => ({
+    const transformedData = reservations.map(reservation => ({
       id: reservation.id,
-      patient_name: reservation.patient_name,
+      patient_name: reservation.patientName,
       patient_phone: reservation.phone,
       patient_email: reservation.email,
-      reservation_date: reservation.preferred_date,
-      reservation_time: reservation.preferred_time,
+      reservation_date: reservation.preferredDate.toISOString().split('T')[0],
+      reservation_time: reservation.preferredTime,
       department: reservation.service,
       doctor_name: '',
-      purpose: reservation.treatment_type === 'FIRST_VISIT' ? '초진' : '재진',
+      purpose: reservation.treatmentType === 'FIRST_VISIT' ? '초진' : '재진',
       status: reservation.status,
       notes: reservation.notes,
-      created_at: reservation.created_at,
-      updated_at: reservation.updated_at
+      created_at: reservation.createdAt.toISOString(),
+      updated_at: reservation.updatedAt.toISOString()
     }));
 
     return NextResponse.json(transformedData);
@@ -262,65 +240,76 @@ export async function PUT(request: Request) {
     );
   }
 
-  const body = await request.json();
-  const index = mockReservations.findIndex(r => r.id === id);
+  try {
+    const body = await request.json();
 
-  if (index === -1) {
-    return NextResponse.json(
-      { error: 'Reservation not found' },
-      { status: 404 }
-    );
-  }
+    // Get existing reservation from database
+    const existingReservation = await prisma.reservation.findUnique({
+      where: { id }
+    });
 
-  // Handle status updates
-  if (body.status) {
-    const currentStatus = mockReservations[index].status;
+    if (!existingReservation) {
+      console.error('Reservation not found');
+      return NextResponse.json(
+        { error: 'Reservation not found' },
+        { status: 404 }
+      );
+    }
 
     // Validate status transitions
-    if (currentStatus === 'COMPLETED' || currentStatus === 'CANCELLED') {
-      return NextResponse.json(
-        { error: '완료되거나 취소된 예약은 수정할 수 없습니다.' },
-        { status: 400 }
-      );
+    if (body.status) {
+      const currentStatus = existingReservation.status;
+
+      if (currentStatus === 'COMPLETED' || currentStatus === 'CANCELLED') {
+        return NextResponse.json(
+          { error: '완료되거나 취소된 예약은 수정할 수 없습니다.' },
+          { status: 400 }
+        );
+      }
     }
 
-    // Update status timestamps
-    if (body.status === 'CONFIRMED') {
-      body.confirmed_at = new Date().toISOString();
-    } else if (body.status === 'CANCELLED') {
-      body.cancelled_at = new Date().toISOString();
-    }
-  }
+    // Prepare update data - map frontend field names to Prisma model field names
+    const updateData: Prisma.ReservationUpdateInput = {};
 
-  // Check for time slot conflict if changing time
-  if (body.reservation_date || body.reservation_time) {
-    const newDate = body.reservation_date || mockReservations[index].reservation_date;
-    const newTime = body.reservation_time || mockReservations[index].reservation_time;
-    const department = body.department || mockReservations[index].department;
+    if (body.status) updateData.status = body.status;
+    if (body.patient_name) updateData.patientName = body.patient_name;
+    if (body.patient_phone) updateData.phone = body.patient_phone;
+    if (body.patient_email !== undefined) updateData.email = body.patient_email;
+    if (body.reservation_date) updateData.preferredDate = new Date(body.reservation_date);
+    if (body.reservation_time) updateData.preferredTime = body.reservation_time;
+    if (body.department) updateData.service = body.department;
+    if (body.notes !== undefined) updateData.notes = body.notes;
 
-    const conflict = mockReservations.find(
-      r => r.id !== id &&
-          r.reservation_date === newDate &&
-          r.reservation_time === newTime &&
-          r.department === department &&
-          r.status !== 'CANCELLED'
+    // Update reservation in database
+    const updatedReservation = await prisma.reservation.update({
+      where: { id },
+      data: updateData
+    });
+
+    // Transform response to match frontend expectations
+    const response = {
+      id: updatedReservation.id,
+      patient_name: updatedReservation.patientName,
+      patient_phone: updatedReservation.phone,
+      patient_email: updatedReservation.email,
+      reservation_date: updatedReservation.preferredDate.toISOString().split('T')[0],
+      reservation_time: updatedReservation.preferredTime,
+      department: updatedReservation.service,
+      purpose: updatedReservation.treatmentType === 'FIRST_VISIT' ? '초진' : '재진',
+      status: updatedReservation.status,
+      notes: updatedReservation.notes,
+      created_at: updatedReservation.createdAt.toISOString(),
+      updated_at: updatedReservation.updatedAt.toISOString()
+    };
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error('Error in PUT /api/reservations:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
     );
-
-    if (conflict) {
-      return NextResponse.json(
-        { error: '해당 시간대는 이미 예약이 있습니다.' },
-        { status: 400 }
-      );
-    }
   }
-
-  mockReservations[index] = {
-    ...mockReservations[index],
-    ...body,
-    updated_at: new Date().toISOString()
-  };
-
-  return NextResponse.json(mockReservations[index]);
 }
 
 export async function DELETE(request: Request) {
@@ -334,24 +323,39 @@ export async function DELETE(request: Request) {
     );
   }
 
-  const index = mockReservations.findIndex(r => r.id === id);
+  try {
+    // Get existing reservation from database
+    const existingReservation = await prisma.reservation.findUnique({
+      where: { id }
+    });
 
-  if (index === -1) {
+    if (!existingReservation) {
+      console.error('Reservation not found');
+      return NextResponse.json(
+        { error: 'Reservation not found' },
+        { status: 404 }
+      );
+    }
+
+    // Cancel instead of delete
+    await prisma.reservation.update({
+      where: { id },
+      data: {
+        status: 'CANCELLED'
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: '예약이 취소되었습니다.'
+    });
+  } catch (error) {
+    console.error('Error in DELETE /api/reservations:', error);
     return NextResponse.json(
-      { error: 'Reservation not found' },
-      { status: 404 }
+      { error: 'Internal server error' },
+      { status: 500 }
     );
   }
-
-  // Cancel instead of delete
-  mockReservations[index].status = 'CANCELLED';
-  mockReservations[index].cancelled_at = new Date().toISOString();
-  mockReservations[index].updated_at = new Date().toISOString();
-
-  return NextResponse.json({
-    success: true,
-    message: '예약이 취소되었습니다.'
-  });
 }
 
 // Get available time slots for a specific date and department

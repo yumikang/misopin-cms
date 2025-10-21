@@ -21,6 +21,8 @@ export function middleware(request: NextRequest) {
       'https://misopin-cms.vercel.app', // CMS domain
       'https://misopin.com',
       'https://www.misopin.com',
+      'http://misopin.one-q.xyz', // Production static site (HTTP)
+      'https://misopin.one-q.xyz', // Production static site (HTTPS)
       process.env.NEXT_PUBLIC_STATIC_SITE_URL,
       process.env.NEXT_PUBLIC_CMS_URL,
     ].filter(Boolean);

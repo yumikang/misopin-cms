@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, ReservationStatus, Gender, TreatmentType, PopupType, BoardType } from "@prisma/client";
+import { PrismaClient, UserRole, ReservationStatus, Gender, TreatmentType, PopupType, BoardType, ServiceType } from "@prisma/client";
 import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -56,11 +56,11 @@ async function main() {
       birthDate: new Date("1990-05-15"),
       gender: Gender.MALE,
       treatmentType: TreatmentType.FIRST_VISIT,
-      service: "목 디스크 치료",
+      service: ServiceType.WRINKLE_BOTOX,
       preferredDate: new Date("2024-01-15"),
       preferredTime: "14:00",
       status: ReservationStatus.CONFIRMED,
-      notes: "목이 자주 아파서 검사받고 싶습니다.",
+      notes: "이마 주름 보톡스 상담 원합니다.",
     },
     {
       patientName: "박영희",
@@ -69,11 +69,11 @@ async function main() {
       birthDate: new Date("1985-08-22"),
       gender: Gender.FEMALE,
       treatmentType: TreatmentType.FOLLOW_UP,
-      service: "허리 통증 재검",
+      service: ServiceType.VOLUME_LIFTING,
       preferredDate: new Date("2024-01-16"),
       preferredTime: "10:30",
       status: ReservationStatus.PENDING,
-      notes: "지난번 치료 후 상태 확인",
+      notes: "지난번 필러 시술 후 경과 확인",
       adminNotes: "정기 재검 환자",
     },
     {
@@ -82,11 +82,11 @@ async function main() {
       birthDate: new Date("1992-12-10"),
       gender: Gender.MALE,
       treatmentType: TreatmentType.FIRST_VISIT,
-      service: "어깨 통증 검사",
+      service: ServiceType.SKIN_CARE,
       preferredDate: new Date("2024-01-17"),
       preferredTime: "16:00",
       status: ReservationStatus.COMPLETED,
-      notes: "운동 중 어깨 부상",
+      notes: "레이저 토닝 상담",
     },
     {
       patientName: "최수연",
@@ -95,11 +95,11 @@ async function main() {
       birthDate: new Date("1988-03-05"),
       gender: Gender.FEMALE,
       treatmentType: TreatmentType.FIRST_VISIT,
-      service: "무릎 관절 검사",
+      service: ServiceType.REMOVAL_PROCEDURE,
       preferredDate: new Date("2024-01-18"),
       preferredTime: "11:00",
       status: ReservationStatus.CANCELLED,
-      notes: "갑작스런 일정 변경으로 취소",
+      notes: "점 제거 시술 문의",
       adminNotes: "환자 요청으로 취소",
     },
   ];

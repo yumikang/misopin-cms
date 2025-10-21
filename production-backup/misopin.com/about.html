@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+<meta http-equiv="imagetoolbar" content="no">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<!-- 모바일 최적화 메타태그 -->
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-capable" content="no">
+<meta name="theme-color" content="#9F988C">
+<meta name="format-detection" content="telephone=no">
+<title>병원 소개 - 미소핀의원</title>
+<link rel="icon" type="image/svg+xml" href="img/misopin-temporary-logo%201.svg">
+<link rel="shortcut icon" type="image/svg+xml" href="img/misopin-temporary-logo%201.svg">
+<link rel="apple-touch-icon" href="img/misopin-temporary-logo%201.svg">
+<link rel="stylesheet" href="css/vendor/default.css">
+<link rel="stylesheet" href="css/components/quickmenu.css">
+<link rel="stylesheet" href="css/components/top_menu.css">
+<link rel="stylesheet" href="css/components/sub_main_banner.css">
+<link rel="stylesheet" href="css/components/aside.css">
+<link rel="stylesheet" href="css/vendor/user.css">
+<link rel="stylesheet" href="css/pages/page_style.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/button-styles.css">
+<link rel="stylesheet" href="css/grid-system-1450.css">
+<script src="js/vendor/aos.js"></script>
+<link rel="stylesheet" href="css/vendor/aos.css">
+<link rel="stylesheet" href="css/vendor/swiper.min.css">
+<!-- About 페이지 전용 CSS -->
+<link rel="stylesheet" href="css/pages/about.css">
+<script>
+// 자바스크립트에서 사용하는 전역변수 선언
+var g5_url       = "https://skincare1007.shiningcorp.com";
+var g5_bbs_url   = "https://skincare1007.shiningcorp.com/bbs";
+</script>
+<script src="js/vendor/jquery-3.7.1.min.js"></script>
+<script src="js/vendor/jquery-ui.js"></script>
+<script src="js/vendor/jquery.menu.js"></script>
+<script src="js/common.js"></script>
+<script src="js/wrest.js"></script>
+<script src="js/libs/placeholders.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="js/vendor/feather.min.js"></script>
+<script src="js/components/top_menu.js"></script>
+<link rel="stylesheet" href="css/index-custom.css">
+</head>
+<body>
+
+<div id="sh_wrapper">
+
+<!-- 퀵메뉴 시작 -->
+<iframe src="quickmenu.html" style="position:fixed;top:50%;right:1.5%;transform:translateY(-50%);width:140px;height:800px;border:none;z-index:8;background:transparent;" scrolling="no"></iframe>
+<!-- 퀵메뉴 끝 -->
+
+<!-- 헤더 시작 -->
+<!-- 반응형 헤더 템플릿 -->
+<!-- 데스크톱 헤더 (768px 이상) -->
+<header id="sh_hd" class="desktop-header">
+    <div id="sh_hd_wrapper">
+        <div id="top_nav_wrap">
+            <!-- 로고 -->
+            <div id="top_logo">
+                <a href="index.html">
+                    <img src="img/misopin-temporary-logo.png" srcset="img/misopin-temporary-logo.png 2048w, img/misopin-temporary-logo.png 1024w, img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 100px, 150px" alt="미소핀의원" style="height: 50px;" />
+                </a>
+            </div>
+            <div class="right">
+                <nav id="r_menu">
+                    <!-- 상단메뉴 -->
+                    <ul id="top_nav">
+                        <li class="list01">
+                            <a class="list" href="about.html">미소핀 소개</a>
+                            <ul class="sub_ul1">
+                                <li><a href="about.html">병원 소개</a></li>
+                                <li><a href="board-page.html">공지 및 이벤트</a></li>
+                            </ul>
+                        </li>
+                        <li class="list02">
+                            <a class="list" href="dist/botox.html">주름/보톡스</a>
+                            <ul class="sub_ul2">
+                                <li><a href="dist/botox.html">보톡스</a></li>
+                                <li><a href="dist/jeomin.html">제오민</a></li>
+                            </ul>
+                        </li>
+                        <li class="list03">
+                            <a class="list" href="dist/filler.html">볼륨/리프팅</a>
+                            <ul class="sub_ul3">
+                                <li><a href="dist/filler.html">필러</a></li>
+                                <li><a href="dist/skinbooster.html">스킨부스터</a></li>
+                                <li><a href="dist/lifting.html">리프팅</a></li>
+                            </ul>
+                        </li>
+                        <li class="list04">
+                            <a class="list" href="dist/acne.html">피부케어</a>
+                            <ul class="sub_ul4">
+                                <li><a href="dist/acne.html">여드름치료</a></li>
+                                <li><a href="dist/peeling.html">필링</a></li>
+                            </ul>
+                        </li>
+                        <li class="list05">
+                            <a class="list" href="dist/mole.html">제거시술</a>
+                            <ul class="sub_ul5">
+                                <li><a href="dist/mole.html">점</a></li>
+                                <li><a href="dist/milia.html">비립종</a></li>
+                                <li><a href="dist/tattoo.html">문신제거</a></li>
+                            </ul>
+                        </li>
+                        <li class="list06">
+                            <a class="list" href="dist/hair-removal.html">바디케어</a>
+                            <ul class="sub_ul6">
+                                <li><a href="dist/hair-removal.html">제모</a></li>
+                                <li><a href="dist/diet.html">다이어트</a></li>
+                            </ul>
+                        </li>
+                        <li class="list07">
+                            <a class="list" href="calendar-page.html">상담 예약</a>
+                            <ul class="sub_ul7">
+                                <li><a href="calendar-page.html">온라인 상담</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <a class="event" href="board-event.html">09월 이벤트</a>
+        </div>
+    </div>
+</header>
+
+<!-- 모바일 헤더 (768px 미만) -->
+<header id="mo_hd" class="mobile-header">
+    <div id="mo_hd_wrapper">
+        <!-- 모바일 로고 -->
+        <div id="mo_logo">
+            <a href="index.html"><img src="img/misopin-temporary-logo.png" alt="미소핀의원" style="height: 3.125rem;" /></a>
+        </div>
+
+        <!-- 햄버거 메뉴 버튼 -->
+        <button id="navBtn" type="button" aria-label="메뉴 열기">
+            <span></span>
+        </button>
+
+        <!-- 슬라이드 네비게이션 -->
+        <div id="navWrap">
+            <div class="inner">
+                <!-- 대메뉴 리스트 -->
+                <nav class="lnb">
+                    <!-- 미소핀 소개 -->
+                    <button class="bmenu">미소핀 소개</button>
+                    <ul class="smenu">
+                        <li><a href="about.html">병원 소개</a></li>
+                        <li><a href="board-page.html">공지 및 이벤트</a></li>
+                    </ul>
+
+                    <!-- 주름/보톡스 -->
+                    <button class="bmenu">주름/보톡스</button>
+                    <ul class="smenu">
+                        <li><a href="dist/botox.html">보톡스</a></li>
+                        <li><a href="dist/jeomin.html">제오민</a></li>
+                    </ul>
+
+                    <!-- 볼륨/리프팅 -->
+                    <button class="bmenu">볼륨/리프팅</button>
+                    <ul class="smenu">
+                        <li><a href="dist/filler.html">필러</a></li>
+                        <li><a href="dist/skinbooster.html">스킨부스터</a></li>
+                        <li><a href="dist/lifting.html">리프팅</a></li>
+                    </ul>
+
+                    <!-- 피부케어 -->
+                    <button class="bmenu">피부케어</button>
+                    <ul class="smenu">
+                        <li><a href="dist/acne.html">여드름치료</a></li>
+                        <li><a href="dist/peeling.html">필링</a></li>
+                    </ul>
+
+                    <!-- 제거시술 -->
+                    <button class="bmenu">제거시술</button>
+                    <ul class="smenu">
+                        <li><a href="dist/mole.html">점</a></li>
+                        <li><a href="dist/milia.html">비립종</a></li>
+                        <li><a href="dist/tattoo.html">문신제거</a></li>
+                    </ul>
+
+                    <!-- 바디케어 -->
+                    <button class="bmenu">바디케어</button>
+                    <ul class="smenu">
+                        <li><a href="dist/hair-removal.html">제모</a></li>
+                        <li><a href="dist/diet.html">다이어트</a></li>
+                    </ul>
+
+                    <!-- 상담 예약 -->
+                    <button class="bmenu">상담 예약</button>
+                    <ul class="smenu">
+                        <li><a href="calendar-page.html">온라인 상담</a></li>
+                    </ul>
+                </nav>
+
+                <!-- 하단 정보 -->
+                <div class="copy">
+                    © 2024 미소핀의원
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 모바일 하단 네비게이션 -->
+<div class="mobile-bottom-nav mobile-only">
+    <a href="#" onclick="openKakaoChat(); return false;" class="kakao">
+        <i class="fa fa-comment"></i>
+        카카오톡 상담
+    </a>
+    <a href="https://instagram.com/misopin_clinic" target="_blank" class="instagram">
+        <i class="fa fa-instagram"></i>
+        인스타그램
+    </a>
+    <a href="event.html" class="event">
+        <i class="fa fa-gift"></i>
+        이벤트
+    </a>
+    <a href="calendar-page.html" class="reservation">
+        <i class="fa fa-calendar"></i>
+        예약하기
+    </a>
+    <a href="tel:02-123-4567" class="phone">
+        <i class="fa fa-phone"></i>
+        전화상담
+    </a>
+</div>
+<!-- 헤더 끝 -->
+
+<script>
+    $(function(){
+        $('#r_menu').sh_menu();
+    });
+</script>
+
+<!-- 콘텐츠 시작 { -->
+<main id="sh_container">
+	<div id="sh_container_wrapper">
+
+		<!-- 서브 비주얼영역 -->
+		<div id="sub_main_banner">
+		    <div id="shSub" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('img/about/about-hero-bg.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+		        <div class="txt_area">
+		            <p>병원 소개</p>
+		            <div class="breadcrumb">
+		                <a href="index.html">Home</a>
+		                <i class="fa fa-angle-right"></i>
+		                <span>미소핀 소개</span>
+		                <i class="fa fa-angle-right"></i>
+		                <span>병원 소개</span>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+		<!-- 서브 비주얼영역 끝 -->
+
+		<!-- 본문 내용 시작 -->
+
+		<!-- 병원 소개 섹션 -->
+		<section class="section intro-section">
+		    <div class="container">
+		        <div class="section-header" data-aos="fade-up" data-aos-duration="800">
+		            <h2 class="section_h2" style="font-size: 2.5rem; color: #999; margin-bottom: 1rem;">미소가 피어나는 곳,</h2>
+		            <h2 class="section_h2" style="font-size: 3rem; margin-bottom: 2rem;">MISOPIN CLINIC</h2>
+		            <p class="section-subtitle" style="font-size: 1.125rem; font-weight: 400; color: #999; line-height: 1.8; max-width: 900px; margin: 0 auto;">
+		                여러분의 아름다운 미소를 위해 최선을 다하는 피부과 전문의원입니다.<br>
+		                정확한 진단과 안전한 시술로 고객님의 만족과 신뢰를 최우선으로 생각합니다.
+		            </p>
+		        </div>
+
+		        <div class="intro-content" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+		            <div class="intro-text" style="display: block; max-width: 800px;">
+		                <h2 class="section_h2" data-aos="fade-right" data-aos-duration="1000" data-aos-delay="300">
+		                    <span>당신의 미소가 시작되는 곳,</span>
+		                </h2>
+		                <p style="font-size: 1.125rem; color: #666; margin: 1.5rem 0 0 0; line-height: 1.6;" data-aos="fade-right" data-aos-duration="1000" data-aos-delay="400">
+		                    정확한 진단과 안전한 시술로 완성하는<br>
+		                    신뢰받는 피부과 전문 클리닉.
+		                </p>
+		                <p style="font-size: 1.125rem; color: #666; margin: 1.5rem 0 0 0; line-height: 1.6;" data-aos="fade-right" data-aos-duration="1000" data-aos-delay="600">
+                            미소핀의원의 독자적 맞춤 솔루션으로<br>당신만의 자연스러운 아름다움을 완성합니다.
+		                </p>
+		            </div>
+		            <div class="intro-image" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="300">
+		                <img src="img/about/about18-2.webp"
+		                     alt="미소핀의원 내부" loading="lazy">
+		            </div>
+		        </div>
+		    </div>
+		</section>
+
+		<!-- 특징 섹션 -->
+		<section class="section">
+		    <div class="container">
+		        <div class="section-header" data-aos="fade-up" data-aos-duration="800">
+		            <h2 class="section_h2">SPECIAL <span>CARE</span></h2>
+		            <p class="section-subtitle">
+		                고객 만족을 위한 차별화된 서비스와 전문적인 치료 시스템을 제공합니다.
+		            </p>
+		        </div>
+
+		        <div class="special-features-grid">
+		            <div class="special-card" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('img/special_card_01.webp');" data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
+		                <div class="special-content">
+		                    <h3>전문 의료진</h3>
+		                    <p>풍부한 임상 경험을 바탕으로 한<br>피부과 전문의의 정확한 진단과 치료</p>
+		                </div>
+		            </div>
+
+		            <div class="special-card" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('img/special_card_02.webp');" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+		                <div class="special-content">
+		                    <h3>안전한 시술</h3>
+		                    <p>철저한 소독과 멸균 시스템으로<br>안전하고 위생적인 시술 환경 제공</p>
+		                </div>
+		            </div>
+
+		            <div class="special-card" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('img/special_card_03.webp');" data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">
+		                <div class="special-content">
+		                    <h3>맞춤형 상담</h3>
+		                    <p>개인의 피부 상태와 요구사항을<br>정확히 분석한 맞춤형 치료 계획</p>
+		                </div>
+		            </div>
+
+		            <div class="special-card" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('img/special_card_04.webp');" data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
+		                <div class="special-content">
+		                    <h3>사후관리</h3>
+		                    <p>시술 후 지속적인 관리와 상담을<br>통한 최적의 치료 결과 보장</p>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</section>
+
+		<!-- 시설 갤러리 셉션 -->
+		<section class="section facility-section">
+		    <div class="container">
+		        <div class="section-header" data-aos="fade-up" data-aos-duration="800">
+		            <h2 class="section_h2">CLINIC <span>FACILITIES</span></h2>
+		            <p class="section-subtitle">
+		                쾌적하고 안전한 진료 환경을 제공합니다.
+		            </p>
+		        </div>
+
+		        <!-- 시설 안내 슬라이드 -->
+		        <div class="facility-slider-wrapper" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+		            <div class="swiper-container facility-slide">
+		                <ul class="swiper-wrapper">
+		                    <li class="swiper-slide">
+		                        <div class="facility-slide-item">
+		                            <div class="facility-image">
+		                                <img src="img/about/about_16.webp" alt="대기실 1" loading="lazy">
+		                                <div class="facility-overlay"></div>
+		                            </div>
+		                            <div class="facility-content">
+		                                <div class="facility-category">대기 공간</div>
+		                                <h3 class="facility-title">편안한 대기실 1</h3>
+		                                <p class="facility-description">고객님의 편의를 위한 최상의 환경과 편안하고 아늑한 대기 공간을 제공합니다.</p>
+		                            </div>
+		                        </div>
+		                    </li>
+		                    <li class="swiper-slide">
+		                        <div class="facility-slide-item">
+		                            <div class="facility-image">
+		                                <img src="img/about/about_12.webp" alt="대기실 2" loading="lazy">
+		                                <div class="facility-overlay"></div>
+		                            </div>
+		                            <div class="facility-content">
+		                                <div class="facility-category">대기 공간</div>
+		                                <h3 class="facility-title">편안한 대기실 2</h3>
+		                                <p class="facility-description">편안하고 아늑한 분위기의 또 다른 대기 공간입니다.</p>
+		                            </div>
+		                        </div>
+		                    </li>
+		                    <li class="swiper-slide">
+		                        <div class="facility-slide-item">
+		                            <div class="facility-image">
+		                                <img src="img/about/DSC08214.webp" alt="진료실" loading="lazy">
+		                                <div class="facility-overlay"></div>
+		                            </div>
+		                            <div class="facility-content">
+		                                <div class="facility-category">진료 공간</div>
+		                                <h3 class="facility-title">청결한 진료실</h3>
+		                                <p class="facility-description">청결하고 현대적인 진료 공간에서 전문의와 함께하는 1:1 진료</p>
+		                            </div>
+		                        </div>
+		                    </li>
+		                    <li class="swiper-slide">
+		                        <div class="facility-slide-item">
+		                            <div class="facility-image">
+		                                <img src="img/about/about_08.webp" alt="시술실" loading="lazy">
+		                                <div class="facility-overlay"></div>
+		                            </div>
+		                            <div class="facility-content">
+		                                <div class="facility-category">시술 공간</div>
+		                                <h3 class="facility-title">첨단 시술실</h3>
+		                                <p class="facility-description">첨단 장비를 갖춘 안전한 시술 공간과 철저한 소독 및 멸균 시스템</p>
+		                            </div>
+		                        </div>
+		                    </li>
+		                    <li class="swiper-slide">
+		                        <div class="facility-slide-item">
+		                            <div class="facility-image">
+		                                <img src="img/about/DSC08199.webp" alt="시술 장비" loading="lazy">
+		                                <div class="facility-overlay"></div>
+		                            </div>
+		                            <div class="facility-content">
+		                                <div class="facility-category">장비</div>
+		                                <h3 class="facility-title">최신 시술 장비</h3>
+		                                <p class="facility-description">첨단 의료 장비와 전문 시술 기구로 안전하고 정확한 시술을 제공</p>
+		                            </div>
+		                        </div>
+		                    </li>
+		                </ul>
+		                <div class="swiper-pagination facility-pagination"></div>
+		                <div class="facility-nav-container">
+		                    <div class="facility-prev">
+		                        <span></span>
+		                    </div>
+		                    <div class="facility-next">
+		                        <span></span>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</section>
+
+		<!-- 본문 내용 끝 -->
+
+	</div>
+</main>
+<!-- } 콘텐츠 끝 -->
+
+<!-- 푸터 시작 -->
+<!-- 하단 푸터 시작 { -->
+<footer id="sh_ft">
+    <div class="footer_wrapper">
+        <div class="copy">
+            <div class="top">
+                <div class="logo_area">
+                    <img class="ft_logo" src="img/misopin-temporary-logo.png" srcset="img/misopin-temporary-logo.png 2048w, img/misopin-temporary-logo.png 1024w, img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 80px, 120px" alt="미소핀의원" style="filter: brightness(0) invert(1); height: 2.5rem;" loading="lazy" />
+                </div>
+                <div class="phone_info">
+                    <div class="number">061-277-1001</div>
+                </div>
+                <div class="hours_title">
+                    <div class="cate">진료시간</div>
+                </div>
+                <div class="hours_info">
+                    <div class="hours_row">
+                        <span class="day">월/화/목/금</span>
+                        <span class="time">08:30 ~ 19:30</span>
+                    </div>
+                    <div class="hours_row">
+                        <span class="day">수요일</span>
+                        <span class="time">08:30 ~ 12:00</span>
+                    </div>
+                    <div class="hours_row">
+                        <span class="day">토요일</span>
+                        <span class="time">09:00 ~ 14:00</span>
+                    </div>
+                    <div class="notice">※점심시간 12:00-14:00 / 일요일, 공휴일 휴진</div>
+                </div>
+                <div class="menu_links">
+                    <a href="javascript:void(0)" onclick="window.open('privacy.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')">개인정보취급방침</a>
+                    <a href="javascript:void(0)" onclick="window.open('stipulation.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')">이용약관</a>
+                    <a href="javascript:void(0)" onclick="window.open('fee-schedule.html', 'window', 'width=800; height=800; left=150; top=0; scrollbars=yes')">비급여 수가표</a>
+                </div>
+            </div>
+            <div class="main_info">상호 : 미소핀의원 | 대표자 : 김지식 | 사업자등록번호 : 123-56-789 | 전화번호 : 061-277-1001 | 주소 : 전남 목포시 영산로 362 미소핀의원</div>
+            <div class="bottom">
+                <p>© MISOPIN CLINIC. ALL RIGHTS RESERVED.</p>
+                <div class="adm">
+                    <a href="/admin/admin.login.php">ADMIN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- 푸터 끝 -->
+
+<script>feather.replace();</script>
+
+</div>
+<!-- 100% 배경이미지 때문에 사용 -->
+
+<script>
+function fmain_submit(f){
+    if (!$("#prv_check").is(":checked")) {
+        alert("개인정보취급방침의 내용에 동의하셔야 작성가능 합니다.");
+        return false;
+    }
+    return true;
+}
+function Num_ck(obj) {
+    var val = obj.value;
+    if(isNaN(val)) {
+        alert("숫자만 입력해 주세요");
+        obj.value = val.replace(/[^0-9]/gi, '');
+    }
+}
+function korean_ck(obj) {
+    var val = obj.value;
+    var korean = /^[가-힣ㄱ-ㅎㅏ-ㅣㆍ ᆢ\s]*$/;
+    if (!korean.test(val)) {
+        alert("한글만 입력해 주세요");
+        obj.value = val.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣㆍ ᆢ\s]+/g, '');
+    }
+}
+</script>
+
+<script src="js/mobile-nav.js"></script>
+
+<!-- Swiper 스크립트 -->
+<script src="js/vendor/swiper.min.js"></script>
+<script>
+$(document).ready(function() {
+    // 시설 슬라이드 초기화
+    const facilitySlide = new Swiper(".facility-slide", {
+        loop: true,
+        speed: 1200,
+        slidesPerView: 1,
+        centeredSlides: true,
+        spaceBetween: 30,
+        slideActiveClass: 'on',
+        breakpoints: {
+            // 모바일
+            320: {
+                slidesPerView: 1,
+                spaceBetween: 20
+            },
+            // 태블릿
+            768: {
+                slidesPerView: 1.2,
+                spaceBetween: 30
+            },
+            // 데스크톱
+            1024: {
+                slidesPerView: 1.5,
+                spaceBetween: 40
+            },
+            1200: {
+                slidesPerView: 1.8,
+                spaceBetween: 50
+            }
+        },
+        pagination: {
+            el: ".facility-pagination",
+            clickable: true,
+            bulletActiveClass: 'swiper-pagination-bullet-active'
+        },
+        navigation: {
+            prevEl: ".facility-prev",
+            nextEl: ".facility-next"
+        },
+        autoplay: {
+            delay: 4000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true
+        },
+        effect: 'slide',
+        watchSlidesProgress: true,
+        on: {
+            slideChange: function() {
+                // 슬라이드 변경 시 애니메이션 추가
+                const activeSlide = this.slides[this.activeIndex];
+                if (activeSlide) {
+                    const img = activeSlide.querySelector('.facility-image img');
+                    if (img) {
+                        img.style.transform = 'scale(1.05)';
+                        setTimeout(() => {
+                            img.style.transform = 'scale(1)';
+                        }, 800);
+                    }
+                }
+            }
+        }
+    });
+
+    // 호버 시 자동재생 일시정지
+    $('.facility-slide').hover(
+        function() {
+            facilitySlide.autoplay.stop();
+        },
+        function() {
+            facilitySlide.autoplay.start();
+        }
+    );
+});
+
+// AOS 초기화
+AOS.init({
+    duration: 1000,
+    once: true,
+    offset: 100
+});
+</script>
+</body>
+</html>

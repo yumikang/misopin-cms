@@ -1,0 +1,453 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+/* 공통 */
+button{border:none}
+input[type=text], input[type=password]{box-shadow:none;transition:none;font-family:'notokr-regular'}
+input[type=text]:focus,input[type=text]:active, input[type=password]:focus, textarea:focus, select:focus, select:active{box-shadow:none;border:inherit!important;outline:none}
+input[type=submit]:focus{outline:none}
+input[type=submit]{border:none}
+button:focus,button:active{outline:none}
+.required, textarea.required{background-image:url(../../member/sh_basic/require.png)!important}
+
+/* 관리자 버튼 */
+.sh_adm_btn{width:85px;height:38px;border-radius:2px;border:1px solid #ffd8e1;font-size:13.5px;line-height:36px;color:#ff567f;letter-spacing:-.7px;background-color:#fff7f9;-webkit-transition:all .2s;transition:all .2s;font-family:'notokr-medium'}
+a.sh_adm_btn{display:block;text-align:center}
+.sh_adm_btn:hover{border-color:#fdb6c6}
+
+/*게시판 관리*/
+.basicset_title{text-align:center;font-size:17px;font-weight:bold;color:#777;padding:15px 0 5px 0}
+.basicset{width:95%;padding:0;margin:15px;border:1px solid #ccc;border-spacing:0;border-collapse:collapse}
+.basicset th{width:20%;border-bottom:1px solid #ddd;background:#ebebeb;height:30px}
+.basicset td{width:30%;border-bottom:1px solid #ddd;height:30px;padding:5px 0 5px 8px}
+.basicset input{height:30px;border-radius:unset;box-shadow:none}
+.btn_submit{font-size:14px;background:#555}
+.btn_submit:hover{background:#555}
+a.btn_cancel{border-radius:3px;font-size:14px}
+
+/* 버튼 공통 */
+.btn_type01{display:inline-block;width:180px;height:55px;margin:0 auto;border-radius:2px;font-size:15px;color:#fff;text-align:center;line-height:55px;background-color:#9F988C;-webkit-transition:all .2s;transition:all .2s;font-family:'notokr-medium'}
+.btn_type01:hover{background-color:#87857E}
+a.cancel_btn{display:inline-block;vertical-align:top;width:75px;height:55px;border:none;border-radius:2px;font-size:15px;text-align:center;color:#fff;line-height:55px;background-color:#bbb;font-family:'notokr-medium'}
+a.btn_normal{display:inline-block;vertical-align:top;width:75px;height:55px;border:none;border-radius:2px;font-size:15px;text-align:center;color:#fff;line-height:55px;background-color:#bbb;font-family:'notokr-medium'}
+a.btn_line{display:inline-block;vertical-align:top;width:75px;height:55px;border:none;border-radius:2px;border:1px solid #d1d1d1;font-size:15px;text-align:center;color:#777;line-height:53px;font-family:'notokr-medium'}
+
+/* 페이지 */
+.pg_wrap{display:block;float:none;margin:40px 0 0;text-align:center;font-family:'notokr-regular'}
+.pg_wrap a{display:inline-block;vertical-align:middle}
+.pg_page{min-width:30px;height:30px;padding:0 5px;border:none;border-radius:0;font-size:14px;line-height:30px;color:#999;background:none}
+.pg_page:hover{background:none}
+.pg_current{display:inline-block;vertical-align:middle;min-width:30px;height:30px;padding:0 5px;border:none;border-radius:0;font-size:15px;font-weight:normal;line-height:29px;color:#222;background:none;box-shadow:none;font-family:'notokr-medium'}
+.pg_start, .pg_end{width:30px;height:30px;border-radius:2px;border:1px solid #e1e1e1;font-size:0;text-indent:0;background-color:#fff}
+.pg_start{margin-right:5px}
+.pg_next, .pg_prev{width:30px;height:30px;border-radius:2px;border:1px solid #e1e1e1;font-size:0;text-indent:0;background-color:#fff}
+.pg_next:before,.pg_prev:before{content:"\f105";padding:0;font-size:12px;text-align:center;color:#555;line-height:28px;letter-spacing:.5px;font-family:'FontAwesome'}
+.pg_prev:before{content:"\f104"}
+.pg_prev:hover, .pg_prev:hover{background-color:#f6f6f6}
+.pg_end{margin-left:5px}
+.pg_start:before, .pg_end:before{content:"\f104 \f104";padding:0;font-size:12px;text-align:center;color:#555;line-height:28px;letter-spacing:.5px;font-family:'FontAwesome'}
+.pg_end:before{padding-left:3px;content:"\f105 \f105"}
+.pg_start:hover, .pg_end:hover{background-color:#f6f6f6}
+
+/* 테이블 공통 */
+.sh_tbl_common{width:100%;border-top:1px solid #555}
+.sh_tbl_common table{width:100%}
+.sh_tbl_common th{border-bottom:1px solid #e1e1e1;font-size:15px;font-weight:normal;color:#222;font-family:'notokr-medium'} 
+.sh_tbl_common td{border-bottom:1px solid #e1e1e1;font-size:14px;color:#777}
+
+/* -------- 병원 예약 달력 시작 [s] */
+.t_red{color:#ff0000}
+.t_blue{color:#108ef0}
+.t_gray{color:#bbb}
+
+/* 달력 공통 */
+#mara_cal_view{width:100%;font-family:'notokr-regular'}
+#mara_cal_view .title{position:relative;width:260px;margin:0 auto;padding:0 62px;font-size:24px;line-height:42px;font-weight:normal;text-align:center;color:#222;font-family:'notokr-bold'}
+#mara_cal_view .stit{padding-top:20px;font-size:15px;text-align:center;color:#777}
+#mara_cal_view .c_btn{position:absolute;width:42px;height:42px;border-radius:14px;border:1px solid #e1e1e1;font-size:17px;text-align:center;line-height:39px;cursor:pointer;transition:all .2s}
+#mara_cal_view .c_btn:hover{border-color:#aaa}
+#mara_cal_view .prev_btn{top:0;left:0}
+#mara_cal_view .next_btn{top:0;right:0}
+#mara_cal_view .red{color:#e60000!important}
+#mara_cal_view .blue{color:#007bda!important}
+#mara_cal_view .gray{color:#999}
+
+#mara_cal_view table{width:100%;font-size:14px;color:#222}
+#mara_cal_view table th{padding:15px 0;border-top:1px solid #e1e1e1;border-bottom:1px solid #e9e9e9;border-top:2px solid #222;font-size:15px;font-weight:normal;color:#222;font-family:'notokr-bold'}
+#mara_cal_view table td{padding:10px;border-bottom:1px solid #e9e9e9;color:#222;font-family:'notokr-medium';vertical-align:top}
+#mara_cal_view table td:not(:first-child){border-left:1px solid #e1e1e1}
+#mara_cal_view table td.null{color:#bbb;background:#f9f9f9;}
+#mara_cal_view table td .title_day{font-weight:500;text-align:right;font-family:'Poppins','notokr-medium'}
+#mara_cal_view table td .title_day a{display:block;padding-bottom:30px;}
+#mara_cal_view table td .title_day .t_gray{display:block;padding-bottom:30px}
+#mara_cal_view table td > a{display:inline-block;padding:4px 12px;border-radius:30px;font-size:12px;color:#fff;background:#4ab2f1}
+
+#mara_cal_view .season{font-size:13px;color:#999}
+#mara_cal_view .c_list{position:relative;padding-bottom:5px;font-size:13px;line-height:22px}
+#mara_cal_view .c_list:last-child{padding-bottom:0}
+#mara_cal_view .iconst{float:left;margin-right:5px}
+
+#mara_cal_view .cal_btn_area{position:relative;padding:30px 0 15px;text-align:right}
+#mara_cal_view .cal_btn_area ul{overflow:hidden}
+#mara_cal_view .cal_btn_area li{float:left;margin-right:10px;font-size:13px;line-height:22px;color:#666}
+#mara_cal_view .c_icon{display:inline-block;margin-right:5px;width:20px;height:20px;border-radius:100px;font-size:10px;line-height:20px;text-align:center;color:#fff;font-family:'notokr-bold'}
+#mara_cal_view .icon_green{background:#41bbaf!important}
+#mara_cal_view .icon_blue{background:#1f77b3!important}
+#mara_cal_view .icon_red{background:#d7001e!important}
+#mara_cal_view .icon_gray{background:#aaa!important}
+#mara_cal_view .cal_btn_area .rsv_btn_t{padding:0 20px;border-radius:2px;font-size:13px;color:#fff;line-height:40px;background-color:#333;transition:all .3s;cursor:pointer;font-family:'notokr-medium'}
+#mara_cal_view .cal_btn_area .rsv_btn_t i{display:inline-block;padding-right:3px;font-size:12px}
+#mara_cal_view .cal_btn_area .rsv_price{right:110px}
+#mara_cal_view .cal_btn_area .rsv_sch{right:0}
+#mara_cal_view .c_list_price{display:none;overflow:hidden;margin:0 0 5px 28px}
+#mara_cal_view .c_list_price li{float:left;font-size:14px;line-height:18px;color:#222;font-family:'notokr-bold'}
+#mara_cal_view .c_list_price .sale{padding-right:5px;font-size:12px;color:#999;text-decoration:line-through;font-family:'notokr-regular'}
+#mara_cal_view .rsv_info{display:none;position:absolute;top:25px;left:20px;z-index:1;width:165px;padding:10px;line-height:23px;color:#fff;background-color:rgba(0,0,0,.8);box-shadow:0px 1px 3px rgba(0,0,0,0.15)}
+#mara_cal_view .c_list:hover .rsv_info{display:block}
+#mara_cal_view .rsv_info p{position:relative;padding-left:8px}
+#mara_cal_view .rsv_info p:before{position:absolute;top:11px;left:0;width:2px;height:2px;background:#aaa;content:""}
+#mara_cal_view .close_room{vertical-align:middle;margin-left:3px;font-size:15px;color:#aaa;background-color:transparent}
+#mara_cal_view .open_room{vertical-align:middle;margin-left:3px;font-size:15px;color:#d7001e;background-color:transparent}
+
+#calendar_form{display:none;position:fixed;top:50%;left:50%;z-index:101;transform:translate(-50%,-50%);width:100%;max-width:480px;padding:30px;border-radius:20px;background:#fff;box-shadow:8px 8px 26px rgba(0,0,0,.15)}
+#calendar_form .close{position:absolute;right:30px;top:20px;width:40px;height:40px;background:none}
+#calendar_form .close span{position:absolute;transform:rotate(45deg);width:20px;height:3px;background:#222}
+#calendar_form .close span:after{display:block;content:"";position:absolute;transform:rotate(-90deg);width:20px;height:3px;background:#222}
+#calendar_form .tit{padding-bottom:10px;font-size:18px;font-family:'notokr-bold'}
+#calendar_form .inner{max-height:80vh;overflow:auto;font-size:14px;font-family:'notokr-regular'}
+#calendar_form .inner label{width:95px;color:#222;font-family:'notokr-medium'}
+#calendar_form input[type=text]:focus, input[type=password]:focus, textarea:focus, select:focus{box-shadow:none !important;border:1px solid #e1e1e1 !important}
+#calendar_form .form{padding:15px;border:1px solid #e1e1e1;border-top:2px solid #222}
+#calendar_form .form input[type=text]{flex-grow:1;height:35px;padding:0 12px;border:1px solid #e1e1e1;border-radius:2px;font-size:14px;background:#f2f2f2}
+#calendar_form .form select{flex-grow:1;height:35px;padding:0 12px;border:1px solid #e1e1e1;border-radius:2px;font-size:14px;background:#f2f2f2;font-family:'notokr-regular'}
+#calendar_form .form ul+ul{margin-top:15px;padding-top:15px;border-top:1px dashed #ddd}
+#calendar_form .form li{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+#calendar_form .form li+li{margin-top:5px}
+#calendar_form .form li.full{display:block;padding-top:15px;font-size:13px;text-align:center;color:#777}
+#calendar_form .type span+span{margin-left:10px}
+#calendar_form .type span label{font-weight:500}
+#calendar_form .agree_area{padding-top:5px}
+#calendar_form .agree_area p{padding:10px;border-bottom:1px solid #e1e1e1}
+#calendar_form .agree_area p label{margin-left:5px;color:#111}
+#calendar_form .agree_area label{font-weight:400;color:#777}
+#calendar_form .agree_area button{border:1px solid #e1e1e1;padding:0 3px;border-radius:2px;font-size:12px;color:#777;background:#fff;font-family:'notokr-regular'}
+#calendar_form .agree_area ul{padding:10px}
+#calendar_form textarea{flex-grow:1;padding:10px;border:1px solid #e1e1e1;border-radius:2px;font-size:14px;font-family:'notokr-regular'}
+#calendar_form .sbm_btn{width:100%;margin-top:8px;padding:15px 0;border-radius:2px;font-size:14px;text-align:center;color:#fff;background:#0064c5;font-family:'notokr-medium';transition:all .3s}
+
+/* 예약확인 */
+#rv_cf{position:fixed;top:0;left:0;z-index:100;width:100%;height:100%;background:rgba(0,0,0,0.6);font-family:'notokr-regular'}
+#rv_cf .cont{position:absolute;top:50%;left:0;width:100%;margin:-236px 0 0 0;text-align:center}
+#rv_cf .cont .cont_area{position:relative;display:inline-block;text-align:left;padding:50px;background:#fff}
+#rv_cf .cont .close{position:absolute;top:30px;right:30px;border:none;background:none}
+#rv_cf .cont label{display:block;font-size:17px;color:#333;letter-spacing:-0.4px;font-family:'notokr-medium'}
+#rv_cf .cont .rv_input{display:block;width:100%;height:35px;margin:10px 0 40px;border:none;border-bottom:1px solid #d7d7d7;font-size:15px;color:#333;letter-spacing:-0.4px;font-family:'notokr-regular'}
+#rv_cf .cont .rv_input:focus{border:none !important;border-bottom:1px solid #d7d7d7!important;box-shadow:none}
+#rv_cf .cont .result_btn{display:block;width:80%;margin:0 auto;background:#333;border:none;border-radius:30px;font-size:14px;line-height:45px;color:#fff;font-family:'notokr-medium'}
+#rv_cf .rv_input_area{float:left;width:300px}
+#rv_cf #rv_list{float:left}
+#rv_cf #rv_list .no_rv{padding:50px 0 0 20px;font-size:15px}
+#rv_cf #rv_list > div{float:left;padding:0 20px;border-right:1px dotted #ddd;font-size:14px;line-height:24px}
+#rv_cf #rv_list > div:first-child{margin-left:50px}
+#rv_cf #rv_list > div:last-child{border-right:0}
+#rv_cf #rv_list dl{padding-bottom:15px;margin-bottom:20px;border-bottom:1px dotted #ddd}
+#rv_cf #rv_list dt{font-size:15px;color:#333;font-family:'notokr-medium'}
+#rv_cf #rv_list .rv_cd{display:inline-block;width:84px;height:30px;border-radius:2px;font-size:13px;line-height:30px;text-align:center;color:#fff}
+#rv_cf #rv_list .rv_cancel{background:#c00}
+#rv_cf #rv_list .rv_complete{background:#287ece}
+#rv_cf #rv_list .rv_waiting{background:#898989}
+
+/* 병원 기본설정 */
+#ps_setup{padding:15px;font-size:14px;letter-spacing:-.3px;line-height:1.8;color:#666;font-family:'notokr-regular'}
+#ps_setup .tit{padding-bottom:5px;font-size:16px;color:#222;font-family:'notokr-bold'}
+#ps_setup .tit ~ .tit{margin-top:20px}
+#ps_setup label{font-size:14px}
+#ps_setup th{width:20%;padding:8px 5px;font-size:14px;line-height:1.6;background-color:#f5f6f8}
+#ps_setup td{padding:8px 5px}
+#ps_setup .sh_input{height:36px;padding:0 8px;border:1px solid #e1e1e1;border-radius:2px;font-size:14px;color:#777;font-family:'notokr-regular'}
+#ps_setup .sh_input:focus, #sh_write_tbl .sh_input:active{border:1px solid #e1e1e1!important;outline:none}
+#ps_setup .txtarea{width:100%;height:100px;padding:12px}
+#ps_setup .ps{font-size:14px;color:#ff567f}
+#ps_setup span.ps{padding-left:10px}
+#ps_setup .op_tit{padding:8px 15px 10px;border-top:1px solid #555;border-bottom:1px solid #e1e1e1;color:#222;background-color:#f5f6f8;font-family:'notokr-medium'}
+#ps_setup .op_tit ~ .op_tit{margin-top:15px}
+#ps_setup .option_tbl{border-top:none}
+#ps_setup .icode i{padding:0 8px}
+#ps_setup .icode a{text-decoration:underline!important}
+#ps_setup .btn_area{position:relative;margin:20px 0;text-align:center}
+#ps_setup .btn_area .btn_type01{width:150px}
+#ps_setup .btn_area .btn_type01,#ps_setup .btn_area .cancel_btn{height:50px;line-height:50px}
+
+/* 버튼 */ 
+#mara_cal_view .btn_area{position:relative;margin:20px 0}
+#mara_cal_view .btn_area:after{display:block;content:"";visibility:hidden;clear:both}
+#mara_cal_view .btn_area .right{float:right}
+#mara_cal_view .btn_area .right li{margin-left:4px}
+#mara_cal_view .btn_area .set_btn{display:block;width:85px;height:38px;border-radius:2px;border:1px solid #d1d1d1;background:#fff;font-size:13.5px;text-align:center;line-height:36px;color:#777;letter-spacing:-.7px;-webkit-transition:all .2s;transition:all .2s;font-family:'notokr-medium'}
+#mara_cal_view .btn_area .set_btn:hover{border-color:#777}
+#mara_cal_view .adm_btns li{display:inline-block;vertical-align:top;margin-right:2px}
+#mara_cal_view .w_btn{float:right}
+#mara_cal_view .w_btn:hover{background-color:#0064c5}
+
+/* -------- 병원 예약 달력 끝 [e] */
+
+/* -------- 병원 예약 목록 시작 [s] */
+#sh_bo_list{font-size:15px;letter-spacing:-.3px;line-height:1.8;color:#666;font-family:'notokr-regular'}
+#sh_bo_list .pg_wrap{float:none;display:flex;justify-content:center}
+
+/* 검색 */
+#sh_rsv_sch{position:relative;margin-bottom:15px;padding:20px 15px;border-top:1px solid #555;border-bottom:1px solid #e1e1e1;text-align:center;background-color:#f5f6f8}
+#sh_rsv_sch:after{display:block;content:"";visibility:hidden;clear:both}
+#sh_rsv_sch ul{display:flex;justify-content:center;gap:5px}
+#sh_rsv_sch ul+ul{gap:20px;margin:10px 0}
+#sh_rsv_sch .sch_btns{display:inline-flex;gap:5px}
+#sh_rsv_sch .sh_input{height:40px;padding:0 10px;border:1px solid #e1e1e1;border-radius:2px;font-size:15px;color:#777;font-family:'notokr-regular'}
+#sh_rsv_sch .sh_input:focus, #sh_write_tbl .sh_input:active{border:1px solid #e1e1e1!important;outline:none}
+#sh_rsv_sch .sh_input.w120{width:120px}
+#sh_rsv_sch select{min-width:125px;height:40px;padding:0 0 0 10px;border:1px solid #e1e1e1;border-radius:2px;font-size:15px;color:#777;-webkit-appearance:none;appearance:none;background:url(../sh_basic/img/select_arr.png) 95% center no-repeat #fff;font-family:'notokr-regular'}
+#sh_rsv_sch select::-ms-expand{display:none}
+#sh_rsv_sch select:focus, #sh_rsv_sch select:active{border:1px solid #e1e1e1!important}
+#sh_rsv_sch input[type=submit]{width:110px;height:40px;border-radius:2px;font-size:14px;color:#fff;background-color:#9F988C;-webkit-transition:all .2s;transition:all .2s;font-family:'notokr-medium'}
+#sh_rsv_sch input[type=submit]:hover{background-color:#87857E}
+#sh_rsv_sch .reset{display:block;width:65px;height:40px;border-radius:2px;font-size:14px;line-height:40px;color:#fff;background-color:#bbb;-webkit-transition:all .2s;transition:all .2s;font-family:'notokr-medium'}
+#sh_rsv_sch .reset:hover{background-color:#b1b1b1}
+
+/* 리스트 */
+#sh_list_tbl tbody tr:hover{background-color:#fafafa}
+#sh_list_tbl .bo_notice:hover{background-color:#f5f6f8}
+#sh_list_tbl th{height:60px} 
+#sh_list_tbl td{height:60px;text-align:center}
+#sh_list_tbl tr:nth-child(2n) td{background:#f8f8f8}
+#sh_list_tbl td strong{font-weight:normal;font-family:'notokr-medium'}
+#sh_bo_list .state{display:inline-block;padding:1px 10px;border-radius:20px;font-size:13px;color:#fff;letter-spacing:-.5px;font-family:'notokr-medium'}
+#sh_bo_list .state.stay{background-color:#1f77b3}
+#sh_bo_list .state.comp{background-color:#d7001e}
+#sh_bo_list .state.cancle{background-color:#999}
+#sh_bo_list .ps{margin-top:15px;font-size:14px;color:#ff567f}
+
+/* 버튼 */ 
+#sh_bo_list .btn_area{position:relative;margin:20px 0}
+#sh_bo_list .btn_area:after{display:block;content:"";visibility:hidden;clear:both}
+#sh_bo_list .btn_area .right{float:right}
+#sh_bo_list .btn_area .right li{margin-left:4px}
+#sh_bo_list .btn_area .set_btn{display:block;width:85px;height:38px;border-radius:2px;border:1px solid #d1d1d1;font-size:13.5px;text-align:center;line-height:36px;color:#777;letter-spacing:-.7px;-webkit-transition:all .2s;transition:all .2s;font-family:'notokr-medium'}
+#sh_bo_list .btn_area .set_btn:hover{border-color:#777}
+#sh_bo_list .adm_btns{position:absolute;top:0;left:0}
+#sh_bo_list .adm_btns li{display:inline-block;vertical-align:top;margin-right:2px}
+#sh_bo_list .adm_btns i{font-size:13px}
+/* -------- 병원 예약 목록 끝 [e] */
+
+/* -------- 병원 예약 페이지 시작 [s] */
+#sh_rsv_area{font-family:'notokr-regular'}
+#sh_rsv_area .rsv_tit{overflow:hidden;display:block;margin-bottom:17px;padding:0 24px;font-size:15px;font-weight:normal;letter-spacing:-.15px;line-height:43px;color:#fff;background:#373737;font-family:'notokr-medium'}
+#sh_rsv_area .rsv_tit.bt{border-top:2px solid #333;color:#222;background-color:#f5f5f5}
+#sh_rsv_area .rsv_tit span{float:right;font-size:14px;font-weight:normal;color:#ccc;font-family:'notokr-regular'}
+#sh_rsv_area .rsv_s{width:101px;height:34px;margin-right:22px;padding:0 6px;border-left:0px;border-right:0;border-top:0;border-bottom:1px solid #ddd !important;font-size:15px;color:#666;cursor:pointer;-webkit-appearance:none;appearance:none;background:url(./img/sch_arr.png) 96% center no-repeat;background-size:11px;background-color:transparent;font-family:'notokr-regular'}
+
+/* 날짜선택 */
+.rsv_date_info{position:relative;overflow:hidden;padding-top:97px;margin-bottom:60px}
+.rsv_date_info > div{float:left;width:49%;min-height:323px}
+.rsv_date_info .sh_calendar{float:left}
+.rsv_date_info .date_cont{float:right;padding:26px;border:1px solid #dfdfdf}
+.rsv_date_info .date_cont .date_txt{padding:21px 0 29px;border-bottom:1px dotted #c6c6c6;font-size:20px;text-align:center;color:#222;font-family:'notokr-bold'}
+.rsv_date_info .date_cont .date_txt span{display:inline-block;padding-left:5px;color:#ff567f;font-family:'notokr-regular'}
+.rsv_date_info .date_cont .date_cont_info{padding:31px 0 0;font-size:15px;line-height:33px;color:#666}
+.rsv_date_info .date_cont .date_cont_info .holiday{display:none}
+.rsv_date_info .date_cont .date_cont_info span{position:relative;display:inline-block;margin-right:15px;color:#222;font-family:'notokr-bold'}
+.rsv_date_info .date_cont .date_cont_info .holiday span{margin-right:12px;letter-spacing:7px}
+.rsv_date_info .date_cont .date_cont_info b{font-weight:normal;color:#222;text-decoration:underline;font-family:'notokr-medium'}
+
+/* 달력 */
+#mara_cal_write{width:100%;font-family:'notokr-regular'}
+#mara_cal_write .title{position:absolute;top:32px;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);z-index:100;padding:0 62px;font-size:24px;line-height:42px;font-weight:normal;text-align:center;color:#222;font-family:'notokr-bold'}
+#mara_cal_write .c_btn{position:absolute;width:42px;height:42px;border:1px solid #c5c5c5;border-radius:100px;font-size:17px;text-align:center;line-height:39px;cursor:pointer;-webkit-transition:border .2s;transition:border .2s}
+#mara_cal_write .c_btn:hover{border-color:#333}
+#mara_cal_write .prev_btn{top:0;left:0}
+#mara_cal_write .next_btn{top:0;right:0}
+#mara_cal_write .red{color:#e60000!important}
+#mara_cal_write .blue{color:#007bda!important}
+#mara_cal_write .gray{color:#999}
+#mara_cal_write table{width:100%;border:1px solid #dfdfdf}
+#mara_cal_write th{padding:15px 0;border-left:1px solid #dfdfdf;border-bottom:2px solid;font-size:14px;font-weight:normal;color:#222;font-family:'notokr-medium'}
+#mara_cal_write td{padding:0;border:none;font-size:13px;text-align:center;line-height:52px;font-family:'notokr-medium'}
+#mara_cal_write td button{display:block;width:100%;margin:0;padding:0;border:none;background:none;font-size:14px;line-height:60px;color:#333;text-align:center;font-family:'notokr-medium'}
+#mara_cal_write td .title_dayred{color:#ff0000}
+#mara_cal_write td .title_dayblue{color:#06F}
+#mara_cal_write td .day{padding:0 0 5px 0}
+#mara_cal_write td span.open{color:#333;font-weight:bold}
+#mara_cal_write td span.close{color:#ccc}
+#mara_cal_write .select button{width:42px;height:42px;margin:0 auto;border-radius:42px;line-height:42px;color:#fff !important;background-color:#222}
+
+/* 객실선택 */
+.rsv_room_info .rsv_subdivide{overflow:hidden;margin-bottom:25px;text-align:center}
+.rsv_room_info .rsv_subdivide li{display:inline-block;}
+.rsv_room_info .rsv_subdivide li button{display:block;min-width:130px;height:44px;margin:0 4px;padding:0 15px;border:1px solid #dfdfdf;border-radius:100px;background:#fff;font-size:15px;line-height:42px;color:#222;text-align:center;cursor:pointer;font-family:'notokr-bold'}
+.rsv_room_info .rsv_subdivide li.active button{border:2px solid #444;line-height:40px}
+.rsv_room_info .room_info{margin-bottom:75px}
+.rsv_room_info .room_info .room_cont{position:relative;overflow:hidden;margin-bottom:16px;padding:0;border:1px solid #dfdfdf;transition:all .2s}
+.rsv_room_info .room_info .room_cont:hover{background-color:#f7f7f7}
+.rsv_room_info .room_info .room_cont.none{padding:50px 0;font-size:16px;color:#333;text-align:center;font-family:'notokr-medium'}
+.rsv_room_info .room_info .room_cont.pick{border:1px solid #222}
+.rsv_room_info .room_cont:last-child{margin-bottom:0}
+.rsv_room_info .check_box{position:absolute;top:50%;right:50px;z-index:1;width:36px;height:36px;margin-top:-18px;border:1px solid #333;border-radius:50%;font-size:16px;line-height:34px;color:#222;text-align:center;cursor:pointer;background:#fff}
+.rsv_room_info .room_img{float:left;width:225px;height:154px;margin-right:45px;border-right:1px solid #dfdfdf}
+.rsv_room_info .room_img.no_img{background:#ddd;font-size:14px;line-height:154px;text-align:center;font-family:'notokr-medium'}
+.rsv_room_info .cont_info{float:left;padding-top:45px}
+.rsv_room_info .room_name{padding-bottom:12px;font-size:14px;color:#666}
+.rsv_room_info .room_name span{display:inline-block;padding-right:10px;font-size:20px;color:#222}
+.rsv_room_info .r_select{overflow:hidden}
+.rsv_room_info .r_select li{float:left;line-height:34px}
+.rsv_room_info .r_select li label{display:inline-block;padding-right:13px;font-size:15px;color:#222;font-family:'notokr-bold'}
+.rsv_room_info .r_select li .rsv_s{width:88px;height:34px;margin-right:22px;padding:0 11px;border-left:0px;border-right:0;border-top:0;border-bottom:1px solid #ddd !important;font-size:15px;color:#666;background-color:transparent}
+.rsv_room_info .room_price{position:absolute;top:50%;right:95px;-webkit-transform:translateY(-50%);transform:translateY(-50%);width:188px;text-align:center;line-height:1}
+.rsv_room_info .room_price span{display:block;padding-bottom:8px;font-size:14px;color:#666}
+.rsv_room_info .room_price .price{font-size:26px;color:#222;font-family:'notokr-bold'}
+.rsv_room_info .price_org{display:none;position:relative;margin-top:12px;font-size:14px;color:#666;font-family:'notokr-regular'}
+.rsv_room_info .price_org span{display:inline-block;padding:5px 8px;margin-bottom:7px;border-radius:20px;font-size:12px;color:#fff;background-color:#333;font-family:'notokr-medium'}
+.rsv_room_info .price_org span:after{content:"\f005";padding-left:3px;font-size:11px;color:#ffa500;font-family:'FontAwesome'}
+
+/* 옵션선택 */
+#sh_rsv_area .rsv_option{margin-bottom:65px}
+.option_cont{border-top:1px solid #e5e5e5;border-bottom:1px solid #e5e5e5}
+.option_cont > div{position:relative;height:90px;margin-top:-2px;padding-left:30px;border-bottom:1px solid #e5e5e5;transition:all .2s}
+.option_cont > div:hover{background-color:#f7f7f7}
+.option_cont div.pick{background:#f7f7f7}
+.option_cont div:last-child{border-bottom:0}
+.option_cont .op_txt{font-size:15px;color:#666;line-height:90px}
+.option_cont .op_tit{display:inline-block;padding-right:10px;color:#222;font-family:'notokr-bold'}
+.option_cont .check_box{position:absolute;top:50%;right:50px;width:36px;height:36px;margin-top:-18px;border:1px solid #333;border-radius:50%;font-size:16px;line-height:34px;color:#222;text-align:center;cursor:pointer;background:#fff}
+.option_cont .op_price{position:absolute;right:130px;top:0;line-height:90px}
+.option_cont .op_price span{font-size:19px;color:#222;font-family:'notokr-bold'}
+
+/* 예약자정보,결제금액 */
+.rsv_price_info{overflow:hidden}
+.rsv_price_info .frm_input{width:100%;height:45px;padding:0 14px;border:1px solid #dfdfdf;border-radius:0;font-size:14px;color:#666;box-shadow:none;cursor:pointer;font-family:'notokr-regular'}
+.rsv_price_info .frm_input:focus{border:1px solid #dfdfdf!important}
+.rsv_price_info .input_p{height:115px;padding-top:10px;line-height:26px;cursor:pointer}
+.rsv_price_info input[type="radio"],input[type="checkbox"]{cursor:pointer}
+.rsv_price_info .rsv_input{float:left;width:49%}
+.rsv_price_info .rsv_final{float:right;width:49%}
+.rsv_price_info .input_cont,.rsv_price_info .final_cont{padding:32px 23px;border:1px solid #dfdfdf}
+.rsv_price_info .input_cont ul{overflow:hidden}
+.rsv_price_info .input_cont ul li{float:left;width:49%;margin:0 2% 10px 0}
+.rsv_price_info .input_cont ul li:nth-child(2n){margin-right:0}
+.rsv_price_info .input_cont .pick_up{border:1px solid #dfdfdf;font-size:14px;line-height:42px;text-align:center}
+#sh_pickup_02{margin-left:20px}
+.rsv_price_info .input_cont .text_area{width:100%;margin:0}
+.rsv_price_info .input_cont .ag_box{overflow:hidden;padding:0 10px;font-size:14px;line-height:45px;background:#f7f7f7}
+.rsv_price_info .input_cont .ag_box span{float:right;font-size:13px;color:#888}
+.rsv_price_info .final_price{overflow:hidden;margin-bottom:26px;padding-bottom:15px;border-bottom:1px solid #dfdfdf;font-size:14px;line-height:25px;color:#666}
+.rsv_price_info .final_price #all_price{float:right;font-size:19px;font-family:'notokr-medium'}
+.rsv_price_info .final_price #all_price span{font-size:25px;color:#ff567f;font-family:'notokr-bold'}
+.rsv_price_info .final_price #all_price_org{display:none;font-size:15px;color:#222;font-family:'notokr-medium'}
+.rsv_price_info .final_price #all_price_org span{position:relative;}
+.rsv_price_info .final_price #all_price_org span:after{display:block;content:"";position:absolute;left:-2%;top:50%;width:104%;height:1px;background-color:#ff567f}
+.rsv_final .account_info{font-size:14px;line-height:26px;color:#666}
+.rsv_btn{margin-top:35px;text-align:center}
+.rsv_btn_submit{width:200px;height:52px;border:2px solid #333!important;border-radius:100px;font-size:15px;line-height:48px;text-align:center;color:#fff;background:#333;-webkit-transition:all .3s;transition:all .3s;font-family:'notokr-medium'}
+.rsv_btn_submit:hover{color:#222;background:#fff}
+.rsv_btn a{display:inline-block;vertical-align:top;width:200px;height:52px;margin-left:8px;border:2px solid #ccc;border-radius:30px;font-size:15px;line-height:48px;-webkit-transition:all .3s;transition:all .3s;font-family:'notokr-medium'}
+.rsv_btn a:hover{border-color:#333}
+
+/* 객실 이미지 팝업 레이어 */
+#img_view{position:fixed;top:0;left:0;z-index:9999;width:100%;height:100%;background:rgba(0,0,0,0.7)}
+#img_view .img_cont{display:table;width:100%;height:100%}
+#img_view div.gallery_img{display:table-cell;width:100%;text-align:center;vertical-align:middle}
+#img_view div.gallery_img .big_img{width:860px;margin:0 auto;background-color:#fff}
+#img_view div.gallery_img .big_img > img{width:auto;max-width:860px;max-height:600px}
+#img_view ul.gallery_thumb{overflow:hidden;position:relative;max-width:860px;margin:0 auto}
+#img_view ul.gallery_thumb > li{position:relative;overflow:hidden;float:left;width:10%;height:75px;text-align:center;cursor:pointer;background-size:auto 100%!important;background-position:center!important;background-repeat:no-repeat!important;background-color:#ddd!important}
+#img_view ul.gallery_thumb > li:before{position:absolute;left:0;content:'';width:100%;height:100%;background:rgba(0,0,0,.3);-webkit-transition:opacity .3s;transition:opacity .3s}
+#img_view ul.gallery_thumb > li.on:before{opacity:0}
+#img_view ul.gallery_thumb > li:hover:before{opacity:0}
+#img_view .close_btn{position:absolute;top:30px;right:30px;border:none;background:none}
+
+
+/*본문 사이즈 작을때*/
+.cramped .rsv_room_info .r_select li{float:none}
+.cramped .rsv_room_info .cont_info{padding-top:11px}
+.cramped .rsv_room_info .r_select li label{width:83px}
+.cramped .rsv_room_info .room_info .room_cont{padding:15px 20px}
+.cramped .rsv_price_info .input_cont .ag_box{font-size:12.5px}
+
+/* -------- 병원 예약 페이지 끝 [e] */
+
+/* -------- 병원 예약 뷰 시작 [s] */
+#sh_bo_v{font-size:15px;letter-spacing:-.3px;line-height:1.8;color:#666;font-family:'notokr-regular'}
+#sh_bo_v .tit{margin-bottom:10px;font-size:17px;color:#222;font-family:'notokr-bold'}
+
+/* 예약내역 */
+#sh_view_tbl th{width:16%;padding:12px 0;line-height:1.6;background-color:#f5f6f8}
+#sh_view_tbl td{padding:12px 0 12px 10px}
+#sh_view_tbl td strong{font-weight:normal;font-family:'notokr-bold'}
+#sh_view_tbl .state{display:inline-block;padding:1px 10px;border-radius:20px;font-size:13px;color:#fff;letter-spacing:-.5px;font-family:'notokr-medium'}
+#sh_view_tbl .state.stay{background-color:#1f77b3}
+#sh_view_tbl .state.comp{background-color:#d7001e}
+#sh_view_tbl .state.cancle{background-color:#999}
+#sh_view_tbl .price_org{position:relative;margin-right:10px;color:#222;font-family:'notokr-medium'}
+#sh_view_tbl .price_org:after{display:block;content:"";position:absolute;left:-2%;top:50%;width:104%;height:1px;background-color:#ff567f}
+#sh_view_tbl .price{font-size:17px;color:#ff567f;font-family:'notokr-bold'}
+#sh_view_tbl .ps{padding-left:10px;font-size:14px;color:#ff567f}
+
+/* 버튼 */ 
+#sh_bo_v .btn_area{position:relative;margin:20px 0}
+#sh_bo_v .btn_area:after{display:block;content:"";visibility:hidden;clear:both}
+#sh_bo_v .btn_area .right{float:right}
+#sh_bo_v .btn_area .right li{margin-left:4px}
+#sh_bo_v .btn_area .set_btn{display:block;width:85px;height:38px;border-radius:2px;border:1px solid #d1d1d1;font-size:13.5px;text-align:center;line-height:36px;color:#777;letter-spacing:-.7px;-webkit-transition:all .2s;transition:all .2s;font-family:'notokr-medium'}
+#sh_bo_v .btn_area .set_btn:hover{border-color:#777}
+#sh_bo_v .adm_btns{position:absolute;top:0;left:0}
+#sh_bo_v .adm_btns li{display:inline-block;vertical-align:top;margin-right:2px}
+#sh_bo_v .adm_btns i{font-size:13px}
+/* -------- 병원 예약 뷰 끝 [e] */
+
+/* 예약 뷰 댓글 시작 [s] */
+#sh_bo_cmt{padding:20px 15px;border-bottom:1px solid #eee;font-size:14px;letter-spacing:-.3px;line-height:1.8;color:#666;font-family:'notokr-regular'}
+.sh_cmt_btn{border:none;font-size:15px;color:#222;background-color:transparent;font-family:'notokr-medium'}
+.sh_cmt_btn:after{content:"\f106";padding-left:15px;font-family:'FontAwesome'}
+.sh_cmt_btn_op:after{content:"\f107"}
+#sh_bo_vc h2{position:absolute;font-size:0;line-height:0;overflow:hidden}
+#sh_bo_vc article{margin:20px 0;position:relative}
+#sh_bo_vc article .profile_img img{border-radius:50%}
+#sh_bo_vc header:after{display:block;visibility:hidden;clear:both;content:""}
+#sh_bo_vc header .icon_reply{position:absolute;top:15px;left:-20px}
+.sh_bo_vc_hdinfo{float:right}
+#sh_bo_vc h1{position:absolute;font-size:0;line-height:0;overflow:hidden}
+#sh_bo_vc .cmt_contents{padding:15px;margin:5px 0 0;border-radius:2px;border:1px solid #e1e1e1;font-size:14px;background:#f5f6f8}
+#sh_bo_vc p a{text-decoration:underline}
+#sh_bo_vc p a.s_cmt{text-decoration:underline;color:#ed6479}
+#sh_bo_vc_empty{margin:0;padding:30px 0 !important;color:#777;text-align:center}
+#sh_bo_vc #bo_vc_winfo{float:left}
+.bo_vc_act{text-align:right;margin:0;list-style:none;zoom:1}
+.bo_vc_act:after{display:block;visibility:hidden;clear:both;content:""}
+.bo_vc_act li{display:inline-block}
+.bo_vc_act li a{display:inline-block;vertical-align:middle;padding:0 5px;border:1px solid #e1e1e1;border-radius:2px;font-size:13px;line-height:23px;background-color:#fff}
+.sh_bo_vc_w{position:relative;margin:10px 0;display:block}
+.sh_bo_vc_w:after{display:block;visibility:hidden;clear:both;content:""}
+.sh_bo_vc_w h2{position:absolute;font-size:0;line-height:0;overflow:hidden}
+.sh_bo_vc_w #char_cnt{display:block;margin:0 0 5px}
+.sh_bo_vc_w textarea{width:100%;height:90px;padding:15px;border:1px solid #e1e1e1;border-radius:2px;font-size:14px;color:#777;font-family:'notokr-regular'}
+.sh_bo_vc_w textarea:focus{border:1px solid #e1e1e1!important}
+.bo_vc_w_info{margin:10px 0;float:left}
+.bo_vc_w_info:after{display:block;visibility:hidden;clear:both;content:""}
+.bo_vc_w_info .frm_input{float:left;width:120px;margin-right:5px;padding-left:10px;border-radius:2px;border:1px solid #e1e1e1}
+.bo_vc_w_info #captcha #captcha_key{border-radius:2px;border:1px solid #e1e1e1}
+.bo_vc_w_info input:focus{border:1px solid #e1e1e1!important}
+.bo_vc_w_info #captcha{float:left;display:block}
+.bo_vc_w .btn_confirm{float:right;margin-top:10px}
+.sh_bo_vc_w .btn_confirm label{display:inline-block;margin-right:10px;font-size:14px}
+.sh_bo_vc_w .btn_confirm label i{padding:0 5px}
+.sh_bo_vc_w .cm_btn{width:85px;height:35px;font-size:14px;line-height:35px;background-color:#444}
+.sh_bo_vc_w .cm_btn:hover{background-color:#222}
+.bo_vc_w_wr:after{display:block;visibility:hidden;clear:both;content:""}
+#bo_vc_send_sns{float:left}
+#bo_vc_sns{display:inline-block;margin:0;padding:0;list-style:none;zoom:1}
+#bo_vc_sns:after{display:block;visibility:hidden;clear:both;content:""}
+#bo_vc_sns li{float:left;margin:0 5px 0 0}
+#bo_vc_sns .sns_li_f{border-radius:3px;background:#3a589b;height:40px;line-height:40px;padding:0 0 0 10px}
+#bo_vc_sns .sns_li_t{border-radius:3px;background:#00aced;height:40px;line-height:40px;padding:0 0 0 10px}
+#bo_vc_sns .sns_li_off{background:#bbb}
+#bo_vc_sns a{display:inline-block;padding:0 15px 0 5px}
+#bo_vc_sns input{margin:0 5px 0 0}
+/* 예약 뷰 댓글 끝[e] */
+

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+    <!-- 모바일 최적화 메타태그 -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-capable" content="no">
+    <meta name="theme-color" content="#9F988C">
+    <meta name="format-detection" content="telephone=no">
+    <title>문신제거 - 미소핀의원</title>
+<link rel="icon" type="image/svg+xml" href="../img/misopin-temporary-logo%201.svg">
+<link rel="shortcut icon" type="image/svg+xml" href="../img/misopin-temporary-logo%201.svg">
+<link rel="apple-touch-icon" href="../img/misopin-temporary-logo%201.svg">
+    
+    <!-- 외부 CSS (임시 - 추후 로컬화) -->
+    <link rel="stylesheet" href="../css/vendor/default.css">
+    <link rel="stylesheet" href="../css/components/quickmenu.css">
+    <link rel="stylesheet" href="../css/components/top_menu.css">
+    <link rel="stylesheet" href="../css/components/sub_main_banner.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/components/aside.css">
+    <link rel="stylesheet" href="../css/vendor/user.css">
+    <link rel="stylesheet" href="../css/pages/page_style.css">
+    <link rel="stylesheet" href="../css/button-styles.css">
+    <link rel="stylesheet" href="../css/grid-system-1450.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    
+        <!-- 통합 반응형 시스템 CSS -->
+    <link rel="stylesheet" href="../css/dist-responsive-system.css">
+
+<!-- Swiper CSS -->
+    <link rel="stylesheet" href="../css/vendor/swiper.min.css">
+    
+    <!-- AOS Animation -->
+    <script src="../js/vendor/aos.js"></script>
+    <link rel="stylesheet" href="../css/vendor/aos.css">
+    
+    <!-- 폰트 -->
+    <style>
+    @font-face {
+        font-family: 'NanumSquare';
+        src: url(//font.shiningcorp.com/css/font/NanumSquareR.eot);
+        src: url(//font.shiningcorp.com/css/font/NanumSquareR.eot?#iefix) format('embedded-opentype'),
+             url(//font.shiningcorp.com/css/font/NanumSquareR.woff) format('woff'),
+             url(//font.shiningcorp.com/css/font/NanumSquareR.ttf) format('truetype');
+    }
+    </style>
+    
+    <!-- 미소핀 커스텀 CSS -->
+    <style>
+    /* CSS 변수 - 미소핀 브랜드 색상 */
+    :root {
+        --primary: #9F988C; /* 기존 파란색 대신 미소핀 브랜드 색상으로 오버라이드 */
+        --misopin-primary: #9F988C;
+        --misopin-secondary: #87857E;
+        --misopin-accent: #EFEDE5;
+        --misopin-bg-main: #FFFFFF;
+        --misopin-bg-accent: #F5F5F0;
+        --misopin-text-dark: #2C2C2C;
+        --misopin-text-light: #555555;
+        --misopin-border: #E0E0E0;
+    }
+    
+    /* 헤더 색상 오버라이드 */
+    #top_nav_wrap {
+        background-color: #fff !important;
+    }
+    
+    #top_nav li ul {
+        background-color: var(--misopin-primary) !important;
+    }
+    
+    #top_nav li a:hover {
+        color: var(--misopin-accent) !important;
+    }
+    
+    .event {
+        background-color: var(--misopin-primary) !important;
+        border: 1px solid var(--misopin-primary) !important;
+        color: #fff !important;
+    }
+    
+    .event:hover {
+        background-color: var(--misopin-secondary) !important;
+        border-color: var(--misopin-secondary) !important;
+    }
+    
+    /* 네비게이션 드롭다운 메뉴 표시 */
+    #top_nav > li:hover > ul {
+        display: block !important;
+    }
+    
+    /* SubBanner 스타일 오버라이드 */
+    #sub_main_banner {
+        background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('../images/botox/botox-01.webp') center/cover !important;
+        min-height: 300px;
+        position: relative;
+    }
+    
+    #shSub .txt_area {
+        text-align: center;
+        color: white;
+    }
+    
+    #shSub .txt_area p {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+    
+    #shSub .breadcrumb {
+        font-size: 0.875rem;
+        opacity: 0.9;
+    }
+    
+    #shSub .breadcrumb a {
+        color: white;
+        text-decoration: none;
+    }
+    
+    #shSub .breadcrumb i {
+        margin: 0 10px;
+    }
+    
+    /* 본문 컨테이너 */
+    .treatment-container {
+        max-width: 1450px;
+        margin: 0 auto;
+        padding: 80px 20px;
+    }
+    
+    /* Hero 섹션 */
+    .treatment-hero {
+        margin-bottom: 80px;
+    }
+    
+    .hero-image {
+        width: 100%;
+        height: 500px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    /* 컨텐츠 섹션 공통 */
+    .treatment-section {
+        margin-bottom: 80px;
+    }
+    
+    
+    .treatment-section p {
+        font-size: 1rem;
+        line-height: 1.8;
+        color: var(--misopin-text-light);
+        margin-bottom: 20px;
+    }
+    
+    /* 2컬럼 레이아웃 */
+    .content-row {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+        margin-bottom: 60px;
+    }
+    
+    .content-row.reverse {
+        flex-direction: row-reverse;
+    }
+    
+    .col-text, .col-image {
+        flex: 1;
+    }
+    
+    .col-image img {
+        width: 100%;
+        border-radius: 10px;
+    }
+    
+    /* 관련 시술 섹션 */
+    .related-treatments {
+        background-color: var(--misopin-bg-accent);
+        padding: 60px 0;
+        margin-top: 100px;
+    }
+    
+    .related-treatments h2 {
+        text-align: center;
+        font-size: 1.75rem;
+        color: var(--misopin-text-dark);
+        margin-bottom: 40px;
+    }
+    
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .related-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .related-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .related-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .related-card-content {
+        padding: 20px;
+    }
+    
+    .related-card h3 {
+        font-size: 1.25rem;
+        color: var(--misopin-text-dark);
+        margin-bottom: 10px;
+    }
+
+    .related-card p {
+        font-size: 0.875rem;
+        color: var(--misopin-text-light);
+        line-height: 1.6;
+    }
+    
+    /* 반응형 */
+    
+        /* H2 모바일 반응형 추가 */
+        h2[style*="font-size: 2.25rem"] {
+            font-size: 2.25rem;
+        }
+
+        @media (max-width: 768px) {
+            h2[style*="font-size: 2.25rem"] {
+                font-size: 1.75rem !important;
+            }
+        }
+
+
+    @media (max-width: 768px) {
+        .content-row,
+        .content-row.reverse {
+            flex-direction: column;
+        }
+        
+        .treatment-container {
+            padding: 40px 20px;
+        }
+        
+        .hero-image {
+            height: 300px;
+        }
+        
+        #shSub .txt_area p {
+            font-size: 1.75rem;
+        }
+    }
+    </style>
+    
+    <!-- jQuery -->
+    <script src="../js/vendor/jquery-3.7.1.min.js"></script>
+    <script src="../js/vendor/jquery-migrate-3.4.1.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="../js/vendor/swiper.min.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/wrest.js"></script>
+
+    <link rel="stylesheet" href="../css/index-custom.css">
+</head>
+<body class="dist-page">
+    <!-- 헤더 -->
+    <!-- 헤더 시작 -->
+<header id="sh_hd" class="desktop-header">
+    <div id="sh_hd_wrapper">
+        <div id="top_nav_wrap">
+            <!-- 로고 -->
+            <div id="top_logo">
+                <a href="../index.html"><img src="../img/misopin-temporary-logo.png" srcset="../img/misopin-temporary-logo.png 2048w, ../img/misopin-temporary-logo.png 1024w, ../img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 100px, 150px" alt="미소핀의원" style="height: 50px;" /></a>
+            </div>
+            <div class="right">
+                <nav id="r_menu">
+                    <!-- 상단메뉴 -->
+                    <ul id="top_nav">   
+                        <li class="list01">
+                            <a class="list" href="../about.html">미소핀 소개</a>
+                            <ul class="sub_ul1">
+                                <li><a href="../about.html">병원 소개</a></li>
+                                <li><a href="../board-page.html">공지 및 이벤트</a></li>
+                            </ul>
+                        </li>
+                        <li class="list02">
+                            <a class="list" href="botox.html">주름/보톡스</a>
+                            <ul class="sub_ul2">
+                                <li><a href="botox.html">보톡스</a></li>
+                                <li><a href="jeomin.html">제오민</a></li>
+                            </ul>
+                        </li>
+                        <li class="list03">
+                            <a class="list" href="filler.html">볼륨/리프팅</a>
+                            <ul class="sub_ul3">
+                                <li><a href="filler.html">필러</a></li>
+                                <li><a href="skinbooster.html">스킨부스터</a></li>
+                                <li><a href="lifting.html">리프팅</a></li>
+                            </ul>
+                        </li>
+                        <li class="list04">
+                            <a class="list" href="acne.html">피부케어</a>
+                            <ul class="sub_ul4">
+                                <li><a href="acne.html">여드름치료</a></li>
+                                <li><a href="peeling.html">필링</a></li>
+                            </ul>
+                        </li>
+                        <li class="list05">
+                            <a class="list" href="mole.html">제거시술</a>
+                            <ul class="sub_ul5">
+                                <li><a href="mole.html">점</a></li>
+                                <li><a href="milia.html">비립종</a></li>
+                                <li><a href="tattoo.html">문신제거</a></li>
+                            </ul>
+                        </li>
+                        <li class="list06">
+                            <a class="list" href="hair-removal.html">바디케어</a>
+                            <ul class="sub_ul6">
+                                <li><a href="hair-removal.html">제모</a></li>
+                                <li><a href="diet.html">다이어트</a></li>
+                            </ul>
+                        </li>
+                        <li class="list07">
+                            <a class="list" href="../calendar-page.html">상담 예약</a>
+                            <ul class="sub_ul7">
+                                <li><a href="../calendar-page.html">온라인 상담</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <a class="event" href="../board-event.html">09월 이벤트</a>
+        </div>
+    </div>
+</header>
+<!-- 헤더 끝 -->
+<!-- 모바일 헤더 (768px 미만) -->
+<header id="mo_hd" class="mobile-header">
+    <div id="mo_hd_wrapper">
+        <!-- 모바일 로고 -->
+        <div id="mo_logo">
+            <a href="../index.html"><img src="../img/misopin-temporary-logo.png" alt="미소핀의원" style="height: 3.125rem;" /></a>
+        </div>
+
+        <!-- 햄버거 메뉴 버튼 -->
+        <button id="navBtn" type="button" aria-label="메뉴 열기">
+            <span></span>
+        </button>
+
+        <!-- 슬라이드 네비게이션 -->
+        <div id="navWrap">
+            <div class="inner">
+                <!-- 대메뉴 리스트 -->
+                <nav class="lnb">
+                    <!-- 미소핀 소개 -->
+                    <button class="bmenu">미소핀 소개</button>
+                    <ul class="smenu">
+                        <li><a href="../about.html">병원 소개</a></li>
+                        <li><a href="../board-page.html">공지 및 이벤트</a></li>
+                    </ul>
+
+                    <!-- 주름/보톡스 -->
+                    <button class="bmenu">주름/보톡스</button>
+                    <ul class="smenu">
+                        <li><a href="botox.html">보톡스</a></li>
+                        <li><a href="jeomin.html">제오민</a></li>
+                    </ul>
+
+                    <!-- 볼륨/리프팅 -->
+                    <button class="bmenu">볼륨/리프팅</button>
+                    <ul class="smenu">
+                        <li><a href="filler.html">필러</a></li>
+                        <li><a href="skinbooster.html">스킨부스터</a></li>
+                        <li><a href="lifting.html">리프팅</a></li>
+                    </ul>
+
+                    <!-- 피부케어 -->
+                    <button class="bmenu">피부케어</button>
+                    <ul class="smenu">
+                        <li><a href="acne.html">여드름치료</a></li>
+                        <li><a href="peeling.html">필링</a></li>
+                    </ul>
+
+                    <!-- 제거시술 -->
+                    <button class="bmenu">제거시술</button>
+                    <ul class="smenu">
+                        <li><a href="mole.html">점</a></li>
+                        <li><a href="milia.html">비립종</a></li>
+                        <li><a href="tattoo.html">문신제거</a></li>
+                    </ul>
+
+                    <!-- 바디케어 -->
+                    <button class="bmenu">바디케어</button>
+                    <ul class="smenu">
+                        <li><a href="hair-removal.html">제모</a></li>
+                        <li><a href="diet.html">다이어트</a></li>
+                    </ul>
+
+                    <!-- 상담 예약 -->
+                    <button class="bmenu">상담 예약</button>
+                    <ul class="smenu">
+                        <li><a href="../calendar-page.html">온라인 상담</a></li>
+                    </ul>
+                </nav>
+
+                <!-- 하단 정보 -->
+                <div class="copy">
+                    © 2024 미소핀의원
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+    
+    <!-- 서브 배너 -->
+    <!-- 서브페이지 배너 -->
+<div id="sub_main_banner">
+    <div id="shSub">
+        <div class="txt_area">
+            <p>제거시술</p>
+            <div class="breadcrumb">
+                <a href="../index.html">Home</a>
+                <i class="fa fa-angle-right"></i>
+                <span>시술 안내</span>
+                <i class="fa fa-angle-right"></i>
+                <span>문신제거</span>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    <!-- 메인 컨텐츠 -->
+    <main class="treatment-container">
+        <div class="container responsive-container">
+            <!-- 메인 소개 섹션 -->
+        <section class="treatment-section first-section">
+                <div class="container responsive-container">
+                    <div class="row">
+                        <div class="col col-sm-12 col-md-6 col-lg-6" data-aos="fade-right" data-aos-duration="1000" first-section-content>
+                            <div class="first-section-label">MISOPIN TATTOO</div>
+                            <h2 class="heading-main">
+                                <span class="highlight-text">문신 제거는<br>
+                                단순한 미용 시술이 아닙니다.</span>
+                            </h2>
+                            <p class="text-lead">
+                                문신 제거, 스스로의 선택으로 새 출발을 하려는 분들에게
+                                피부 상태를 고려한 안전하고 의학적인 접근이 필요합니다.
+                            </p>
+                        </div>
+                        <div class="col col-sm-12 col-md-6 col-lg-6" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200" first-section-image>
+                            <img src="../images/tattoo/tattoo-main.webp" alt="문신제거 시술" style="width: 100%; border-radius: 12px;">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 문신 제거 시술이란 섹션 -->
+            <section class="treatment-section has-background">
+                <div class="section_tit" style="text-align: center;" data-aos="fade-up" data-aos-duration="800">
+                    <div class="text-label">Removal Treatment</div>
+                    <h2 class="heading-main">
+                        <span style="background: linear-gradient(180deg, transparent 60%, #f5e6d3 60%); padding: 0 0.25rem;">문신 제거 시술 원리</span>
+                    </h2>
+                </div>
+
+                <div class="single-column-layout" style="max-width: 900px; margin: 2.5rem auto 0;">
+                    <!-- 중앙 정렬된 텍스트 -->
+                    <div class="col-text" data-aos="fade-up" data-aos-duration="1000">
+                        <p style="margin-bottom: 20px; color: var(--misopin-text-light); font-size: 1rem; line-height: 1.8; text-align: center;">
+                            문신 제거는 레이저를 이용해 피부 깊숙이 있는 색소를 안전하게 분해하는 시술입니다.
+                        </p>
+
+                        <p style="margin-bottom: 20px; color: var(--misopin-text-light); font-size: 1rem; line-height: 1.8; text-align: center;">
+                            미소핀의원에서는 개인의 문신 특성을 정확히 파악한 후,<br>가장 적합한 레이저 설정으로 시술을 진행합니다.
+                        </p>
+
+                        <div class="procedure-box" style="background: white; padding: 30px; border-radius: 10px; margin: 20px 0;">
+                            <!-- 모바일 반응형 스타일 추가 -->
+                            <style>
+                            @media (max-width: 768px) {
+                                .procedure-box {
+                                    margin: 20px 15px !important;
+                                    padding: 20px 15px !important;
+                                    border-radius: 8px !important;
+                                }
+                                .procedure-box h3 {
+                                    font-size: 1.125rem !important;
+                                    margin-bottom: 15px !important;
+                                }
+                                .procedure-box h4 {
+                                    font-size: 0.9375rem !important;
+                                    margin-bottom: 8px !important;
+                                }
+                                .procedure-box p {
+                                    font-size: 0.8125rem !important;
+                                }
+                            }
+                            </style>
+
+                            <h3 class="heading-sub">시술 원리</h3>
+
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: var(--misopin-text-dark); margin-bottom: 10px; font-size: 1rem;">정밀한 레이저 조사</h4>
+                                <p style="color: var(--misopin-text-light); margin: 0; font-size: 0.875rem; line-height: 1.6;">
+                                    특정 파장의 레이저가 피부를 통과해 문신 색소에만 선택적으로 작용합니다. 정상 피부는 손상 없이 색소만을 효과적으로 타겟팅합니다.
+                                </p>
+                            </div>
+
+                            <div style="margin-bottom: 25px;">
+                                <h4 style="color: var(--misopin-text-dark); margin-bottom: 10px; font-size: 1rem;">자연스러운 배출</h4>
+                                <p style="color: var(--misopin-text-light); margin: 0; font-size: 0.875rem; line-height: 1.6;">
+                                    분해된 색소 입자는 우리 몸의 자연스러운 대사 과정을 통해 점진적으로 배출됩니다. 시간이 지날수록 문신이 점점 옅어지는 것을 경험하실 수 있습니다.
+                                </p>
+                            </div>
+
+                            <div>
+                                <h4 style="color: var(--misopin-text-dark); margin-bottom: 10px; font-size: 1rem;">개인 맞춤 계획</h4>
+                                <p style="color: var(--misopin-text-light); margin: 0; font-size: 0.875rem; line-height: 1.6;">
+                                    문신의 크기, 색상, 깊이, 부위를 종합적으로 분석하여 최적의 시술 계획을 수립합니다. 보통 4~6주 간격으로 진행하며, 개인차에 따라 조정됩니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 개인별 맞춤 계획 섹션 -->
+            <section class="treatment-section">
+                <div class="section-header" style="text-align: center; margin-bottom: 2.5rem;" data-aos="fade-up" data-aos-duration="800">
+                    <h2 class="heading-main">시술단계</h2>
+                    <p class="section-subtitle">
+                        미소핀에서는 모든 시술을 안전하고<br>
+                        검증된 과정으로 시행합니다.
+                    </p>
+                </div>
+
+                <div style="max-width: 1000px; margin: 0 auto;">
+
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 50px;">
+                        <div style="background: var(--misopin-bg-accent); padding: 30px; border-radius: 15px;" data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
+                            <div style="width: 60px; height: 60px; background: var(--misopin-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                <span style="color: white; font-size: 1.75rem; font-weight: bold;">1</span>
+                            </div>
+                            <h4 class="heading-section">색상별 분석</h4>
+                            <p style="color: var(--misopin-text-light); font-size: 0.875rem; line-height: 1.6; margin: 0;">
+                                검은색은 비교적 쉽게 제거되지만, 빨강, 노랑, 파랑 등 컬러 문신은 각각 다른 파장의 레이저가 필요합니다. 색상 조합과 농도를 면밀히 분석하여 최적의 레이저를 선택합니다.
+                            </p>
+                        </div>
+
+                        <div style="background: var(--misopin-bg-accent); padding: 30px; border-radius: 15px;" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+                            <div style="width: 60px; height: 60px; background: var(--misopin-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                <span style="color: white; font-size: 1.75rem; font-weight: bold;">2</span>
+                            </div>
+                            <h4 class="heading-section">깊이별 접근</h4>
+                            <p style="color: var(--misopin-text-light); font-size: 0.875rem; line-height: 1.6; margin: 0;">
+                                얕은 문신은 상대적으로 빠른 개선을 보이지만, 깊은 문신은 점진적인 접근이 필요합니다. 안전한 범위 내에서 효과를 극대화하는 에너지 설정을 적용합니다.
+                            </p>
+                        </div>
+
+                        <div style="background: var(--misopin-bg-accent); padding: 30px; border-radius: 15px;" data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">
+                            <div style="width: 60px; height: 60px; background: var(--misopin-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                <span style="color: white; font-size: 1.75rem; font-weight: bold;">3</span>
+                            </div>
+                            <h4 class="heading-section">부위별 고려</h4>
+                            <p style="color: var(--misopin-text-light); font-size: 0.875rem; line-height: 1.6; margin: 0;">
+                                얼굴, 목, 손처럼 민감한 부위는 더욱 섬세한 접근이 필요합니다. 각 부위의 특성을 고려하여 시술 강도와 간격을 조절하며, 일상생활에 지장이 없도록 계획합니다.
+                            </p>
+                        </div>
+                    </div>
+
+
+                </div>
+            </section>
+
+            <!-- 시술 후 주의사항 섹션 -->
+            <section class="treatment-section aftercare-section">
+                <div class="aftercare-two-column" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; margin-top: 2.5rem;">
+                    <!-- 모바일 반응형 스타일 추가 -->
+                    <style>
+                    @media (max-width: 768px) {
+                        .aftercare-two-column {
+                            grid-template-columns: 1fr !important;
+                            gap: 2rem !important;
+                            text-align: center !important;
+                        }
+                        .aftercare-subtitle {
+                            font-size: 0.75rem !important;
+                        }
+                        .aftercare-title {
+                            font-size: 1.75rem !important;
+                        }
+                        .aftercare-list-item {
+                            font-size: 0.95rem !important;
+                            padding: 1rem 0 !important;
+                        }
+                    }
+                    </style>
+
+                    <!-- 왼쪽 컬럼: 타이틀 -->
+                    <div class="col-title" data-aos="fade-right" data-aos-duration="1000">
+                        <div class="aftercare-subtitle" style="color: #c4a582; font-size: 0.875rem; font-weight: 600; letter-spacing: 0.2em; margin-bottom: 1rem; text-transform: uppercase;">
+                            Aftercare Instructions
+                        </div>
+                        <h2 class="aftercare-title" style="font-size: 2.25rem; font-weight: 700; color: #666666; line-height: 1.2; margin-bottom: 1.5rem;">
+                            시술 후 주의사항
+                        </h2>
+                        <p style="color: var(--misopin-text-light); font-size: 1rem; line-height: 1.8;">
+                            문신제거 시술을 받은 후에는 다음과 같은 관리가 중요합니다.
+                        </p>
+                    </div>
+
+                    <!-- 오른쪽 컬럼: 리스트 -->
+                    <div class="col-content" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                        <div class="aftercare-list" style="display: flex; flex-direction: column; gap: 0;">
+                            <div class="aftercare-list-item" style="display: flex; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid rgba(159, 152, 140, 0.2);">
+                                <span style="color: var(--misopin-secondary); font-size: 1.25rem; font-weight: 600; margin-right: 1.5rem; min-width: 2rem;">01</span>
+                                <span style="color: var(--misopin-text-dark); font-size: 1.1rem; font-weight: 500;">시술 부위는 손으로 만지지 않기</span>
+                            </div>
+                            <div class="aftercare-list-item" style="display: flex; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid rgba(159, 152, 140, 0.2);">
+                                <span style="color: var(--misopin-secondary); font-size: 1.25rem; font-weight: 600; margin-right: 1.5rem; min-width: 2rem;">02</span>
+                                <span style="color: var(--misopin-text-dark); font-size: 1.1rem; font-weight: 500;">세게 문지르거나 자극하지 않기</span>
+                            </div>
+                            <div class="aftercare-list-item" style="display: flex; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid rgba(159, 152, 140, 0.2);">
+                                <span style="color: var(--misopin-secondary); font-size: 1.25rem; font-weight: 600; margin-right: 1.5rem; min-width: 2rem;">03</span>
+                                <span style="color: var(--misopin-text-dark); font-size: 1.1rem; font-weight: 500;">자외선 차단은 철저히</span>
+                            </div>
+                            <div class="aftercare-list-item" style="display: flex; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid rgba(159, 152, 140, 0.2);">
+                                <span style="color: var(--misopin-secondary); font-size: 1.25rem; font-weight: 600; margin-right: 1.5rem; min-width: 2rem;">04</span>
+                                <span style="color: var(--misopin-text-dark); font-size: 1.1rem; font-weight: 500;">충분한 보습 관리하기</span>
+                            </div>
+                            <div class="aftercare-list-item" style="display: flex; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid rgba(159, 152, 140, 0.2);">
+                                <span style="color: var(--misopin-secondary); font-size: 1.25rem; font-weight: 600; margin-right: 1.5rem; min-width: 2rem;">05</span>
+                                <span style="color: var(--misopin-text-dark); font-size: 1.1rem; font-weight: 500;">딱지가 생기더라도 억지로 제거하지 않기</span>
+                            </div>
+                            <div class="aftercare-list-item" style="display: flex; align-items: center; padding: 1.25rem 0;">
+                                <span style="color: var(--misopin-secondary); font-size: 1.25rem; font-weight: 600; margin-right: 1.5rem; min-width: 2rem;">06</span>
+                                <span style="color: var(--misopin-text-dark); font-size: 1.1rem; font-weight: 500;">의료진 안내에 따른 사후 관리</span>
+                            </div>
+                        </div>
+                        <p style="margin-top: 2rem; color: var(--misopin-text-light); font-size: 0.95rem; line-height: 1.7;">
+                            시술 후 일시적인 붉어짐, 따끔거림, 건조감이 나타날 수 있습니다. </br>개인차에 따라 회복 속도가 다를 수 있으므로 꾸준한 관리가 중요합니다.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 마무리 메시지 섹션 -->
+            <section class="treatment-section banner-section" style="background-image: url('../images/jeomin/jeomin-02.webp');">
+                <div class="banner-overlay"></div>
+                <div class="container responsive-container banner-content">
+                    <div class="row">
+                        <div class="col col-sm-12">
+                            <div class="text-label">Clear skin begins with precise removal</div>
+                            <h2 class="heading-main">과거를 지우고 새로운 시작</h2>
+                            <p class="text-lead">개인별 문신 특성에 맞춘 정밀한 레이저 치료로 안전하게 제거합니다.</p>
+                            <p class="text-lead">깨끗한 피부로 자신감 있는 새출발을 시작하세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- 모바일 하단 네비게이션 -->
+    <div class="mobile-bottom-nav mobile-only">
+        <a href="javascript:void(0);" onclick="openKakaoChat();" class="kakao">
+            <i class="fas fa-comment"></i>
+            카톡상담
+        </a>
+        <a href="https://instagram.com/misopin_clinic" target="_blank" class="instagram">
+            <i class="fab fa-instagram"></i>
+            인스타그램
+        </a>
+        <a href="../board-page.html">
+            <i class="fas fa-gift"></i>
+            이벤트
+        </a>
+        <a href="../calendar-page.html">
+            <i class="fas fa-edit"></i>
+            예약하기
+        </a>
+        <a href="tel:061-277-1001" class="phone">
+            <i class="fas fa-phone"></i>
+            전화상담
+        </a>
+    </div>
+
+    
+    <!-- 푸터 -->
+    <!-- 하단 푸터 시작 { -->
+<footer id="sh_ft">
+    <div class="footer_wrapper">
+        <div class="copy">
+            <div class="top">
+                <div class="logo_area">
+                    <img class="ft_logo" src="../img/misopin-temporary-logo.png" srcset="../img/misopin-temporary-logo.png 2048w, ../img/misopin-temporary-logo.png 1024w, ../img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 80px, 120px" alt="미소핀의원" style="filter: brightness(0) invert(1); height: 3.125rem;" loading="lazy" />
+                </div>
+                <div class="phone_info">
+                    <div class="number">061-277-1001</div>
+                </div>
+                <div class="hours_title">
+                    <div class="cate">진료시간</div>
+                </div>
+                <div class="hours_info">
+                    <div class="hours_row">
+                        <span class="day">월/화/목/금</span>
+                        <span class="time">08:30 ~ 19:30</span>
+                    </div>
+                    <div class="hours_row">
+                        <span class="day">수요일</span>
+                        <span class="time">08:30 ~ 12:00</span>
+                    </div>
+                    <div class="hours_row">
+                        <span class="day">토요일</span>
+                        <span class="time">09:00 ~ 14:00</span>
+                    </div>
+                    <div class="notice">※점심시간 12:00-14:00 / 일요일, 공휴일 휴진</div>
+                </div>
+                <div class="menu_links">
+                    <a href="javascript:void(0)" onclick="window.open('../privacy.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')">개인정보취급방침</a>
+                    <a href="javascript:void(0)" onclick="window.open('../stipulation.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')">이용약관</a>
+                    <a href="javascript:void(0)" onclick="window.open('../fee-schedule.html', 'window', 'width=800; height=800; left=150; top=0; scrollbars=yes')">비급여 수가표</a>
+                </div>
+            </div>
+            <div class="main_info">상호 : 미소핀의원 | 대표자 : 김지식 | 사업자등록번호 : 123-56-789 | 전화번호 : 061-277-1001 | 주소 : 전남 목포시 영산로 362 미소핀의원</div>
+            <div class="bottom">
+                <p>© MISOPIN CLINIC. ALL RIGHTS RESERVED.</p>
+                <div class="adm">
+                    <a href="/admin/admin.login.php">ADMIN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- 모바일 하단 네비게이션 -->
+<div class="mobile-bottom-nav mobile-only">
+    <a href="javascript:void(0);" onclick="openKakaoChat();" class="kakao">
+        <i class="fas fa-comment"></i>
+        카톡상담
+    </a>
+    <a href="https://instagram.com/misopin_clinic" target="_blank" class="instagram">
+        <i class="fab fa-instagram"></i>
+        인스타그램
+    </a>
+    <a href="../board-page.html">
+        <i class="fas fa-gift"></i>
+        이벤트
+    </a>
+    <a href="../calendar-page.html">
+        <i class="fas fa-edit"></i>
+        예약하기
+    </a>
+    <a href="tel:02-123-4567" class="phone">
+        <i class="fas fa-phone"></i>
+        전화상담
+    </a>
+</div>
+
+<!-- 100% 배경이미지 때문에 사용 -->
+</div>
+
+
+
+<script>
+function fmain_submit(f){
+    if (!$("#prv_check").is(":checked")) {
+        alert("개인정보취급방침의 내용에 동의하셔야 작성가능 합니다.");
+        return false;
+    }
+    return true;
+}
+feather.replace();
+function Num_ck(obj) {
+    var val = obj.value;
+    if(isNaN(val)) {
+        alert("숫자만 입력해 주세요");
+        obj.value = val.replace(/[^0-9]/gi, '');
+    }
+}
+function korean_ck(obj) {
+    var val = obj.value;
+    var korean = /^[가-힣ㄱ-ㅎㅏ-ㅣㆍ ᆢ\s]*$/;
+    if (!korean.test(val)) {
+        alert("한글만 입력해 주세요");
+        obj.value = val.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣㆍ ᆢ\s]+/g, '');
+    }
+}
+</script>
+<!-- } 하단 끝 -->
+
+    <!-- 퀵메뉴 iframe -->
+    <iframe src="../quickmenu.html" style="position:fixed;top:50%;right:1.5%;transform:translateY(-50%);width:140px;height:800px;border:none;z-index:8;background:transparent;" scrolling="no"></iframe>
+<script src="../js/mobile-nav.js" defer></script>
+
+<!-- AOS 초기화 -->
+<script>
+    AOS.init({
+        once: true,
+        duration: 1000,
+        offset: 100
+    });
+</script>
+<script src="../js/clinic-info.js"></script>
+</body>
+</html>

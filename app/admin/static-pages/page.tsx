@@ -131,7 +131,7 @@ export default function StaticPagesPage() {
                 <TableHead>제목</TableHead>
                 <TableHead>슬러그</TableHead>
                 <TableHead>파일 경로</TableHead>
-                <TableHead>상태</TableHead>
+                <TableHead className="hidden">상태</TableHead>
                 <TableHead>마지막 수정</TableHead>
                 <TableHead className="text-right">작업</TableHead>
               </TableRow>
@@ -148,7 +148,7 @@ export default function StaticPagesPage() {
                   <TableCell>
                     <span className="text-xs text-gray-500">{page.filePath}</span>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden">
                     {page.isPublished ? (
                       <Badge variant="default">게시중</Badge>
                     ) : (

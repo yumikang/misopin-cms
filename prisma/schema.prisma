@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -58,7 +59,7 @@ model Reservation {
   birthDate     DateTime
   gender        Gender
   treatmentType TreatmentType
-  service       String            // 원하는 진료 내용
+  service       ServiceType       // 진료 항목
   preferredDate DateTime
   preferredTime String
   status        ReservationStatus @default(PENDING)
@@ -143,6 +144,15 @@ enum Gender {
 enum TreatmentType {
   FIRST_VISIT     // 초진
   FOLLOW_UP       // 재진
+}
+
+enum ServiceType {
+  WRINKLE_BOTOX         // 주름/보톡스
+  VOLUME_LIFTING        // 볼륨/리프팅
+  SKIN_CARE             // 피부케어
+  REMOVAL_PROCEDURE     // 제거시술
+  BODY_CARE             // 바디케어
+  OTHER_CONSULTATION    // 기타 상담
 }
 
 // 시스템 설정 모델
@@ -334,6 +344,50 @@ model StaticPage {
   versions    StaticPageVersion[]
 
   @@map("static_pages")
+}
+
+// ============= 클리닉 정보 관리 모델 =============
+
+// 클리닉 연락처 및 운영 정보 (단일 레코드 패턴)
+model ClinicInfo {
+  id                    String   @id @default(cuid())
+
+  // 연락처 정보
+  phonePrimary          String   // 대표 전화번호 (예: 061-277-1001)
+  phoneSecondary        String?  // 보조 전화번호 (선택)
+
+  // 주소 정보
+  addressFull           String   // 전체 주소
+  addressFloor          String?  // 층/호수 정보 (선택)
+
+  // 운영 시간 (유연한 문자열 형식으로 한글 지원)
+  hoursWeekday          String   // 평일 운영시간
+  hoursSaturday         String   // 토요일 운영시간
+  hoursSunday           String   // 일요일/공휴일 운영시간
+  hoursLunch            String?  // 점심시간 (선택)
+  hoursSpecialNote      String?  // 특이사항 (예: 마지막 수요일 휴진)
+
+  // SNS 링크
+  snsInstagram          String?
+  snsKakao              String?
+  snsNaverBlog          String?
+  snsFacebook           String?
+  snsYoutube            String?
+
+  // 사업자 정보
+  businessRegistration  String   // 사업자등록번호
+  representativeName    String   // 대표자명
+  medicalLicense        String?  // 의료기관 인허가번호 (선택)
+
+  // 시스템 필드
+  isActive              Boolean  @default(true)  // 활성 레코드 여부 (단일 레코드 패턴)
+  version               Int      @default(1)     // 낙관적 잠금용 버전
+  lastUpdatedBy         String?  // 마지막 수정자 ID
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([isActive])
+  @@map("clinic_info")
 }
 
 // 정적 페이지 버전 관리 모델

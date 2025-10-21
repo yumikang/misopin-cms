@@ -1,0 +1,847 @@
+@charset "utf-8";
+
+/* About 페이지 전용 CSS */
+
+/* ===================================
+   CSS 변수 및 오버라이드
+   =================================== */
+/* 외부 CSS의 --primary 변수를 브라운으로 오버라이드 */
+:root {
+    --primary: #9F988C !important;
+    --misopin-primary: #9F988C !important;
+    --misopin-secondary: #87857E !important;
+
+    /* 폰트 크기 변수 - rem 기준 (16px = 1rem) */
+    --font-xs: 0.75rem;    /* 12px */
+    --font-sm: 0.875rem;   /* 14px */
+    --font-base: 1rem;     /* 16px */
+    --font-lg: 1.125rem;   /* 18px */
+    --font-xl: 1.25rem;    /* 20px */
+}
+
+/* Notice 카테고리 링크 색상을 브라운으로 변경 */
+#sh_list_tbl .cate_link span {
+    color: #9F988C !important;
+}
+
+/* 버튼 호버 효과 브라운으로 변경 */
+.btn_type01:hover {
+    background-color: #9F988C !important;
+}
+
+#sh_bo_list .w_btn:hover {
+    background-color: #9F988C !important;
+}
+
+/* BEAUTY TIP 배경 박스 색상 변경 (하늘색 -> 연한 브라운) */
+#atc05 .inc05_text .txt_cont {
+    background-color: #F5F3F0 !important;
+}
+
+/* 카테고리 텍스트 색상 브라운으로 변경 */
+.inc05_text .txt_cont .cate {
+    color: #9F988C !important;
+}
+
+/* 세일 가격 색상 변경 (파랑 -> 브라운) */
+.inc05_text .txt_cont .price {
+    color: #9F988C !important;
+}
+
+/* ===================================
+   rem 기준 설정
+   =================================== */
+html {
+    font-size: 16px;  /* 1rem = 16px 기준 설정 */
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;  /* 모바일에서 기준 크기 조정 */
+    }
+
+    /* H2 인라인 스타일 모바일 반응형 */
+    h2[style*="font-size: 1.875rem"] {
+        font-size: 1.5rem !important;  /* 모바일에서 24px로 축소 */
+    }
+}
+
+/* ===================================
+   폰트 설정
+   =================================== */
+@import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@font-face {
+    font-family: 'NanumSquare';
+    src: url(//font.shiningcorp.com/css/font/NanumSquareR.eot);
+    src: url(//font.shiningcorp.com/css/font/NanumSquareR.eot?#iefix) format('embedded-opentype'),
+         url(//font.shiningcorp.com/css/font/NanumSquareR.woff) format('woff'),
+         url(//font.shiningcorp.com/css/font/NanumSquareR.ttf) format('truetype');
+}
+
+/* ===================================
+   1450px 그리드 시스템
+   =================================== */
+.container {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+    padding: 0 30px;
+}
+
+@media (max-width: 767px) {
+    .container {
+        padding: 0 15px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .container {
+        padding: 0 20px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        padding: 0 30px;
+    }
+}
+
+/* ===================================
+   12 컬럼 그리드
+   =================================== */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -15px;
+}
+
+.col {
+    padding: 0 15px;
+    width: 100%;
+}
+
+/* 데스크톱 그리드 */
+@media (min-width: 1024px) {
+    .col-1 { width: 8.333333%; }
+    .col-2 { width: 16.666667%; }
+    .col-3 { width: 25%; }
+    .col-4 { width: 33.333333%; }
+    .col-5 { width: 41.666667%; }
+    .col-6 { width: 50%; }
+    .col-7 { width: 58.333333%; }
+    .col-8 { width: 66.666667%; }
+    .col-9 { width: 75%; }
+    .col-10 { width: 83.333333%; }
+    .col-11 { width: 91.666667%; }
+    .col-12 { width: 100%; }
+}
+
+/* 태블릿 그리드 */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .col-md-1 { width: 8.333333%; }
+    .col-md-2 { width: 16.666667%; }
+    .col-md-3 { width: 25%; }
+    .col-md-4 { width: 33.333333%; }
+    .col-md-6 { width: 50%; }
+    .col-md-12 { width: 100%; }
+}
+
+/* 모바일 그리드 */
+@media (max-width: 767px) {
+    .col-sm-6 { width: 50%; }
+    .col-sm-12 { width: 100%; }
+}
+
+/* ===================================
+   섹션 구조
+   =================================== */
+.section {
+    padding: 80px 0;
+    position: relative;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 120px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+.section-subtitle {
+    font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.3;
+    color: #666666;
+    word-break: keep-all;
+}
+
+@media (max-width: 767px) {
+    .section {
+        padding: 50px 0;
+    }
+
+    .section-header {
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        font-size: 1.875rem;
+    }
+
+    .section-subtitle {
+        font-size: 1rem;
+    }
+}
+
+/* ===================================
+   About 페이지 전용 스타일
+   =================================== */
+.intro-section {
+    background: #fff;
+}
+
+.intro-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    background-image: url('../../img/about/about18-2.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 80px 40px;
+    overflow: hidden;
+}
+
+.intro-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0.85) 40%,
+        rgba(255, 255, 255, 0.3) 70%,
+        rgba(255, 255, 255, 0.1) 100%);
+    backdrop-filter: blur(2px);
+    z-index: 1;
+}
+
+.intro-content > * {
+    position: relative;
+    z-index: 2;
+}
+
+.intro-text {
+    flex: 1;
+}
+
+.intro-image {
+    flex: 0.8;
+    display: none;
+}
+
+.intro-image img {
+    width: 80%;
+    height: auto;
+}
+
+.highlight {
+    color: #9F988C;
+    font-weight: 600;
+}
+
+/* ===================================
+   특징 그리드
+   =================================== */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.feature-card {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: #9F988C;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #fff;
+}
+
+/* ===================================
+   특별함 섹션 - 스크린샷 스타일 적용
+   =================================== */
+.special-features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 50px;
+}
+
+.special-card {
+    position: relative;
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: flex-end;
+    padding: 30px;
+    color: #fff;
+    text-align: left;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.special-card:hover {
+    transform: translateY(-5px);
+}
+
+.special-content {
+    position: relative;
+    z-index: 2;
+}
+
+.special-content h3 {
+    font-size: var(--font-xl);
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    color: #fff;
+}
+
+.special-content p {
+    font-size: var(--font-sm);
+    line-height: 1.5;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===================================
+   갤러리 그리드
+   =================================== */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 50px;
+}
+
+.gallery-item {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+/* ===================================
+   타임라인
+   =================================== */
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background: #9F988C;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 40px;
+    padding-left: 40px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 5px;
+    width: 16px;
+    height: 16px;
+    background: #9F988C;
+    border-radius: 50%;
+}
+
+.timeline-year {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #9F988C;
+    margin-bottom: 5px;
+}
+
+.timeline-content {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* ===================================
+   시설 슬라이드 스타일
+   =================================== */
+.facility-section {
+    padding: 80px 0;
+    background: #fff;
+}
+
+.facility-slider-wrapper {
+    position: relative;
+    margin: 0 auto;
+    max-width: 1450px;
+    overflow: hidden;
+}
+
+.facility-slide {
+    overflow: hidden;
+    position: relative;
+    padding-top: 4rem;
+    width: 100%;
+}
+
+.facility-slide .swiper-slide {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+}
+
+.facility-slide-item {
+    position: relative;
+    width: 100%;
+    height: 36.25rem;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+
+.facility-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.facility-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.facility-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+        rgba(0,0,0,0.2) 0%,
+        rgba(0,0,0,0.3) 50%,
+        rgba(0,0,0,0.7) 100%);
+}
+
+.facility-content {
+    position: relative;
+    z-index: 2;
+    padding: 2.5rem 3rem;
+    width: 100%;
+    color: #fff;
+    text-align: left;
+}
+
+.facility-category {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.facility-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 1rem 0;
+}
+
+.facility-description {
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* 활성 슬라이드 효과 */
+.facility-slide .swiper-slide.on .facility-image img {
+    transform: scale(1.05);
+}
+
+.facility-slide .swiper-slide.on .facility-overlay {
+    background: linear-gradient(to bottom,
+        rgba(0,0,0,0.1) 0%,
+        rgba(0,0,0,0.3) 50%,
+        rgba(159, 152, 140, 0.8) 100%);
+}
+
+/* 페이지네이션 스타일 */
+.facility-pagination {
+    position: absolute;
+    top: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    text-align: center;
+}
+
+.facility-pagination .swiper-pagination-bullet {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.3);
+    margin: 0 5px;
+    border-radius: 6px;
+    width: 12px;
+    height: 12px;
+    transition: all 0.3s;
+}
+
+.facility-pagination .swiper-pagination-bullet-active {
+    width: 28px;
+    height: 8px;
+    border-radius: 4px;
+    background-color: #9F988C;
+}
+
+/* 네비게이션 버튼 스타일 */
+.facility-nav-container {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.facility-prev,
+.facility-next {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 4.375rem;
+    height: 4.375rem;
+    border: 0.125rem solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    pointer-events: auto;
+}
+
+.facility-prev span,
+.facility-next span {
+    display: block;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-top: 0.1875rem solid rgba(255, 255, 255, 0.8);
+    border-right: 0.1875rem solid rgba(255, 255, 255, 0.8);
+    transition: all 0.3s;
+}
+
+.facility-prev span {
+    transform: rotate(-135deg);
+}
+
+.facility-next span {
+    transform: rotate(45deg);
+}
+
+.facility-prev:hover,
+.facility-next:hover {
+    border-color: #9F988C;
+    background-color: rgba(159, 152, 140, 0.2);
+}
+
+.facility-prev:hover span,
+.facility-next:hover span {
+    border-color: #9F988C;
+}
+
+/* ===================================
+   반응형 스타일
+   =================================== */
+
+/* 태블릿 반응형 */
+@media (max-width: 1023px) {
+    .intro-content {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .special-features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 1024px) {
+    .facility-slide-item {
+        height: 28.125rem;
+    }
+
+    .facility-nav-container {
+        width: 85%;
+    }
+
+    .facility-prev,
+    .facility-next {
+        width: 3.4375rem;
+        height: 3.4375rem;
+    }
+
+    .facility-prev span,
+    .facility-next span {
+        width: 0.625rem;
+        height: 0.625rem;
+        border-width: 0.15625rem;
+    }
+
+    .facility-title {
+        font-size: 1.5rem;
+    }
+
+    .facility-description {
+        font-size: 1rem;
+    }
+}
+
+/* 모바일 반응형 */
+@media (max-width: 767px) {
+    body {
+        overflow-x: hidden !important;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .special-features-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        width: 100%;
+        max-width: 100vw;
+    }
+
+    .special-card {
+        height: 250px;
+        padding: 20px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .special-content h3 {
+        font-size: var(--font-lg);
+    }
+
+    .special-content p {
+        font-size: var(--font-xs);
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .timeline {
+        padding-left: 20px;
+    }
+
+    .timeline-item {
+        padding-left: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .facility-slide {
+        padding-top: 3.75rem;
+    }
+
+    .facility-slide-item {
+        height: 25rem;
+    }
+
+    .facility-content {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .facility-category {
+        font-size: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .facility-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .facility-description {
+        font-size: 0.875rem;
+        line-height: 1.4;
+    }
+
+    .facility-nav-container {
+        width: 85%;
+        top: 45%;
+        z-index: 20;
+    }
+
+    .facility-prev,
+    .facility-next {
+        width: 2.8125rem;
+        height: 2.8125rem;
+        border-width: 0.09375rem;
+        background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    .facility-prev span,
+    .facility-next span {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-width: 0.125rem;
+        border-color: #666;
+    }
+
+    .facility-prev:hover span,
+    .facility-next:hover span {
+        border-color: #9F988C;
+    }
+}
+
+/* 작은 모바일 반응형 */
+@media (max-width: 480px) {
+    .facility-slide {
+        padding-top: 3.125rem;
+    }
+
+    .facility-slide-item {
+        height: 20rem;
+    }
+
+    .facility-pagination {
+        position: absolute;
+        top: auto;
+        bottom: -2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+    }
+
+    .facility-pagination .swiper-pagination-bullet {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+    }
+
+    .facility-pagination .swiper-pagination-bullet-active {
+        background-color: #fff;
+        border: 1px solid #fff;
+    }
+
+    .facility-content {
+        padding: 1.25rem 1rem;
+    }
+
+    .facility-title {
+        font-size: 1.125rem;
+    }
+
+    .facility-description {
+        font-size: 0.8125rem;
+        line-height: 1.3;
+    }
+
+    .facility-nav-container {
+        width: 80%;
+        z-index: 20;
+    }
+
+    .facility-prev,
+    .facility-next {
+        width: 2.5rem;
+        height: 2.5rem;
+        background-color: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .facility-prev span,
+    .facility-next span {
+        width: 0.4375rem;
+        height: 0.4375rem;
+        border-width: 0.1125rem;
+    }
+}
+
+/* ===================================
+   반응형 이미지
+   =================================== */
+img {
+    max-width: 100%;
+    height: auto;
+}

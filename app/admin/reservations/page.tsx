@@ -78,6 +78,16 @@ const statusInfo = {
   NO_SHOW: { label: '미방문', color: 'destructive' as const }
 };
 
+// 진료 항목 매핑
+const serviceTypeLabels: Record<string, string> = {
+  'WRINKLE_BOTOX': '주름/보톡스',
+  'VOLUME_LIFTING': '볼륨/리프팅',
+  'SKIN_CARE': '피부케어',
+  'REMOVAL_PROCEDURE': '제거시술',
+  'BODY_CARE': '바디케어',
+  'OTHER_CONSULTATION': '기타 상담'
+};
+
 // 진료과 목록
 const departments = [
   '내과', '외과', '정형외과', '피부과', '이비인후과',
@@ -94,7 +104,9 @@ export default function ReservationsPage() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editingReservation, setEditingReservation] = useState<Reservation | null>(null);
+  const [viewingReservation, setViewingReservation] = useState<Reservation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -303,6 +315,11 @@ export default function ReservationsPage() {
     setAvailableSlots(timeSlots);
   };
 
+  const handleViewDetails = (reservation: Reservation) => {
+    setViewingReservation(reservation);
+    setViewDialogOpen(true);
+  };
+
   return (
     <div className="p-6">
       <div className="mb-8 flex justify-between items-center">
@@ -469,7 +486,9 @@ export default function ReservationsPage() {
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">
-                      <div className="font-medium">{reservation.department}</div>
+                      <div className="font-medium">
+                        {serviceTypeLabels[reservation.department] || reservation.department}
+                      </div>
                       {reservation.doctor_name && (
                         <div className="text-sm text-gray-600">{reservation.doctor_name}</div>
                       )}
@@ -494,6 +513,13 @@ export default function ReservationsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleViewDetails(reservation)}
+                      >
+                        자세히
+                      </Button>
                       {reservation.status === 'PENDING' && (
                         <>
                           <Button
@@ -680,6 +706,119 @@ export default function ReservationsPage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Details Dialog */}
+      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>예약 상세 정보</DialogTitle>
+            <DialogDescription>
+              예약의 모든 정보를 확인할 수 있습니다
+            </DialogDescription>
+          </DialogHeader>
+
+          {viewingReservation && (
+            <div className="grid gap-6 py-4">
+              {/* 환자 정보 */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-gray-700">환자 정보</h3>
+                <div className="grid grid-cols-2 gap-4 pl-4">
+                  <div>
+                    <Label className="text-xs text-gray-500">환자명</Label>
+                    <p className="text-sm font-medium">{viewingReservation.patient_name}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-500">전화번호</Label>
+                    <p className="text-sm font-medium">{viewingReservation.patient_phone}</p>
+                  </div>
+                  {viewingReservation.patient_email && (
+                    <div className="col-span-2">
+                      <Label className="text-xs text-gray-500">이메일</Label>
+                      <p className="text-sm font-medium">{viewingReservation.patient_email}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 예약 정보 */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-gray-700">예약 정보</h3>
+                <div className="grid grid-cols-2 gap-4 pl-4">
+                  <div>
+                    <Label className="text-xs text-gray-500">예약일</Label>
+                    <p className="text-sm font-medium">{viewingReservation.reservation_date}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-500">예약 시간</Label>
+                    <p className="text-sm font-medium">{viewingReservation.reservation_time}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-500">진료 항목</Label>
+                    <p className="text-sm font-medium">
+                      {serviceTypeLabels[viewingReservation.department] || viewingReservation.department}
+                    </p>
+                  </div>
+                  {viewingReservation.doctor_name && (
+                    <div>
+                      <Label className="text-xs text-gray-500">담당 의사</Label>
+                      <p className="text-sm font-medium">{viewingReservation.doctor_name}</p>
+                    </div>
+                  )}
+                  <div className="col-span-2">
+                    <Label className="text-xs text-gray-500">진료 목적</Label>
+                    <p className="text-sm font-medium">{viewingReservation.purpose}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 희망 진료 사항 */}
+              {viewingReservation.notes && (
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-gray-700">희망 진료 사항</h3>
+                  <div className="pl-4 bg-gray-50 p-4 rounded-md">
+                    <p className="text-sm whitespace-pre-wrap">{viewingReservation.notes}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* 상태 정보 */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-gray-700">상태 정보</h3>
+                <div className="grid grid-cols-2 gap-4 pl-4">
+                  <div>
+                    <Label className="text-xs text-gray-500">예약 상태</Label>
+                    <div className="mt-1">
+                      <Badge variant={statusInfo[viewingReservation.status].color}>
+                        {statusInfo[viewingReservation.status].label}
+                      </Badge>
+                    </div>
+                  </div>
+                  {viewingReservation.cancel_reason && (
+                    <div className="col-span-2">
+                      <Label className="text-xs text-gray-500">취소 사유</Label>
+                      <p className="text-sm font-medium text-red-600">{viewingReservation.cancel_reason}</p>
+                    </div>
+                  )}
+                  <div>
+                    <Label className="text-xs text-gray-500">등록일</Label>
+                    <p className="text-sm">{new Date(viewingReservation.created_at).toLocaleString('ko-KR')}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-500">수정일</Label>
+                    <p className="text-sm">{new Date(viewingReservation.updated_at).toLocaleString('ko-KR')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
+              닫기
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

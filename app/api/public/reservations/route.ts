@@ -1,32 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-// Create Supabase client without Database type
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://wizlegjvfapykufzrojl.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpemxlZ2p2ZmFweWt1Znpyb2psIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODA4MDk4OSwiZXhwIjoyMDczNjU2OTg5fQ.HRknUNazo3GE068z-VwqEOcGqmTMhu__v_RsnhV7SeI';
-
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-});
-
-// Define types locally
-type ReservationInsert = {
-  patient_name: string;
-  phone: string;
-  email?: string | null;
-  birth_date: string;
-  gender: 'MALE' | 'FEMALE';
-  treatment_type: 'FIRST_VISIT' | 'FOLLOW_UP';
-  service: string;
-  preferred_date: string;
-  preferred_time: string;
-  status?: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
-  notes?: string | null;
-  admin_notes?: string | null;
-};
+import { prisma } from '@/lib/prisma';
+import { Gender, TreatmentType, ReservationStatus, ServiceType } from '@prisma/client';
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,67 +29,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create properly typed reservation data
-    const reservationData: ReservationInsert = {
-      patient_name: body.patient_name,
-      phone: body.phone,
-      email: body.email || null,
-      birth_date: body.birth_date,
-      gender: body.gender,
-      treatment_type: body.treatment_type,
-      service: body.service,
-      preferred_date: body.preferred_date,
-      preferred_time: body.preferred_time,
-      status: 'PENDING',
-      notes: body.notes || null,
-      admin_notes: null
-    };
+    // Convert dates from string to Date objects
+    const birthDate = new Date(body.birth_date);
+    const preferredDate = new Date(body.preferred_date);
 
-    // Insert into database
-    const { data, error } = await supabaseAdmin
-      .from('reservations')
-      .insert([reservationData])
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating reservation:', error);
+    // Validate dates
+    if (isNaN(birthDate.getTime()) || isNaN(preferredDate.getTime())) {
       return NextResponse.json(
         {
-          error: 'Failed to create reservation',
-          details: error.message,
-          code: error.code
+          error: 'Invalid date format',
+          details: 'birth_date and preferred_date must be valid date strings'
         },
-        {
-          status: 500,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          }
-        }
+        { status: 400 }
       );
     }
 
-    if (!data) {
-      return NextResponse.json(
-        { error: 'No data returned from database' },
-        {
-          status: 500,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-          }
-        }
-      );
-    }
+    // Create reservation in database using Prisma
+    const reservation = await prisma.reservation.create({
+      data: {
+        patientName: body.patient_name,
+        phone: body.phone,
+        email: body.email || null,
+        birthDate: birthDate,
+        gender: body.gender as Gender,
+        treatmentType: body.treatment_type as TreatmentType,
+        service: body.service as ServiceType,
+        preferredDate: preferredDate,
+        preferredTime: body.preferred_time,
+        status: 'PENDING' as ReservationStatus,
+        notes: body.notes || null,
+        adminNotes: null
+      }
+    });
 
     // Send success response
     return NextResponse.json(
       {
         success: true,
         reservation: {
-          id: data.id,
-          status: data.status,
-          preferred_date: data.preferred_date,
-          preferred_time: data.preferred_time
+          id: reservation.id,
+          status: reservation.status,
+          preferred_date: reservation.preferredDate.toISOString().split('T')[0],
+          preferred_time: reservation.preferredTime
         },
         message: '예약이 성공적으로 접수되었습니다. 확인 후 연락드리겠습니다.'
       },
@@ -130,7 +85,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Reservation error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       {
         status: 500,
         headers: {

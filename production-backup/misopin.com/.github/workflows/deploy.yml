@@ -1,0 +1,108 @@
+name: Deploy to Production
+
+# 🎯 배포 전략:
+# 개발 중: auto_deploy = true → 자동 배포
+# 운영 중: auto_deploy = false → CMS 전용
+
+env:
+  AUTO_DEPLOY: true  # false로 변경하면 자동 배포 중단
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:  # 수동 배포 가능
+    inputs:
+      reason:
+        description: '배포 사유 (선택)'
+        required: false
+
+jobs:
+  deploy:
+    name: Deploy Static Site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Show deployment info
+        run: |
+          echo "🚀 Deploying to production server..."
+          echo "📦 Branch: ${{ github.ref_name }}"
+          echo "👤 Triggered by: ${{ github.actor }}"
+          echo "📝 Commit: ${{ github.sha }}"
+          echo "💬 Message: ${{ github.event.head_commit.message }}"
+
+      - name: 🔑 Setup SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 📋 Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 141.164.60.51 >> ~/.ssh/known_hosts
+
+      - name: 🧪 Test SSH connection
+        run: |
+          ssh -o StrictHostKeyChecking=no root@141.164.60.51 "echo '✅ SSH connection successful'"
+
+      - name: 📤 Deploy files to server
+        run: |
+          echo "🔄 Syncing files to server..."
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='.next' \
+            --exclude='.DS_Store' \
+            --exclude='*.log' \
+            ./ root@141.164.60.51:/var/www/misopin.com/
+
+      - name: 🔧 Set correct permissions
+        run: |
+          ssh root@141.164.60.51 "
+            echo '🔐 Setting file permissions...'
+            chown -R root:caddy /var/www/misopin.com
+            find /var/www/misopin.com -type d -exec chmod 755 {} \;
+            find /var/www/misopin.com -type f -name '*.html' -exec chmod 664 {} \;
+            find /var/www/misopin.com -type f ! -name '*.html' -exec chmod 644 {} \;
+            echo '✅ Permissions updated'
+          "
+
+      - name: 📊 Verify deployment
+        run: |
+          ssh root@141.164.60.51 "
+            echo '📈 Deployment verification...'
+            echo '📁 Files deployed:'
+            find /var/www/misopin.com -name '*.html' | wc -l
+            echo '💾 Disk usage:'
+            du -sh /var/www/misopin.com
+            echo '👤 Ownership:'
+            ls -ld /var/www/misopin.com | awk '{print \$3\":\"\$4}'
+          "
+
+      - name: 🌐 Test site availability
+        run: |
+          echo "🔍 Testing site..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" http://misopin.one-q.xyz/)
+          if [ "$response" = "200" ]; then
+            echo "✅ Site is live and responding with HTTP 200"
+          else
+            echo "⚠️ Site responded with HTTP $response"
+            exit 1
+          fi
+
+      - name: 💾 Create backup
+        run: |
+          ssh root@141.164.60.51 "/usr/local/bin/backup-misopin.sh"
+          echo "✅ Backup created"
+
+      - name: 🎉 Deployment complete
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Deployment completed successfully!"
+          echo "🌐 Live site: http://misopin.one-q.xyz"
+          echo "📅 Deployed at: $(date)"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

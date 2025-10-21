@@ -1,0 +1,392 @@
+/**
+ * API Components Styles
+ * Styles for dynamically loaded content from CMS
+ */
+
+/* Board Posts Styles */
+.board-item {
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.board-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.board-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.board-type {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.board-type-notice {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.board-type-event {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.board-pinned {
+  font-size: 18px;
+}
+
+.board-title {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+}
+
+.board-title:hover {
+  color: #1976d2;
+}
+
+.board-excerpt {
+  color: #666;
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.board-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+  color: #999;
+}
+
+.board-meta span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Popup Styles */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.popup-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Popup Types */
+.popup-modal {
+  /* Default modal style */
+}
+
+.popup-banner {
+  max-width: 100%;
+  width: 100%;
+  border-radius: 0;
+  max-height: auto;
+}
+
+.popup-toast {
+  max-width: 400px;
+  border-radius: 8px;
+}
+
+/* Popup Positions */
+.popup-overlay[data-type="BANNER"] {
+  align-items: flex-start;
+  background: transparent;
+}
+
+.popup-overlay[data-type="TOAST"] {
+  align-items: flex-end;
+  background: transparent;
+}
+
+.popup-top {
+  margin-top: 20px;
+}
+
+.popup-bottom {
+  margin-bottom: 20px;
+}
+
+.popup-center {
+  /* Default center position */
+}
+
+/* Popup Content */
+.popup-header {
+  padding: 20px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.popup-title {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.popup-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.popup-close:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.popup-content {
+  padding: 20px;
+}
+
+.popup-content img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.popup-content p {
+  margin: 0 0 15px 0;
+  line-height: 1.6;
+  color: #666;
+}
+
+.popup-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #1976d2;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+}
+
+.popup-link:hover {
+  background: #1565c0;
+}
+
+.popup-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.popup-footer button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.popup-footer button:hover {
+  background: #f5f5f5;
+}
+
+.popup-footer button:first-child {
+  background: #f5f5f5;
+}
+
+/* Reservation Form */
+.reservation-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.reservation-form h2 {
+  margin-bottom: 30px;
+  color: #333;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-submit {
+  padding: 14px 32px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.form-submit:hover {
+  background: #1565c0;
+}
+
+.form-submit:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.form-error {
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.form-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Loading States */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #1976d2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error States */
+.error {
+  color: #d32f2f;
+  padding: 20px;
+  text-align: center;
+  background: #ffebee;
+  border-radius: 6px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .board-meta {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .popup-container {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .reservation-form {
+    padding: 20px;
+  }
+}

@@ -52,6 +52,8 @@ export default function BoardPage() {
   // Dialog states
   const [postDialogOpen, setPostDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BoardPost | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Form data
   const [postForm, setPostForm] = useState<BoardPostInsert>({
@@ -122,6 +124,51 @@ export default function BoardPage() {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 미리보기 생성
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // 파일 업로드
+    setUploading(true);
+    setError(null);
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+      uploadFormData.append('folder', 'board');
+
+      const response = await fetch('/api/upload/image', {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || '이미지 업로드에 실패했습니다.');
+      }
+
+      const data = await response.json();
+      setPostForm({ ...postForm, image_url: data.url });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '이미지 업로드 중 오류가 발생했습니다.');
+      setImagePreview(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setPostForm({ ...postForm, image_url: "" });
+    setImagePreview(null);
+  };
+
   // Dialog handlers
   const handleOpenPostDialog = (post?: BoardPost) => {
     if (post) {
@@ -137,6 +184,7 @@ export default function BoardPage() {
         is_pinned: post.is_pinned || false,
         tags: post.tags || null,
       });
+      setImagePreview(post.image_url || null);
     } else {
       setEditingPost(null);
       setPostForm({
@@ -150,6 +198,7 @@ export default function BoardPage() {
         is_pinned: false,
         tags: null,
       });
+      setImagePreview(null);
     }
     setPostDialogOpen(true);
   };
@@ -157,6 +206,7 @@ export default function BoardPage() {
   const handleClosePostDialog = () => {
     setPostDialogOpen(false);
     setEditingPost(null);
+    setImagePreview(null);
     setPostForm({
       board_type: "NOTICE",
       title: "",
@@ -344,15 +394,77 @@ export default function BoardPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="post-image" className="text-right">이미지 URL</Label>
-                <Input
-                  id="post-image"
-                  value={postForm.image_url || ""}
-                  onChange={(e) => setPostForm({ ...postForm, image_url: e.target.value || null })}
-                  className="col-span-3"
-                  placeholder="https://example.com/image.jpg"
-                />
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="image_upload" className="text-right pt-2">
+                  이미지
+                </Label>
+                <div className="col-span-3 space-y-3">
+                  {/* 이미지 미리보기 */}
+                  {(imagePreview || postForm.image_url) && (
+                    <div className="relative inline-block">
+                      <img
+                        src={imagePreview || postForm.image_url || ""}
+                        alt="미리보기"
+                        className="max-w-xs max-h-48 rounded border border-gray-300"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
+
+                  {/* 파일 업로드 버튼 */}
+                  <div>
+                    <input
+                      type="file"
+                      id="image_upload"
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                    <label
+                      htmlFor="image_upload"
+                      className={`inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer ${
+                        uploading ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      {uploading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 mr-2"></div>
+                          업로드 중...
+                        </>
+                      ) : (
+                        <>
+                          📷 이미지 선택
+                        </>
+                      )}
+                    </label>
+                    <p className="text-xs text-gray-500 mt-1">
+                      JPG, PNG, GIF, WebP (최대 5MB)
+                    </p>
+                  </div>
+
+                  {/* 또는 URL 직접 입력 */}
+                  <div className="pt-2 border-t">
+                    <Label htmlFor="post-image" className="text-sm text-gray-600 mb-1 block">
+                      또는 이미지 URL 직접 입력
+                    </Label>
+                    <Input
+                      id="post-image"
+                      value={postForm.image_url || ""}
+                      onChange={(e) => {
+                        setPostForm({ ...postForm, image_url: e.target.value || null });
+                        setImagePreview(e.target.value || null);
+                      }}
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-4 items-center gap-4">

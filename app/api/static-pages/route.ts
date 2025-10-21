@@ -11,6 +11,13 @@ export const dynamic = 'force-dynamic';
 const STATIC_SITE_PATH = process.env.STATIC_PAGES_DIR || path.join(process.cwd(), '../Misopin-renew');
 const htmlParser = new HTMLParser(STATIC_SITE_PATH);
 
+// 관리 UI에서 제외할 페이지 목록
+const EXCLUDED_PAGES = [
+  'calendar-page',    // 예약 캘린더 - API 연동 (예약은 /admin/reservations에서 관리)
+  'board-page',       // 게시판 - API 연동 (게시글은 /admin/board에서 관리)
+  'fee-schedule',     // 비급여 수가표 - 테이블 구조 (파서 미지원)
+];
+
 /**
  * 정적 페이지 목록 조회
  */
@@ -44,8 +51,13 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // 전체 페이지 목록 조회
+    // 전체 페이지 목록 조회 (제외 목록 필터링)
     const pages = await prisma.staticPage.findMany({
+      where: {
+        slug: {
+          notIn: EXCLUDED_PAGES
+        }
+      },
       orderBy: { lastEdited: 'desc' },
       select: {
         id: true,

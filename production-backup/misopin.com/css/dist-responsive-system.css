@@ -1,0 +1,1407 @@
+/**
+ * 미소핀의원 DIST 페이지 통합 반응형 시스템
+ *
+ * 1. Clamp() 기반 반응형 폰트 시스템
+ * 2. CSS Grid/Flexbox 레이아웃
+ * 3. 3단계 미디어쿼리 (모바일/태블릿/데스크톱)
+ */
+
+/* ========================================
+   1. CSS 변수 정의
+   ======================================== */
+:root {
+    /* 브레이크포인트 */
+    --breakpoint-mobile: 480px;
+    --breakpoint-tablet: 768px;
+    --breakpoint-desktop: 1200px;
+
+    /* 컨테이너 최대 너비 */
+    --container-max-width: 1200px;
+
+    /* 반응형 간격 */
+    --spacing-xs: clamp(0.5rem, 1vw, 0.75rem);
+    --spacing-sm: clamp(0.75rem, 1.5vw, 1rem);
+    --spacing-md: clamp(1rem, 2vw, 1.5rem);
+    --spacing-lg: clamp(1.5rem, 3vw, 2.5rem);
+    --spacing-xl: clamp(2rem, 4vw, 3.75rem);
+    --spacing-xxl: clamp(3rem, 5vw, 5rem);
+
+    /* Clamp 기반 반응형 폰트 사이즈 */
+    --font-xs: clamp(0.75rem, 1.5vw, 0.875rem);      /* 12px ~ 14px */
+    --font-sm: clamp(0.875rem, 1.8vw, 1rem);         /* 14px ~ 16px */
+    --font-base: clamp(1rem, 2vw, 1.125rem);         /* 16px ~ 18px */
+    --font-md: clamp(1.125rem, 2.3vw, 1.25rem);      /* 18px ~ 20px */
+    --font-lg: clamp(1.25rem, 2.5vw, 1.5rem);        /* 20px ~ 24px */
+    --font-xl: clamp(1.5rem, 3vw, 1.75rem);          /* 24px ~ 28px */
+    --font-2xl: clamp(1.75rem, 3.5vw, 2.25rem);      /* 28px ~ 36px */
+    --font-3xl: clamp(2rem, 4vw, 2.5rem);            /* 32px ~ 40px */
+    --font-4xl: clamp(2.25rem, 5vw, 3rem);           /* 36px ~ 48px */
+
+    /* 행간 */
+    --line-height-tight: 1.3;
+    --line-height-base: 1.6;
+    --line-height-relaxed: 1.8;
+    --line-height-loose: 2;
+
+    /* 미소핀 브랜드 색상 */
+    --misopin-primary: #9F988C;
+    --misopin-secondary: #87857E;
+    --misopin-accent: #EFEDE5;
+    --misopin-bg-main: #FFFFFF;
+    --misopin-bg-accent: #F5F5F0;
+    --misopin-text-dark: #2C2C2C;
+    --misopin-text-base: #555555;
+    --misopin-text-light: #777777;
+    --misopin-border: #E0E0E0;
+}
+
+/* ========================================
+   2. 기본 타이포그래피 클래스
+   ======================================== */
+
+/* 제목 스타일 */
+.heading-hero {
+    font-size: var(--font-4xl);
+    font-weight: 700;
+    line-height: var(--line-height-tight);
+    color: #666666;
+    margin-bottom: var(--spacing-lg);
+    word-break: keep-all;  /* 한국어 단어 단위 줄바꿈 */
+}
+
+.heading-main {
+    font-size: var(--font-2xl);
+    font-weight: 700;
+    line-height: var(--line-height-tight);
+    color: #666666;
+    margin-bottom: var(--spacing-md);
+    word-break: keep-all;  /* 한국어 단어 단위 줄바꿈 */
+}
+
+.heading-sub {
+    font-size: var(--font-xl);
+    font-weight: 600;
+    line-height: var(--line-height-tight);
+    color: #666666;
+    margin-bottom: var(--spacing-md);
+    word-break: keep-all;  /* 한국어 단어 단위 줄바꿈 */
+}
+
+.heading-section {
+    font-size: var(--font-lg);
+    font-weight: 600;
+    line-height: var(--line-height-base);
+    color: var(--misopin-text-dark);
+    margin-bottom: var(--spacing-sm);
+    word-break: keep-all;  /* 한국어 단어 단위 줄바꿈 */
+}
+
+/* 본문 스타일 */
+.text-lead {
+    font-size: var(--font-md);
+    line-height: var(--line-height-relaxed);
+    color: var(--misopin-text-base);
+    margin-bottom: var(--spacing-md);
+}
+
+.text-body {
+    font-size: var(--font-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--misopin-text-base);
+    margin-bottom: var(--spacing-sm);
+}
+
+.text-small {
+    font-size: var(--font-sm);
+    line-height: var(--line-height-base);
+    color: var(--misopin-text-light);
+}
+
+.text-caption {
+    font-size: var(--font-xs);
+    line-height: var(--line-height-base);
+    color: var(--misopin-text-light);
+}
+
+/* 카테고리/라벨 */
+.text-label {
+    font-size: var(--font-xs);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--misopin-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+/* ========================================
+   3. 레이아웃 컨테이너
+   ======================================== */
+
+.responsive-container {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* Flexbox 유틸리티 */
+.flex-container {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Grid 시스템 */
+.grid-container {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.grid-2-cols {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3-cols {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-4-cols {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* 프로세스 카드 전용 그리드 - 높이 통일 */
+.process-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+    align-items: stretch; /* 모든 아이템 높이 동일 */
+}
+
+.process-grid .process-step {
+    height: 100%; /* 그리드 아이템 높이 채우기 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+/* 섹션 간격 */
+.section {
+    padding: var(--spacing-xl) 0;
+}
+
+.section-lg {
+    padding: var(--spacing-xxl) 0;
+}
+
+/* ========================================
+   4. 첫 번째 섹션 (메인 소개) 전용 스타일
+   ======================================== */
+
+/* 첫 번째 섹션 컨테이너 */
+.first-section {
+    padding: var(--spacing-xl) 0;
+}
+
+.first-section .row {
+    align-items: center;
+    gap: 0;
+}
+
+/* 첫 번째 섹션 텍스트 영역 */
+.first-section-content {
+    max-width: 600px; /* 텍스트 영역 최대 너비 제한 */
+}
+
+/* 첫 번째 섹션 라벨 */
+.first-section-label {
+    color: #d4a574;
+    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    margin-bottom: var(--spacing-sm);
+    text-transform: uppercase;
+}
+
+/* 첫 번째 섹션 제목 */
+.first-section h2,
+.first-section .heading-main {
+    font-size: var(--font-2xl);
+    font-weight: 700;
+    line-height: 1.3;
+    color: #666666;
+    margin-bottom: var(--spacing-md);
+    word-break: keep-all; /* 한국어 단어 단위 줄바꿈 */
+}
+
+/* 하이라이트 효과 */
+.first-section h2 span,
+.highlight-text {
+    background: linear-gradient(180deg, transparent 60%, #f5e6d3 60%);
+    padding: 0 0.25rem;
+}
+
+/* 첫 번째 섹션 리드 텍스트 */
+.first-section .text-lead,
+.first-section p {
+    font-size: clamp(1rem, 2.2vw, 1.125rem);
+    line-height: 1.8; /* 행간 늘리기 */
+    color: var(--misopin-text-base);
+    margin-bottom: var(--spacing-md);
+    word-break: keep-all; /* 한국어 최적화 */
+    letter-spacing: -0.01em; /* 자간 미세 조정 */
+}
+
+/* 첫 번째 섹션 서브 제목 */
+.first-section h3,
+.first-section .heading-sub {
+    font-size: var(--font-xl);
+    font-weight: 600;
+    line-height: 1.4;
+    color: #666666;
+    margin-bottom: var(--spacing-md);
+    word-break: keep-all;
+}
+
+/* 태그 버튼들 */
+.tag-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: var(--spacing-lg);
+    margin-bottom: 2rem; /* 텍스트와의 간격 추가 */
+}
+
+.tag-button {
+    display: inline-block;
+    padding: 0.625rem 1.25rem;
+    background: linear-gradient(135deg, #d4a574 0%, #c19b6c 100%);
+    color: white;
+    border-radius: 25px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* 첫 번째 섹션 이미지 */
+.first-section-image {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.first-section-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 타원형 특징 카드 컨테이너 */
+.feature-cards-container {
+    display: flex;
+    gap: 2rem;
+    margin-top: 3rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* 타원형 특징 카드 */
+.feature-card-oval {
+    background: #f5f3ed;
+    border-radius: 50%;
+    width: 10rem;
+    height: 12.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    flex-shrink: 0;
+}
+
+.feature-card-oval .card-number {
+    color: #b8a997;
+    font-size: 2.25rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+}
+
+.feature-card-oval .card-text {
+    color: #2c2c2c;
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* 모바일 반응형 - 첫 번째 섹션 */
+@media (max-width: 768px) {
+    .first-section .row {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        margin: 0;
+    }
+
+    .first-section-content {
+        max-width: 100%;
+        padding: 0 var(--spacing-sm);
+    }
+
+    .first-section h2,
+    .first-section .heading-main {
+        font-size: var(--font-xl);
+        line-height: 1.4;
+    }
+
+    .first-section .text-lead,
+    .first-section p {
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .first-section h3,
+    .first-section .heading-sub {
+        font-size: var(--font-lg);
+    }
+
+    .tag-buttons {
+        gap: 0.5rem;
+        margin-bottom: 1.5rem; /* 모바일에서도 적절한 간격 유지 */
+    }
+
+    .tag-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.8125rem;
+    }
+
+    /* 타원형 특징 카드 모바일 최적화 */
+    .feature-cards-container {
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: center;
+    }
+
+    .feature-card-oval {
+        width: 8rem;
+        height: 10rem;
+        padding: 1rem;
+    }
+
+    .feature-card-oval .card-number {
+        font-size: 1.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .feature-card-oval .card-text {
+        font-size: 1rem;
+    }
+}
+
+/* 작은 모바일 (480px 이하) */
+@media (max-width: 480px) {
+    .feature-cards-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .feature-card-oval {
+        width: 9rem;
+        height: 9rem;
+    }
+}
+
+/* ========================================
+   공통 한국어 텍스트 최적화 & 반응형 시스템
+   ======================================== */
+
+/* 한국어 텍스트 최적화 - 모든 시술 페이지 공통 */
+.treatment-text-ko {
+    word-break: keep-all;  /* 한국어 단어 단위 줄바꿈 */
+    line-height: 1.8;
+    text-align: justify;   /* 양쪽 정렬 */
+    letter-spacing: -0.01em;  /* 자간 미세 조정 */
+    hyphens: auto;
+}
+
+/* 시술 소개 텍스트 - 공통 */
+.treatment-intro-text {
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: #666;
+    word-break: keep-all;
+    text-align: justify;
+    letter-spacing: -0.01em;
+    hyphens: auto;
+}
+
+/* ========================================
+   제오민 페이지 전용 반응형
+   ======================================== */
+
+/* 시술 설명 섹션 - 공통 반응형 */
+.treatment-detail-section {
+    max-width: 100%;
+}
+
+.treatment-detail-section .col {
+    padding: 20px;
+}
+
+.treatment-detail-section h2 {
+    font-size: var(--font-2xl);
+    font-weight: 400;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    color: #666;
+    word-break: keep-all;
+}
+
+.treatment-detail-section h3 {
+    font-size: var(--font-xl);
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #666666;
+    word-break: keep-all;
+}
+
+.treatment-detail-section p {
+    font-size: clamp(0.875rem, 2.2vw, 0.95rem);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: #666;
+    word-break: keep-all;
+    text-align: justify;
+    letter-spacing: -0.01em;
+    hyphens: auto;
+}
+
+/* 제오민 두 번째 섹션 - 밸런스 교정 (제오민 특화 유지) */
+.jeomin-balance-section {
+    max-width: 100%;
+}
+
+.jeomin-balance-section .col {
+    padding: 20px;
+}
+
+.jeomin-balance-section h2 {
+    font-size: var(--font-2xl);  /* 다른 섹션의 heading-main과 동일 */
+    font-weight: 700;  /* Changed from 400 to match heading-main */
+    line-height: 1.3;  /* Changed from 1.4 to match heading-main */
+    margin-bottom: var(--spacing-md);  /* Changed to use spacing variable */
+    color: #666666;
+    word-break: keep-all;
+}
+
+.jeomin-balance-section h3 {
+    font-size: var(--font-xl);  /* 부제목 크기 */
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #666666;
+    word-break: keep-all;
+}
+
+.jeomin-balance-section p {
+    font-size: clamp(0.875rem, 2.2vw, 0.95rem);  /* 약간 키운 폰트 크기 */
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: #666;
+    word-break: keep-all;  /* 한국어 단어 단위 줄바꿈 */
+    text-align: justify;   /* 양쪽 정렬 */
+    letter-spacing: -0.01em;  /* 자간 미세 조정 */
+    hyphens: auto;  /* 필요시 하이픈 처리 */
+}
+
+/* 데스크톱 - 그라디언트 텍스트 */
+.jeomin-gradient-text {
+    display: inline-block;
+    background: linear-gradient(135deg, #d4a574 0%, #c19a6b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -moz-background-clip: text;
+    -moz-text-fill-color: transparent;
+}
+
+/* 지속 기간 박스 - 모든 시술 페이지 공통 */
+.treatment-duration-box {
+    padding: 12px 16px;
+    background: #f8f8f8;
+    border-left: 3px solid #d4a574;
+    margin-top: 30px;
+    display: inline-block;
+}
+
+.treatment-duration-box .duration-label {
+    color: #d4a574;
+    font-weight: 600;
+    margin-bottom: 3px;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.treatment-duration-box .duration-text {
+    color: #666;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+.treatment-duration-box .duration-text strong {
+    color: #d4a574;
+    font-weight: 700;
+}
+
+
+/* ========================================
+   공통 모바일 반응형 (768px 이하)
+   ======================================== */
+@media (max-width: 768px) {
+    /* 공통 시술 소개 텍스트 */
+    .treatment-intro-text {
+        font-size: 0.875rem;
+        line-height: 1.75;
+        padding: 0 1rem;
+        text-align: left;
+        word-break: keep-all;
+        letter-spacing: -0.02em;
+    }
+
+    /* 공통 시술 설명 섹션 */
+    .treatment-detail-section {
+        padding: 2rem 0;
+    }
+
+    .treatment-detail-section h2,
+    .treatment-detail-section h3 {
+        text-align: left;
+        padding: 0 1rem;
+    }
+
+    .treatment-detail-section h2 {
+        font-size: var(--font-xl) !important;
+        line-height: 1.5;
+    }
+
+    .treatment-detail-section h3 {
+        font-size: var(--font-lg) !important;
+        line-height: 1.4;
+        margin-bottom: 20px;
+    }
+
+    .treatment-detail-section p {
+        text-align: left;
+        padding: 0 1rem;
+        font-size: 0.875rem;
+        line-height: 1.75;
+        word-break: keep-all;
+        letter-spacing: -0.02em;
+    }
+
+    .treatment-detail-section .section-label,
+    .treatment-detail-section .text-label {
+        text-align: left;
+        display: block;
+        margin-bottom: 1rem;
+        padding: 0 1rem;
+        font-size: 0.875rem;
+        letter-spacing: 0.08em;
+    }
+}
+
+/* 제오민 전용 모바일 반응형 */
+@media (max-width: 768px) {
+
+    /* 두 번째 섹션 모바일 */
+    .jeomin-balance-section {
+        padding: 2rem 0;
+    }
+
+    .jeomin-balance-section h2,
+    .jeomin-balance-section h3 {
+        text-align: left;  /* 전체 좌측 정렬 */
+        padding: 0 1rem;  /* 좌우 패딩 추가 */
+    }
+
+    .jeomin-balance-section h2 {
+        font-size: var(--font-xl) !important;  /* 다른 섹션과 동일하게 통일 */
+        line-height: 1.5;
+    }
+
+    .jeomin-balance-section h3 {
+        font-size: var(--font-lg) !important;  /* 계층에 맞게 조정 */
+        line-height: 1.4;
+        margin-bottom: 20px;
+    }
+
+    .jeomin-balance-section p {
+        text-align: left;  /* 모바일에서는 왼쪽 정렬이 더 읽기 편함 */
+        padding: 0 1rem;
+        font-size: 0.875rem;
+        line-height: 1.75;  /* 모바일 행간 약간 증가 */
+        word-break: keep-all;
+        letter-spacing: -0.02em;  /* 모바일에서 자간 조금 더 타이트하게 */
+    }
+
+    .jeomin-balance-section .section-label,
+    .jeomin-balance-section .text-label {
+        text-align: left;  /* 라벨도 좌측 정렬 */
+        display: block;
+        margin-bottom: 1rem;
+        padding: 0 1rem;  /* 좌우 패딩 추가 */
+        font-size: 0.875rem;  /* 모바일에서 라벨 크기 증가 */
+        letter-spacing: 0.08em;  /* 자간 넓혀서 가독성 향상 */
+    }
+
+    /* 모바일 이미지 마진 */
+    .jeomin-balance-section img {
+        margin-bottom: 2rem;
+    }
+
+    /* 지속 기간 박스 모바일 - 공통 */
+    .treatment-duration-box {
+        margin-top: 20px;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        padding: 10px 14px;
+        display: inline-block;
+        width: auto;
+        text-align: left;
+    }
+
+    .treatment-duration-box .duration-text {
+        font-size: 0.875rem;
+        text-align: left;
+    }
+}
+
+/* ========================================
+   공통 작은 모바일 반응형 (480px 이하)
+   ======================================== */
+@media (max-width: 480px) {
+    /* 공통 시술 텍스트 */
+    .treatment-intro-text,
+    .treatment-detail-section p {
+        font-size: 0.8125rem;
+        line-height: 1.65;
+        padding: 0 0.75rem;
+    }
+
+    .treatment-detail-section h2 {
+        font-size: 1.25rem !important;
+        padding: 0 0.75rem;
+    }
+
+    .treatment-detail-section h3 {
+        font-size: 1.125rem !important;
+        padding: 0 0.75rem;
+    }
+
+    .treatment-detail-section .text-label {
+        font-size: 0.75rem;
+        padding: 0 0.75rem;
+    }
+}
+
+/* 제오민 전용 작은 모바일 (480px 이하) */
+@media (max-width: 480px) {
+
+    .jeomin-balance-section h2 {
+        font-size: 1.25rem !important;  /* 작은 화면 최적화 */
+        padding: 0 0.75rem;
+    }
+
+    .jeomin-balance-section h3 {
+        font-size: 1.125rem !important;
+        padding: 0 0.75rem;
+    }
+
+    .jeomin-balance-section .text-label {
+        font-size: 0.75rem;
+        padding: 0 0.75rem;
+    }
+
+    /* 지속 기간 박스 작은 모바일 - 공통 */
+    .treatment-duration-box {
+        margin-left: 0.75rem;
+        margin-right: 0.75rem;
+        padding: 8px 12px;
+    }
+
+    .treatment-duration-box .duration-text {
+        font-size: 0.8125rem;
+    }
+}
+
+/* ========================================
+   체크마크 리스트 (AQUA PEEL TECHNOLOGY 섹션)
+   ======================================== */
+
+/* 체크마크 리스트 컨테이너 */
+.checkmark-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    padding: 0 1rem;
+    margin-top: 2rem;
+}
+
+/* 개별 체크마크 아이템 */
+.checkmark-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 15rem;
+}
+
+/* 타원형 체크마크 아이콘 */
+.checkmark-oval {
+    width: 2.5rem;
+    height: 3.125rem;
+    background: #d4a574;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* 체크마크 텍스트 */
+.checkmark-text {
+    font-size: 1.125rem;
+    color: var(--misopin-text-dark);
+    font-weight: 500;
+}
+
+/* 모바일 반응형 체크마크 */
+@media (max-width: 768px) {
+    .checkmark-list {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 0;
+        margin-top: 1.5rem;
+    }
+
+    .checkmark-item {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .checkmark-oval {
+        width: 2rem;
+        height: 2.5rem;
+    }
+
+    .checkmark-oval svg {
+        width: 14px;
+        height: 11px;
+    }
+
+    .checkmark-text {
+        font-size: 1rem;
+    }
+}
+
+/* ========================================
+   5. 컴포넌트 스타일
+   ======================================== */
+
+/* 카드 컴포넌트 */
+.card {
+    background: var(--misopin-bg-accent);
+    border-radius: 10px;
+    padding: var(--spacing-lg);
+    height: 100%;
+}
+
+/* 프로세스 스텝 */
+.process-step {
+    text-align: center;
+    padding: var(--spacing-lg);
+    background: var(--misopin-bg-accent);
+    border-radius: 10px;
+    min-height: 200px; /* 최소 높이 설정 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.process-number {
+    font-size: var(--font-xl);
+    color: var(--misopin-primary);
+    margin-bottom: var(--spacing-sm);
+    flex-shrink: 0; /* 번호는 고정 크기 */
+}
+
+/* 프로세스 카드 한국어 텍스트 최적화 */
+.process-step h4 {
+    word-break: keep-all;
+    line-height: 1.4;
+    margin-bottom: var(--spacing-xs);
+    flex-shrink: 0; /* 제목은 고정 */
+}
+
+.process-step p,
+.process-step .text-small {
+    word-break: keep-all; /* 단어 단위 줄바꿈 */
+    line-height: 1.6; /* 행간 늘리기 */
+    text-align: center; /* 중앙 정렬 유지 (프로세스 카드 특성) */
+    hyphens: auto; /* 필요시 하이픈 처리 */
+    font-size: clamp(0.875rem, 2.2vw, 0.95rem); /* 약간 키운 폰트 */
+    letter-spacing: -0.01em; /* 자간 미세 조정 */
+    color: var(--misopin-text-light);
+    margin-top: auto; /* 텍스트를 아래쪽으로 밀지 않음 */
+}
+
+/* 모바일 반응형 - 프로세스 카드 */
+@media (max-width: 768px) {
+    .process-grid {
+        grid-template-columns: repeat(2, 1fr); /* 모바일에서 2열 */
+        gap: var(--spacing-sm);
+    }
+
+    .process-step {
+        min-height: 180px; /* 모바일에서는 높이 약간 줄임 */
+        padding: 1rem;
+    }
+
+    .process-step p,
+    .process-step .text-small {
+        font-size: 0.9rem;
+        line-height: 1.7;
+    }
+}
+
+@media (max-width: 480px) {
+    .process-grid {
+        grid-template-columns: 1fr; /* 작은 모바일에서 1열 */
+    }
+
+    .process-step {
+        min-height: auto; /* 작은 화면에서는 자동 높이 */
+    }
+}
+
+/* 버튼 */
+.btn {
+    display: inline-block;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-base);
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--misopin-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--misopin-secondary);
+}
+
+/* ========================================
+   5. 미디어 쿼리 - 3단계 반응형
+   ======================================== */
+
+/* 태블릿 (768px 이하) */
+@media (max-width: 768px) {
+    /* Grid 자동 변환 */
+    .grid-2-cols,
+    .grid-3-cols,
+    .grid-4-cols {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-2-cols-tablet {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Flexbox 방향 변경 */
+    .flex-container {
+        flex-direction: column;
+    }
+
+    .flex-row-tablet {
+        flex-direction: row;
+    }
+
+    /* 텍스트 정렬 */
+    .text-center-mobile {
+        text-align: center;
+    }
+
+    .text-left-mobile {
+        text-align: left;
+    }
+
+    /* 섹션 타이틀 모바일 정렬 */
+    .section_tit {
+        text-align: left !important;
+    }
+
+    .section_tit h2 {
+        text-align: left !important;
+    }
+
+    .section_tit p {
+        text-align: left !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
+/* 모바일 (480px 이하) */
+@media (max-width: 480px) {
+    /* 모바일용 추가 조정 */
+    .responsive-container {
+        padding: 0 var(--spacing-sm);
+    }
+
+    /* 모바일 전용 그리드 */
+    .grid-2-cols-tablet {
+        grid-template-columns: 1fr;
+    }
+
+    /* 이미지 최적화 */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* 테이블 반응형 */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+/* 대형 데스크톱 (1200px 이상) */
+@media (min-width: 1200px) {
+    /* 대형 화면 최적화 */
+    .grid-5-cols-desktop {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .grid-6-cols-desktop {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+/* ========================================
+   6. 배너 섹션 전용 스타일
+   ======================================== */
+
+/* 어두운 배경 이미지가 있는 배너 섹션 */
+.banner-section {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    padding: var(--spacing-xxl) 0;
+    margin: var(--spacing-xl) 0;
+}
+
+/* 배너 오버레이 */
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+/* 배너 콘텐츠 컨테이너 */
+.banner-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+}
+
+/* 배너 섹션 내부의 모든 텍스트를 흰색으로 */
+.banner-content .text-label {
+    color: #d4af37 !important; /* 골드 라벨 */
+    margin-bottom: var(--spacing-xs);
+}
+
+.banner-content .heading-main,
+.banner-content .heading-hero,
+.banner-content h2 {
+    color: white !important;
+    margin-bottom: var(--spacing-lg);
+}
+
+.banner-content .text-lead,
+.banner-content .text-body,
+.banner-content p {
+    color: rgba(255,255,255,0.9) !important;
+    margin-bottom: var(--spacing-sm);
+    word-break: keep-all; /* 한국어 단어 단위 줄바꿈 */
+    line-height: 1.8; /* 행간 늘리기 */
+    font-size: clamp(1rem, 2.2vw, 1.125rem); /* 반응형 폰트 크기 */
+    letter-spacing: -0.01em; /* 자간 미세 조정 */
+}
+
+.banner-content .text-small {
+    color: rgba(255,255,255,0.8) !important;
+}
+
+/* 모바일 반응형 */
+@media screen and (max-width: 768px) {
+    /* 부모 컨테이너를 무시하고 전체 너비로 확장 */
+    .treatment-container > .container > .banner-section,
+    .treatment-container > .responsive-container > .banner-section,
+    .banner-section {
+        padding: var(--spacing-xl) 0;
+        margin: var(--spacing-lg) 0;  /* 상하 마진만 적용 */
+
+        /* 부모 컨테이너 제약 벗어나기 - 실제 모바일 기기 대응 */
+        width: 100vw !important;  /* 뷰포트 전체 너비 강제 */
+        max-width: none !important;
+        position: relative;
+        left: 50%;
+        margin-left: -50vw !important;
+        transform: none;  /* transform 제거 (일부 기기 호환성 문제) */
+    }
+
+    /* 모바일에서 배너 콘텐츠 100% 너비 */
+    .banner-section .container,
+    .banner-section .responsive-container {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .banner-section .banner-content {
+        padding: 0 var(--spacing-md);
+        max-width: 100% !important;
+    }
+
+    .banner-content .heading-main {
+        font-size: var(--font-xl) !important;
+    }
+
+    /* treatment-container 내부의 직접 자식 container도 조정 */
+    .treatment-container > .container,
+    .treatment-container > .responsive-container {
+        overflow: visible !important;
+        padding: 0 !important;  /* 부모 컨테이너 패딩 제거 */
+    }
+
+    /* 배너 섹션이 아닌 다른 섹션은 패딩 유지 */
+    .treatment-container > .container > .treatment-section:not(.banner-section),
+    .treatment-container > .responsive-container > .treatment-section:not(.banner-section) {
+        padding-left: var(--spacing-md);
+        padding-right: var(--spacing-md);
+    }
+}
+
+/* ========================================
+   7. 유틸리티 클래스
+   ======================================== */
+
+/* 마진 유틸리티 */
+.mt-xs { margin-top: var(--spacing-xs); }
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mt-xl { margin-top: var(--spacing-xl); }
+
+.mb-xs { margin-bottom: var(--spacing-xs); }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.mb-xl { margin-bottom: var(--spacing-xl); }
+
+/* 패딩 유틸리티 */
+.pt-xs { padding-top: var(--spacing-xs); }
+.pt-sm { padding-top: var(--spacing-sm); }
+.pt-md { padding-top: var(--spacing-md); }
+.pt-lg { padding-top: var(--spacing-lg); }
+.pt-xl { padding-top: var(--spacing-xl); }
+
+.pb-xs { padding-bottom: var(--spacing-xs); }
+.pb-sm { padding-bottom: var(--spacing-sm); }
+.pb-md { padding-bottom: var(--spacing-md); }
+.pb-lg { padding-bottom: var(--spacing-lg); }
+.pb-xl { padding-bottom: var(--spacing-xl); }
+
+/* 텍스트 정렬 */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* 표시/숨김 */
+.mobile-only { display: none; }
+.tablet-only { display: none; }
+.desktop-only { display: block; }
+
+@media (max-width: 768px) {
+    .mobile-only { display: block; }
+    .desktop-only { display: none; }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .tablet-only { display: block; }
+}
+
+/* ========================================
+   7. 애니메이션
+   ======================================== */
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.slide-up {
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   8. 추가 배너 섹션 (중간 특징 강조)
+   ======================================== */
+
+/* filler, jeomin, skinbooster 페이지의 중간 배너 */
+.feature-banner-section {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    padding: var(--spacing-xxl) 0;
+    margin: var(--spacing-xl) 0;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.feature-banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%);
+}
+
+.feature-banner-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+.feature-banner-content h3 {
+    font-size: var(--font-xl);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    color: white;
+    word-break: keep-all;
+    line-height: 1.4;
+}
+
+.feature-banner-content p {
+    font-size: clamp(1rem, 2.2vw, 1.125rem);
+    line-height: 1.8;
+    color: rgba(255,255,255,0.95);
+    margin-bottom: var(--spacing-sm);
+    word-break: keep-all;
+    letter-spacing: -0.01em;
+}
+
+.feature-banner-content .feature-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    justify-content: center;
+    margin-top: var(--spacing-lg);
+}
+
+.feature-banner-content .feature-item {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 25px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    font-size: var(--font-sm);
+    font-weight: 500;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .feature-banner-section {
+        padding: var(--spacing-xl) 0;
+        margin: var(--spacing-lg) 0;
+        border-radius: 10px;
+    }
+
+    .feature-banner-content h3 {
+        font-size: var(--font-lg);
+    }
+
+    .feature-banner-content p {
+        font-size: var(--font-base);
+    }
+
+    .feature-banner-content .feature-list {
+        gap: var(--spacing-xs);
+    }
+}
+
+/* ========================================
+   9. Treatment Section (기본 시술 섹션)
+   ======================================== */
+
+/* 모든 dist 페이지에서 공통으로 사용하는 treatment-section */
+.treatment-section {
+    padding: var(--spacing-xl) 0;
+    margin: var(--spacing-lg) 0;
+    position: relative;
+}
+
+/* 배경색이 있는 treatment-section */
+.treatment-section.has-background {
+    background: var(--misopin-bg-accent);
+    padding: var(--spacing-xxl) 0;
+    margin: var(--spacing-xl) 0;
+    border-radius: 12px;
+}
+
+/* Treatment section 내부 컨테이너 */
+.treatment-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* Treatment section 제목 영역 */
+.treatment-section .section_tit {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+    padding: 0 var(--spacing-lg);  /* 좌우 패딩 추가 */
+    max-width: 900px;  /* 최대 너비 제한 */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Treatment section 라벨 (원리/효과 섹션용) */
+.treatment-section .section_tit .text-label {
+    color: #d4a574;
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: var(--spacing-sm);
+    display: block;
+}
+
+.treatment-section .section_tit h2 {
+    font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--misopin-text-dark);
+    margin-bottom: var(--spacing-md);
+    word-break: keep-all;
+    line-height: 1.4;
+}
+
+.treatment-section .section_tit p {
+    font-size: clamp(1rem, 2.2vw, 1.125rem);
+    color: var(--misopin-text-light);
+    line-height: 1.8;
+    word-break: keep-all;
+    letter-spacing: -0.01em;
+}
+
+/* Treatment section 헤더 (Clinical Steps 등) */
+.treatment-section .section-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.treatment-section .section-header .text-label {
+    color: #d4a574;
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: var(--spacing-sm);
+}
+
+.treatment-section .section-header h2 {
+    font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    color: var(--misopin-text-dark);
+    margin-bottom: var(--spacing-sm);
+    word-break: keep-all;
+    line-height: 1.4;
+}
+
+.treatment-section .section-header .section-subtitle {
+    font-size: clamp(1rem, 2.2vw, 1.125rem);
+    color: var(--misopin-text-light);
+    line-height: 1.8;
+    word-break: keep-all;
+    margin-top: var(--spacing-sm);
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .treatment-section {
+        padding: var(--spacing-lg) 0;
+        margin: var(--spacing-md) 0;
+    }
+
+    .treatment-section.has-background {
+        padding: var(--spacing-lg) var(--spacing-md);  /* 좌우 패딩 추가 */
+        margin: var(--spacing-lg) 0;
+        border-radius: 8px;
+    }
+
+    .treatment-section .section_tit,
+    .treatment-section .section-header {
+        margin-bottom: var(--spacing-lg);
+        padding: 0 var(--spacing-md);  /* 모바일에서도 좌우 패딩 */
+    }
+
+    .treatment-section .section_tit h2,
+    .treatment-section .section-header h2 {
+        font-size: clamp(1.5rem, 4vw, 1.75rem);
+    }
+}
+

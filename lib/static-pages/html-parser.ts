@@ -5,7 +5,7 @@ import path from 'path';
 
 export interface ParsedSection {
   id: string;
-  type: 'text' | 'image' | 'background';
+  type: 'text' | 'image' | 'background' | 'html';
   label: string;
   selector: string;
   content?: string;
@@ -58,6 +58,9 @@ export class HTMLParser {
 
       // 패턴 4: 배너 이미지 (배경)
       this.parseBannerImages($, sections);
+
+      // 패턴 5: 법률 문서 구조 (.container > .content > h2 + p)
+      this.parseLegalDocuments($, sections);
 
       return {
         success: true,
@@ -263,6 +266,65 @@ export class HTMLParser {
             imageUrl: bgMatch[1],
           });
         }
+      });
+    });
+  }
+
+  /**
+   * 패턴 5: 법률 문서 구조 파싱 (privacy, stipulation 등)
+   * 각 조항(h2 + 내용 전체)을 하나의 섹션으로 묶어서 관리
+   */
+  private parseLegalDocuments(
+    $: cheerio.CheerioAPI,
+    sections: ParsedSection[]
+  ): void {
+    // .container > .content 구조 확인 (법률 문서 특징)
+    const $contentDiv = $('.container > .content');
+    if (!$contentDiv.length) return;
+
+    // h2 제목 찾기 (제1조, 제2조 등)
+    $contentDiv.find('h2').each((index, heading) => {
+      const $heading = $(heading);
+      const headingText = $heading.text().trim();
+
+      // h2 제목부터 다음 h2 전까지의 모든 요소를 하나의 섹션으로 묶기
+      const $nextElements = $heading.nextUntil('h2');
+
+      // 전체 HTML 조합 (h2 제목 + 모든 내용)
+      let fullHtml = $heading.prop('outerHTML') || '';
+      $nextElements.each((_, elem) => {
+        fullHtml += $(elem).prop('outerHTML') || '';
+      });
+
+      // 미리보기 텍스트 생성 (첫 번째 p 태그의 텍스트)
+      let previewText = headingText;
+      const $firstP = $nextElements.filter('p').first();
+      if ($firstP.length) {
+        previewText += ' - ' + $firstP.text().trim().substring(0, 50);
+      }
+
+      sections.push({
+        id: `legal-article-${index}`,
+        type: 'html',
+        label: headingText,
+        selector: `.content > h2:nth-of-type(${index + 1})`,
+        content: fullHtml,
+        preview: previewText,
+      });
+    });
+
+    // .highlight 영역 (강조 박스) - 별도로 관리
+    $contentDiv.find('.highlight').each((index, highlight) => {
+      const $highlight = $(highlight);
+      const text = $highlight.text().trim();
+
+      sections.push({
+        id: `legal-highlight-${index}`,
+        type: 'html',
+        label: `📌 강조 안내 ${index + 1}`,
+        selector: `.content > .highlight:nth-of-type(${index + 1})`,
+        content: $highlight.prop('outerHTML') || '',
+        preview: text.substring(0, 80),
       });
     });
   }

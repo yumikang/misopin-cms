@@ -1,0 +1,85 @@
+<!-- 시술 페이지 본문 템플릿 -->
+<main class="treatment-container">
+    <div class="container">
+        <!-- 메인 소개 섹션 -->
+        <section class="treatment-section">
+            <div class="two-column-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; margin-top: 40px;">
+                <div class="col-text">
+                    <div class="section-subtitle" style="color: var(--misopin-secondary); font-size: 14px; font-weight: 600; margin-bottom: 10px;">{{TREATMENT_CATEGORY}}</div>
+                    <h2 class="section_h2" style="margin-bottom: 25px;">
+                        {{TREATMENT_MAIN_TITLE}}
+                    </h2>
+                    <p style="line-height: 1.8; margin-bottom: 20px; color: var(--misopin-text-light);">
+                        {{TREATMENT_DESCRIPTION_1}}
+                    </p>
+                    <p style="line-height: 1.8; color: var(--misopin-text-light);">
+                        {{TREATMENT_DESCRIPTION_2}}
+                    </p>
+                </div>
+                <div class="col-image">
+                    <img src="{{MAIN_IMAGE_URL}}" alt="{{TREATMENT_NAME}} 시술" style="width: 100%; border-radius: 12px;">
+                </div>
+            </div>
+        </section>
+
+        <!-- 원리/효과 섹션 -->
+        <section class="treatment-section" style="background: var(--misopin-bg-accent); padding: 60px 0; margin: 60px 0;">
+            <div class="section_tit">
+                <h2 class="section_h2">{{TREATMENT_NAME}} {{PRINCIPLE_TITLE}}</h2>
+                <p style="margin-top: 20px; color: var(--misopin-text-light);">
+                    {{PRINCIPLE_DESCRIPTION}}
+                </p>
+            </div>
+        </section>
+
+        <!-- 시술 과정 섹션 -->
+        <section class="treatment-section">
+            <div class="section_tit">
+                <h2 class="section_h2">시술 과정</h2>
+            </div>
+
+            <div class="process-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px;">
+                <div class="process-step" style="text-align: center; padding: 30px; background: var(--misopin-bg-accent); border-radius: 10px;">
+                    <div style="font-size: 48px; color: var(--misopin-primary); margin-bottom: 20px;">01</div>
+                    <h4 style="margin-bottom: 15px; color: var(--misopin-text-dark);">{{STEP_1_TITLE}}</h4>
+                    <p style="font-size: 14px; color: var(--misopin-text-light);">{{STEP_1_DESC}}</p>
+                </div>
+
+                <div class="process-step" style="text-align: center; padding: 30px; background: var(--misopin-bg-accent); border-radius: 10px;">
+                    <div style="font-size: 48px; color: var(--misopin-primary); margin-bottom: 20px;">02</div>
+                    <h4 style="margin-bottom: 15px; color: var(--misopin-text-dark);">{{STEP_2_TITLE}}</h4>
+                    <p style="font-size: 14px; color: var(--misopin-text-light);">{{STEP_2_DESC}}</p>
+                </div>
+
+                <div class="process-step" style="text-align: center; padding: 30px; background: var(--misopin-bg-accent); border-radius: 10px;">
+                    <div style="font-size: 48px; color: var(--misopin-primary); margin-bottom: 20px;">03</div>
+                    <h4 style="margin-bottom: 15px; color: var(--misopin-text-dark);">{{STEP_3_TITLE}}</h4>
+                    <p style="font-size: 14px; color: var(--misopin-text-light);">{{STEP_3_DESC}}</p>
+                </div>
+
+                <div class="process-step" style="text-align: center; padding: 30px; background: var(--misopin-bg-accent); border-radius: 10px;">
+                    <div style="font-size: 48px; color: var(--misopin-primary); margin-bottom: 20px;">04</div>
+                    <h4 style="margin-bottom: 15px; color: var(--misopin-text-dark);">{{STEP_4_TITLE}}</h4>
+                    <p style="font-size: 14px; color: var(--misopin-text-light);">{{STEP_4_DESC}}</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 마무리 메시지 섹션 -->
+        <section class="treatment-section" style="background-image: url('{{HERO_BACKGROUND_URL}}'); background-size: cover; background-position: center; position: relative; padding: 100px 0; margin: 60px 0;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);"></div>
+            <div style="position: relative; z-index: 2; text-align: center; color: white;">
+                <div class="section-subtitle" style="color: #d4af37; font-size: 14px; font-weight: 600; margin-bottom: 10px;">{{CLOSING_SUBTITLE}}</div>
+                <h2 style="font-size: 42px; font-weight: 700; margin-bottom: 30px; line-height: 1.3;">
+                    {{CLOSING_MAIN_TITLE}}
+                </h2>
+                <p style="font-size: 18px; color: rgba(255,255,255,0.95); line-height: 1.8; margin-bottom: 10px;">
+                    {{CLOSING_MESSAGE_1}}
+                </p>
+                <p style="font-size: 18px; color: rgba(255,255,255,0.95); line-height: 1.8;">
+                    {{CLOSING_MESSAGE_2}}
+                </p>
+            </div>
+        </section>
+    </div>
+</main>

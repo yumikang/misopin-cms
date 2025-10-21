@@ -1,0 +1,123 @@
+<!-- 푸터 시작 -->
+<footer id="sh_ft">
+    <div id="sh_ft_wrapper">
+        <div class="contact">
+            <div class="top">
+                <div class="form_area">
+                    <h2>CONTACT US</h2>
+                    <p>미소가 피어나는 곳, 미소핀의원에서 건강한 아름다움을 만나보세요.</p>
+                    <form class="consult" name="fmain_form" method="post" action="/sh_img/ft/footer_update.php" autocomplete="off" onsubmit="return fmain_submit(this);">
+                        <input type="hidden" name="form_url" value="/index.php?device=pc&designkits=1" />
+                        <div class="p_info">
+                            <ul class="input_01">
+                                <li><label for="wr_name">이름</label><input class="sh_input" type="text" name="wr_name" id="wr_name" placeholder="이름" oninput="korean_ck(this)" required maxlength="20"></li>
+                            </ul>
+                            <ul class="input_02">
+                                <li><label for="sh_phone">연락처</label><input class="sh_input" type="text" name="sh_phone" id="sh_phone" oninput="Num_ck(this)" placeholder="연락처" required ></li>
+                            </ul>
+                        </div>
+                        <ul class="input_03">
+                            <li>
+                                <label for="wr_content">문의내용</label>
+                                <textarea class="sh_input inc_input" name="wr_content" id="wr_content" placeholder="문의내용"></textarea>
+                            </li>
+                        </ul>
+                        <div class="prv_area">
+                            <div class="send_btn"><button type="submit">상담신청</button></div>
+                            <div class="consent"><a href="javascript:void(0)" onclick="window.open('/sh_page/sh_privacy.php', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no');">개인정보 수집 · 이용에 동의</a> <label for="prv_check">동의</label><input type="checkbox" class="ck_box" id="prv_check"></div>
+                        </div> 
+                    </form>
+                </div>
+                <div class="map_area">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3266.0891025641867!2d126.39052051524942!3d34.80538698040586!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3571f3f1b0c0c0c0%3A0x0!2s%EC%A0%84%EB%82%A8%20%EB%AA%A9%ED%8F%AC%EC%8B%9C%20%EC%98%81%EC%82%B0%EB%A1%9C%20362!5e0!3m2!1sko!2skr!4v1234567890" width="100%" height="100%" frameborder="0" style="border:0; display:block;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+            <div class="bottom">
+                <ul class="info_box">
+                    <li>
+                        <i data-feather="phone-call"></i>
+                        <div class="cate">대표전화</div>
+                        <div class="number">061-277-1001</div>
+                    </li>
+                    <li>
+                        <i data-feather="clock"></i>
+                        <div class="cate">진료시간</div>
+                        <ul>
+                            <li>
+                                <div class="day">월/화/목/금</div>
+                                <div class="time">08:30 ~ 19:30</div>
+                            </li>
+                            <li>
+                                <div class="day">수요일</div>
+                                <div class="time">08:30 ~ 12:00</div>
+                            </li>
+                            <li>
+                                <div class="day">토요일</div>
+                                <div class="time">09:00 ~ 14:00</div>
+                            </li>
+                            <li class="notice">※점심시간 12:00-14:00 / 일요일, 공휴일 휴진</li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="same_as">
+                    <li>
+                        <i data-feather="map-pin"></i>
+                        <div class="cate">오시는 길</div>
+                        <address>전남 목포시 영산로 362 미소핀의원 (2층, 3층)</address>
+                    </li>
+                    <li>
+                        <i data-feather="instagram"></i>
+                        <div class="cate">인스타그램</div>
+                        <a href="https://www.instagram.com/misopin_clinic" target="_blank">@misopin_clinic</a>
+                    </li>
+                    <li>
+                        <i data-feather="message-circle"></i>
+                        <div class="cate">카카오톡</div>
+                        <a href="http://pf.kakao.com/_xjxdxexj" target="_blank">미소핀의원</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="copy">
+            <div class="top">
+                <div class="logo_area">
+                    <img class="ft_logo" src="../img/misopin-temporary-logo.png" srcset="../img/misopin-temporary-logo.png 2048w, ../img/misopin-temporary-logo.png 1024w, ../img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 80px, 120px" alt="미소핀의원" style="filter: brightness(0) invert(1); height: 2.5rem;" loading="lazy" />
+                </div>
+                <div class="phone_info">
+                    <div class="number">061-277-1001</div>
+                </div>
+                <div class="hours_title">
+                    <div class="cate">진료시간</div>
+                </div>
+                <div class="hours_info">
+                    <div class="hours_row">
+                        <span class="day">월/화/목/금</span>
+                        <span class="time">08:30 ~ 19:30</span>
+                    </div>
+                    <div class="hours_row">
+                        <span class="day">수요일</span>
+                        <span class="time">08:30 ~ 12:00</span>
+                    </div>
+                    <div class="hours_row">
+                        <span class="day">토요일</span>
+                        <span class="time">09:00 ~ 14:00</span>
+                    </div>
+                    <div class="notice">※점심시간 12:00-14:00 / 일요일, 공휴일 휴진</div>
+                </div>
+                <div class="menu_links">
+                    <a href="javascript:void(0)" onclick="window.open('../privacy.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')">개인정보취급방침</a>
+                    <a href="javascript:void(0)" onclick="window.open('../stipulation.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')">이용약관</a>
+                    <a href="javascript:void(0)" onclick="window.open('../fee-schedule.html', 'window', 'width=800; height=800; left=150; top=0; scrollbars=yes')">비급여 수가표</a>
+                </div>
+            </div>
+            <div class="main_info">상호 : 미소핀의원 | 대표자 : 김지식 | 사업자등록번호 : 123-56-789 | 전화번호 : 061-277-1001 | 주소 : 전남 목포시 영산로 362 미소핀의원</div>
+            <div class="bottom">
+                <p>© MISOPIN CLINIC. ALL RIGHTS RESERVED.</p>
+                <div class="adm">
+                    <a href="/admin/admin.login.php">ADMIN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- 푸터 끝 -->

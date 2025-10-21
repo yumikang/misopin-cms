@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+    <!-- 모바일 최적화 메타태그 -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-capable" content="no">
+    <meta name="theme-color" content="#9F988C">
+    <meta name="format-detection" content="telephone=no">
+    <title>퀵메뉴</title>
+<link rel="icon" type="image/svg+xml" href="img/misopin-temporary-logo%201.svg">
+<link rel="shortcut icon" type="image/svg+xml" href="img/misopin-temporary-logo%201.svg">
+<link rel="apple-touch-icon" href="img/misopin-temporary-logo%201.svg">
+    <script src="js/libs/jquery-3.6.0.min.js"></script>
+</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        /* Reset CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        }
+
+        ul, li {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* CSS 변수 정의 */
+        :root {
+            --primary: #9F988C;
+        }
+
+        /* QuickMenu CSS */
+        @import url('css/fonts/aggro-dynamic-subset.css');
+        #quickList{position:fixed;z-index:8;top:50%;right:1.5%;transform:translateY(-50%)}
+        #quickList .pl{white-space:pre-line}
+        #quickList .plus_link{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:15px;width:94px;height:159px;background:url(./img01.png) no-repeat center / cover}
+        #quickList .plus_link .pl{font-size:15px;font-weight:500;font-family:'Aggro';text-align:center;color:#fff}
+        #quickList .plus_link .go{display:flex;align-items:end;font-size:9px;font-weight:300;font-family:'Aggro';color:#fff}
+        #quickList .plus_link svg{width:12px;height:12px}
+        #quickList .list{display:flex;flex-direction:column;align-items:center;margin-top:10px;margin-bottom:15px;padding:20px 5%;max-width:120px;border-radius:8px;box-shadow:4px 4px 20px rgba(17, 17, 17, 0.3);background-color:#fff;color:#111}
+        #quickList .list li{width:100%}
+        #quickList .list li a{display:flex;flex-direction:column;align-items:center;gap:5px;margin-bottom:15px;padding-bottom:15px;width:100%;border-bottom:1px solid #e1e1e1}
+        #quickList .list li:last-child a{margin-bottom:0px;padding-bottom:0px;border-bottom:0px}
+        #quickList .list .kakao{width:23px;height:21px;background:url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDNDNy4wMyAzIDMgNi4xNCAzIDEwQzMgMTIuNTQgNC41NCAxNC43NiA2LjkgMTUuOTdMNi4yNSAxOC41QzYuMTMgMTkuMDMgNi43IDE5LjQzIDcuMTYgMTkuMTNMTAuMzkgMTcuMDlDMTAuOTEgMTcuMTcgMTEuNDUgMTcuMjIgMTIgMTcuMjJDMTYuOTcgMTcuMjIgMjEgMTMuODYgMjEgMTBDMjEgNi4xNCAxNi45NyAzIDEyIDNaIiBmaWxsPSIjMzMzMzMzIi8+Cjwvc3ZnPg==') center/contain no-repeat}
+        #quickList .list .youtube{width:23px;height:16px;background:url(css/components/youtube.png) no-repeat center / contain}
+        #quickList .list .cate{font-size:13px;font-weight:500;transition:all .3s}
+        #quickList .list .number{margin-top:5px;font-size:16px;font-weight:700;text-align:center}
+        #quickList .list svg{color:#111}
+
+        #quickList .progress-wrap{position:relative;margin:0 auto;width:50px;height:50px;border-radius:50%;box-shadow:inset 0 0 0 3px rgba(200,200,200,.5);background:none !important;transition:all .2s;cursor:pointer}
+        #quickList .progress-wrap span{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%)}
+        #quickList .progress-wrap span svg{width:20px;height:20px;stroke-width:1.5px;color:#999;transition:all .3s}
+        #quickList .progress-wrap svg path{fill:none}
+        #quickList .progress-wrap svg.progress-circle path{stroke:var(--primary);stroke-width:4;-webkit-transition:all .2s;transition:all .2s}
+
+        #quickList .list li a:hover .cate{color:var(--primary)}
+        #quickList .list li a:hover i{color:var(--primary) !important}
+        #quickList .progress-wrap:hover span i{color:var(--primary) !important}
+
+        /* 강제로 투명 배경 설정 */
+        #quickList .progress-wrap,
+        #quickList .progress-wrap:before,
+        #quickList .progress-wrap:after{
+            background:none !important;
+            background-color:transparent !important;
+        }
+
+        /* 퀵메뉴 기본 표시 - 아이프레임에서 제어 */
+    </style>
+</head>
+<body>
+
+<!-- 퀵메뉴 시작 -->
+<div id="quickList">
+    <ul class="list">
+        <li>
+            <a href="#" data-clinic-sns-kakao target="_blank">
+                <i class="fa fa-comment" style="font-size: 20px; color: #3C1E1E; margin-bottom: 5px;"></i>
+                <div class="cate">카톡상담</div>
+            </a>
+        </li>
+        <li>
+            <a href="#" data-clinic-sns-instagram target="_blank">
+                <i class="fa fa-instagram" style="font-size: 20px; color: #3C1E1E; margin-bottom: 5px;"></i>
+                <div class="cate">인스타그램</div>
+            </a>
+        </li>
+        <li>
+            <a href="about.html" target="_parent">
+                <i class="fa fa-home" style="font-size: 20px; color: #3C1E1E; margin-bottom: 5px;"></i>
+                <div class="cate">메인페이지</div>
+            </a>
+        </li>
+        <li>
+            <a href="board-page.html" target="_parent">
+                <i class="fa fa-gift" style="font-size: 20px; color: #3C1E1E; margin-bottom: 5px;"></i>
+                <div class="cate">이벤트</div>
+            </a>
+        </li>
+        <li>
+            <a href="calendar-page.html" target="_parent">
+                <i class="fa fa-edit" style="font-size: 20px; color: #3C1E1E; margin-bottom: 5px;"></i>
+                <div class="cate">예약하기</div>
+            </a>
+        </li>
+        <li>
+            <a href="tel:061-277-1001">
+                <i class="fa fa-phone" style="font-size: 20px; color: #3C1E1E; margin-bottom: 5px;"></i>
+                <div class="cate">전화상담</div>
+                <div class="number">061-<br/>277-1001</div>
+            </a>
+        </li>
+    </ul>
+    <div class="progress-wrap">
+        <span><i class="fa fa-arrow-up" style="font-size: 16px; color: #999;"></i></span>
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98"></path>
+        </svg>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    scrollTop();
+});
+
+function scrollTop(){
+    var progressPath = document.querySelector('.progress-wrap path');
+    var pathLength = progressPath.getTotalLength();
+    progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
+    progressPath.style.strokeDasharray = pathLength + ' ' + pathLength;
+    progressPath.style.strokeDashoffset = pathLength;
+    progressPath.getBoundingClientRect();
+    progressPath.style.transition = progressPath.style.WebkitTransition = 'stroke-dashoffset 10ms linear';
+    var updateProgress = function() {
+        var scroll = $(window.parent).scrollTop();
+        var height = $(window.parent.document).height() - $(window.parent).height();
+        var progress = pathLength - scroll * pathLength / height;
+        progressPath.style.strokeDashoffset = progress;
+    };
+    updateProgress();
+    $(window.parent).scroll(updateProgress);
+    jQuery(window.parent).on('scroll', function() {
+        if (jQuery(this).scrollTop() > 50) {
+            jQuery('.progress-wrap').addClass('active');
+        } else {
+            jQuery('.progress-wrap').removeClass('active');
+        }
+    });
+    jQuery('.progress-wrap').on('click', function(event) {
+        event.preventDefault();
+        jQuery(window.parent.document.documentElement, window.parent.document.body).animate({scrollTop: 0}, 550);
+        return false;
+    });
+}
+</script>
+<!-- 퀵메뉴 끝 -->
+
+<script src="/js/clinic-info.js"></script>
+</body>
+</html>

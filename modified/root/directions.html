@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+    <!-- 모바일 최적화 메타태그 -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-capable" content="no">
+    <meta name="theme-color" content="#9F988C">
+    <meta name="format-detection" content="telephone=no">
+    <title>오시는길 - 미소핀의원</title>
+<link rel="icon" type="image/svg+xml" href="img/misopin-temporary-logo%201.svg">
+<link rel="shortcut icon" type="image/svg+xml" href="img/misopin-temporary-logo%201.svg">
+<link rel="apple-touch-icon" href="img/misopin-temporary-logo%201.svg">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f8f8;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: #9F988C;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .content h2 {
+            color: #9F988C;
+            border-bottom: 2px solid #9F988C;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .content h3 {
+            color: #87857E;
+            margin-top: 25px;
+        }
+        .info-box {
+            background: #f9f9f9;
+            border-left: 4px solid #9F988C;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-item {
+            margin: 10px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #9F988C;
+            min-width: 100px;
+            margin-right: 15px;
+        }
+        .info-value {
+            flex: 1;
+        }
+        .map-container {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .map-placeholder {
+            background: #f0f0f0;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 16px;
+        }
+        .transport-section {
+            margin: 30px 0;
+        }
+        .transport-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .transport-title {
+            font-weight: bold;
+            color: #9F988C;
+            margin-bottom: 10px;
+        }
+        .transport-desc {
+            color: #666;
+            line-height: 1.5;
+        }
+        .parking-info {
+            background: #e8f4fd;
+            border: 1px solid #b3d9f7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .parking-info strong {
+            color: #0066cc;
+        }
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background-color: #f8f8f8;
+        }
+        .btn-confirm {
+            background: #9F988C;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .btn-confirm:hover {
+            background: #87857E;
+        }
+        .contact-buttons {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .contact-btn {
+            background: #9F988C;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin: 0 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        .contact-btn:hover {
+            background: #87857E;
+        }
+    </style>
+<link rel="stylesheet" href="css/index-custom.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>오시는길</h1>
+            <p>미소핀의원 찾아오는 방법</p>
+        </div>
+
+        <div class="content">
+            <div class="info-box">
+                <div class="info-item">
+                    <div class="info-label">병원명:</div>
+                    <div class="info-value">미소핀의원</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">주소:</div>
+                    <div class="info-value">전남 목포시 영산로 362 미소핀의원 (2층, 3층)</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">전화:</div>
+                    <div class="info-value">061-277-1001</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">대표자:</div>
+                    <div class="info-value">김지식</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">사업자등록번호:</div>
+                    <div class="info-value">123-56-789</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">진료시간:</div>
+                    <div class="info-value">
+                        월/화/목/금 08:30~19:30<br>
+                        수요일 08:30~12:00<br>
+                        토요일 09:00~14:00<br>
+                        <span style="color: #9F988C; font-size: 14px;">※점심시간 12:00-14:00 / 일요일, 공휴일 휴진</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-buttons">
+                <a href="tel:061-277-1001" class="contact-btn">전화걸기</a>
+                <a href="#" class="contact-btn" onclick="alert('네비게이션 앱으로 연결됩니다.')">길찾기</a>
+            </div>
+
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <p>📍 지도 영역<br>실제 운영시 카카오맵 또는 네이버맵 API 연동</p>
+                </div>
+            </div>
+
+            <h2>대중교통 이용안내</h2>
+            <div class="transport-section">
+                <div class="transport-item">
+                    <div class="transport-title">🚌 시내버스 이용시</div>
+                    <div class="transport-desc">
+                        <strong>목포시내버스:</strong> 1, 2, 3, 5, 6, 7, 8, 9, 15번<br>
+                        <strong>좌석버스:</strong> 300번<br>
+                        <strong>정류장:</strong> '영산로입구' 또는 '목포역' 하차 후 도보 3분<br>
+                        영산로 방향으로 직진하여 미소핀의원 간판 확인
+                    </div>
+                </div>
+                
+                <div class="transport-item">
+                    <div class="transport-title">🚂 KTX/기차 이용시</div>
+                    <div class="transport-desc">
+                        <strong>목포역</strong> 하차 후 도보 5분<br>
+                        <strong>광주송정역</strong>에서 KTX 환승 → 목포역 (약 50분)<br>
+                        목포역에서 영산로 방향으로 직진
+                    </div>
+                </div>
+            </div>
+
+            <h2>자가용 이용안내</h2>
+            <div class="parking-info">
+                <strong>주차 안내:</strong><br>
+                • 병원 건물 앞 전용 주차장 이용 가능<br>
+                • 진료 고객 무료 주차 제공<br>
+                • 주차 공간 협소시 인근 공영주차장 이용<br>
+                • 주차 관련 문의사항은 접수데스크에서 안내
+            </div>
+
+            <div class="transport-section">
+                <div class="transport-item">
+                    <div class="transport-title">🚗 자가용 경로</div>
+                    <div class="transport-desc">
+                        <strong>서울/경기 방면:</strong> 서해안고속도로 → 목포IC → 영산로<br>
+                        <strong>광주 방면:</strong> 무안광주고속도로 → 목포IC → 영산로<br>
+                        <strong>전주 방면:</strong> 호남고속도로 → 무안IC → 영산로<br>
+                        <strong>부산/대구 방면:</strong> 남해고속도로 → 순천완주고속도로 → 목포IC → 영산로<br>
+                        <span style="color: #9F988C;">※ 내비게이션 검색: "목포시 영산로 362" 또는 "미소핀의원"</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2>주변 랜드마크</h2>
+            <div class="transport-section">
+                <div class="transport-item">
+                    <div class="transport-title">🏢 주요 건물 및 시설</div>
+                    <div class="transport-desc">
+                        • 목포역 (도보 5분)<br>
+                        • 목포시청 (도보 10분)<br>
+                        • 영산로 상업지구 (도보 2분)<br>
+                        • 목포대학교 (차량 15분)<br>
+                        • 목포항 (차량 10분)<br>
+                        • 유달산 (차량 15분)
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 찾아오시기 전 확인사항</strong><br>
+                • 예약 진료제로 운영되니 미리 예약해 주시기 바랍니다<br>
+                • 초진 시에는 신분증을 지참해 주세요<br>
+                • 주차 공간이 제한적이니 대중교통 이용을 권장합니다<br>
+                • 길을 잃으셨다면 언제든 병원으로 연락주세요
+            </div>
+        </div>
+
+        <div class="footer">
+            <button class="btn-confirm" onclick="window.close();">확인</button>
+        </div>
+    </div>
+<script src="js/mobile-nav.js"></script>
+<script src="/js/clinic-info.js"></script>
+</body>
+</html>

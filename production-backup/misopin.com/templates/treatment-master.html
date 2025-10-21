@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{PAGE_TITLE}} - 미소핀의원</title>
+    
+    <!-- 외부 CSS (임시 - 추후 로컬화) -->
+    <link rel="stylesheet" href="https://skincare1007.shiningcorp.com/css/default.css?ver=171222">
+    <link rel="stylesheet" href="https://skincare1007.shiningcorp.com/sh_img/hd/r_quickmenu/style.css?ver=171222">
+    <link rel="stylesheet" href="https://skincare1007.shiningcorp.com/sh_img/hd/top_menu/style.css?ver=171222">
+    <link rel="stylesheet" href="https://skincare1007.shiningcorp.com/sh_img/hd/sub_main_banner/style.css?ver=171222">
+    <link rel="stylesheet" href="https://skincare1007.shiningcorp.com/js/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://skincare1007.shiningcorp.com/sh_img/hd/aside/style.css?ver=171222">
+    <link rel="stylesheet" href="https://skincare1007.shiningcorp.com/css/user.css?ver=171222">
+    <link rel="stylesheet" href="https://skincare1007.shiningcorp.com/css/page_style.css?ver=171222">
+    
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://skincare1007.shiningcorp.com/js/swiper/swiper.min.css?ver=171222">
+    
+    <!-- AOS Animation -->
+    <script src="https://skincare1007.shiningcorp.com/sh_img/js/aos.js"></script>
+    <link rel="stylesheet" href="https://skincare1007.shiningcorp.com/sh_img/js/aos.css?ver=171222">
+    
+    <!-- 폰트 -->
+    <style>
+    @import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);
+    @font-face {
+        font-family: 'NanumSquare';
+        src: url(//font.shiningcorp.com/css/font/NanumSquareR.eot);
+        src: url(//font.shiningcorp.com/css/font/NanumSquareR.eot?#iefix) format('embedded-opentype'),
+             url(//font.shiningcorp.com/css/font/NanumSquareR.woff) format('woff'),
+             url(//font.shiningcorp.com/css/font/NanumSquareR.ttf) format('truetype');
+    }
+    </style>
+    
+    <!-- 미소핀 커스텀 CSS -->
+    <style>
+    /* CSS 변수 - 미소핀 브랜드 색상 */
+    :root {
+        --primary: #9F988C; /* 기존 파란색 대신 미소핀 브랜드 색상으로 오버라이드 */
+        --misopin-primary: #9F988C;
+        --misopin-secondary: #87857E;
+        --misopin-accent: #EFEDE5;
+        --misopin-bg-main: #FFFFFF;
+        --misopin-bg-accent: #F5F5F0;
+        --misopin-text-dark: #2C2C2C;
+        --misopin-text-light: #555555;
+        --misopin-border: #E0E0E0;
+    }
+    
+    /* 헤더 색상 오버라이드 */
+    #top_nav_wrap {
+        background-color: #fff !important;
+    }
+    
+    #top_nav li ul {
+        background-color: var(--misopin-primary) !important;
+    }
+    
+    #top_nav li a:hover {
+        color: var(--misopin-accent) !important;
+    }
+    
+    .event {
+        background-color: var(--misopin-primary) !important;
+        border: 1px solid var(--misopin-primary) !important;
+        color: #fff !important;
+    }
+    
+    .event:hover {
+        background-color: var(--misopin-secondary) !important;
+        border-color: var(--misopin-secondary) !important;
+    }
+    
+    /* 네비게이션 드롭다운 메뉴 표시 */
+    #top_nav > li:hover > ul {
+        display: block !important;
+    }
+    
+    /* SubBanner 스타일 오버라이드 */
+    #sub_main_banner {
+        background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{{SUB_BANNER_BG}}') center/cover !important;
+        min-height: 300px;
+        position: relative;
+    }
+    
+    #shSub .txt_area {
+        text-align: center;
+        color: white;
+    }
+    
+    #shSub .txt_area p {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+    
+    #shSub .breadcrumb {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+    
+    #shSub .breadcrumb a {
+        color: white;
+        text-decoration: none;
+    }
+    
+    #shSub .breadcrumb i {
+        margin: 0 10px;
+    }
+    
+    /* 본문 컨테이너 */
+    .treatment-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 80px 20px;
+    }
+    
+    /* Hero 섹션 */
+    .treatment-hero {
+        margin-bottom: 80px;
+    }
+    
+    .hero-image {
+        width: 100%;
+        height: 500px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    /* 컨텐츠 섹션 공통 */
+    .treatment-section {
+        margin-bottom: 80px;
+    }
+    
+    .treatment-section h2 {
+        font-size: 32px;
+        color: var(--misopin-text-dark);
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+    
+    .treatment-section h3 {
+        font-size: 24px;
+        color: var(--misopin-primary);
+        margin-bottom: 30px;
+        font-weight: 600;
+    }
+    
+    .treatment-section p {
+        font-size: 16px;
+        line-height: 1.8;
+        color: var(--misopin-text-light);
+        margin-bottom: 20px;
+    }
+    
+    /* 2컬럼 레이아웃 */
+    .content-row {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+        margin-bottom: 60px;
+    }
+    
+    .content-row.reverse {
+        flex-direction: row-reverse;
+    }
+    
+    .col-text, .col-image {
+        flex: 1;
+    }
+    
+    .col-image img {
+        width: 100%;
+        border-radius: 10px;
+    }
+    
+    /* 관련 시술 섹션 */
+    .related-treatments {
+        background-color: var(--misopin-bg-accent);
+        padding: 60px 0;
+        margin-top: 100px;
+    }
+    
+    .related-treatments h2 {
+        text-align: center;
+        font-size: 28px;
+        color: var(--misopin-text-dark);
+        margin-bottom: 40px;
+    }
+    
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .related-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .related-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .related-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .related-card-content {
+        padding: 20px;
+    }
+    
+    .related-card h3 {
+        font-size: 20px;
+        color: var(--misopin-text-dark);
+        margin-bottom: 10px;
+    }
+    
+    .related-card p {
+        font-size: 14px;
+        color: var(--misopin-text-light);
+        line-height: 1.6;
+    }
+    
+    /* 반응형 */
+    @media (max-width: 768px) {
+        .content-row,
+        .content-row.reverse {
+            flex-direction: column;
+        }
+        
+        .treatment-container {
+            padding: 40px 20px;
+        }
+        
+        .hero-image {
+            height: 300px;
+        }
+        
+        #shSub .txt_area p {
+            font-size: 28px;
+        }
+    }
+    </style>
+    
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://skincare1007.shiningcorp.com/js/swiper/swiper.min.js"></script>
+    <script src="https://skincare1007.shiningcorp.com/js/common.js?ver=171222"></script>
+    <script src="https://skincare1007.shiningcorp.com/js/wrest.js?ver=171222"></script>
+</head>
+<body>
+    <!-- 헤더 -->
+    {{HEADER}}
+    
+    <!-- 서브 배너 -->
+    {{SUB_BANNER}}
+    
+    <!-- 메인 컨텐츠 -->
+    <main class="treatment-container">
+        <!-- Hero 이미지 (옵션) -->
+        {{#if HERO_IMAGE}}
+        <section class="treatment-hero">
+            <div class="hero-image" style="background-image: url('{{HERO_IMAGE}}')"></div>
+        </section>
+        {{/if}}
+        
+        <!-- 동적 컨텐츠 영역 -->
+        {{CONTENT}}
+        
+        <!-- 관련 시술 추천 -->
+        {{#if RELATED_TREATMENTS}}
+        <section class="related-treatments">
+            <div class="container">
+                <h2>관련 시술 추천</h2>
+                <div class="related-grid">
+                    {{RELATED_TREATMENTS}}
+                </div>
+            </div>
+        </section>
+        {{/if}}
+    </main>
+    
+    <!-- 푸터 -->
+    {{FOOTER}}
+    
+    <!-- 퀵메뉴 -->
+    {{QUICKMENU}}
+    
+    <!-- 공통 스크립트 -->
+    <script>
+    // Feather 아이콘 초기화
+    feather.replace();
+    
+    // 퀵메뉴 스크롤
+    $(document).ready(function(){
+        var progressPath = document.querySelector('.progress-circle path');
+        if(progressPath) {
+            var pathLength = progressPath.getTotalLength();
+            progressPath.style.transition = progressPath.style.WebkitTransition = 'none';
+            progressPath.style.strokeDasharray = pathLength + ' ' + pathLength;
+            progressPath.style.strokeDashoffset = pathLength;
+            progressPath.getBoundingClientRect();
+            progressPath.style.transition = progressPath.style.WebkitTransition = 'stroke-dashoffset 10ms linear';
+            
+            var updateProgress = function () {
+                var scroll = $(window).scrollTop();
+                var height = $(document).height() - $(window).height();
+                var progress = pathLength - (scroll * pathLength / height);
+                progressPath.style.strokeDashoffset = progress;
+            }
+            
+            updateProgress();
+            $(window).scroll(updateProgress);
+        }
+        
+        // Top 버튼
+        $('.progress-wrap').on('click', function(event){
+            event.preventDefault();
+            $('html, body').animate({scrollTop:0}, 550);
+            return false;
+        });
+    });
+    </script>
+</body>
+</html>

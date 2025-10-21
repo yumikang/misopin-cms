@@ -4,7 +4,7 @@ import path from 'path';
 
 export interface StaticPageSection {
   id: string;
-  type: 'text' | 'image' | 'background';
+  type: 'text' | 'image' | 'background' | 'html';
   selector: string;
   content?: string;
   imageUrl?: string;

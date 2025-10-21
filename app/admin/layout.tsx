@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "게시판 관리", href: "/admin/board", icon: "📝" },
     // { name: "페이지 관리", href: "/admin/pages", icon: "📄" }, // 웹빌더 기능 - 사용 안함
     { name: "페이지 관리", href: "/admin/static-pages", icon: "🌐" },
-    { name: "파일 관리", href: "/admin/files", icon: "📁" },
+    // { name: "파일 관리", href: "/admin/files", icon: "📁" }, // 사용 안함
     // { name: "시스템 설정", href: "/admin/settings", icon: "⚙️" }, // 사용 안함
   ];
 
@@ -105,7 +105,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-4 border-b bg-blue-600 text-white">
-            <h1 className="text-xl font-bold">미소핀의원 CMS</h1>
+            <Link href="/admin" className="text-xl font-bold hover:opacity-80 transition-opacity cursor-pointer">
+              미소핀의원 CMS
+            </Link>
             <button
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden p-1 rounded hover:bg-blue-700"

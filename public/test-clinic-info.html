@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Info API Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .info-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: bold;
+            width: 150px;
+            color: #666;
+        }
+        .value {
+            flex: 1;
+            color: #333;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        [data-clinic-error] {
+            display: none;
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏥 클리닉 정보 API 테스트</h1>
+
+    <div data-clinic-error></div>
+
+    <div class="card">
+        <h2>📞 연락처 정보</h2>
+        <div class="info-row">
+            <span class="label">대표 전화:</span>
+            <span class="value">
+                <a href="tel:061-277-1001" data-clinic-phone>로딩중...</a>
+            </span>
+        </div>
+        <div class="info-row">
+            <span class="label">보조 전화:</span>
+            <span class="value" data-clinic-phone-secondary>-</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📍 주소 정보</h2>
+        <div class="info-row">
+            <span class="label">주소:</span>
+            <span class="value" data-clinic-address-full>로딩중...</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>⏰ 운영 시간</h2>
+        <div class="info-row">
+            <span class="label">평일:</span>
+            <span class="value" data-clinic-hours-weekday>로딩중...</span>
+        </div>
+        <div class="info-row">
+            <span class="label">토요일:</span>
+            <span class="value" data-clinic-hours-saturday>로딩중...</span>
+        </div>
+        <div class="info-row">
+            <span class="label">일요일/공휴일:</span>
+            <span class="value" data-clinic-hours-sunday>로딩중...</span>
+        </div>
+        <div class="info-row">
+            <span class="label">점심시간:</span>
+            <span class="value" data-clinic-hours-lunch>-</span>
+        </div>
+        <div class="info-row">
+            <span class="label">특이사항:</span>
+            <span class="value" data-clinic-hours-note>-</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🔗 SNS 링크</h2>
+        <div class="info-row">
+            <span class="label">Instagram:</span>
+            <span class="value">
+                <a href="#" data-clinic-sns-instagram target="_blank">-</a>
+            </span>
+        </div>
+        <div class="info-row">
+            <span class="label">Kakao:</span>
+            <span class="value">
+                <a href="#" data-clinic-sns-kakao target="_blank">-</a>
+            </span>
+        </div>
+        <div class="info-row">
+            <span class="label">Naver Blog:</span>
+            <span class="value">
+                <a href="#" data-clinic-sns-naver target="_blank">-</a>
+            </span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🏢 사업자 정보</h2>
+        <div class="info-row">
+            <span class="label">사업자등록번호:</span>
+            <span class="value" data-clinic-business-reg>로딩중...</span>
+        </div>
+        <div class="info-row">
+            <span class="label">대표자명:</span>
+            <span class="value" data-clinic-representative>로딩중...</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <button onclick="ClinicInfo.refresh()">🔄 새로고침</button>
+        <button onclick="ClinicInfo.clearCache()">🗑️ 캐시 삭제</button>
+    </div>
+
+    <script src="/js/clinic-info.js"></script>
+</body>
+</html>

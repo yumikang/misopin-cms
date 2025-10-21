@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
  */
 export interface ParsedSection {
   id: string;
-  type: 'text' | 'image' | 'background';
+  type: 'text' | 'image' | 'background' | 'html';
   label: string;
   selector: string;
   content?: string;

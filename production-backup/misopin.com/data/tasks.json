@@ -1,0 +1,540 @@
+{
+  "tasks": [
+    {
+      "id": "1837764c-2d71-4cdf-aa61-7436adcaed6e",
+      "name": "프로젝트 환경 설정 및 초기 구조 생성",
+      "description": "Next.js 14, TypeScript, Prisma, PostgreSQL 기반 개발 환경을 구축하고 기본 프로젝트 구조를 생성합니다. 기존 정적 사이트와 공존할 수 있는 구조로 설정하며, 필수 의존성 패키지들을 설치합니다.",
+      "notes": "기존 정적 사이트 파일들을 보존하면서 새로운 Next.js 구조와 공존할 수 있도록 설정. Docker Compose로 로컬 PostgreSQL 환경도 구성 필요.",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:47:41.301Z",
+      "relatedFiles": [
+        {
+          "path": "package.json",
+          "type": "CREATE",
+          "description": "Next.js 프로젝트 의존성 및 스크립트 정의"
+        },
+        {
+          "path": ".env.local",
+          "type": "CREATE",
+          "description": "데이터베이스 및 인증 환경변수"
+        },
+        {
+          "path": "docker-compose.yml",
+          "type": "CREATE",
+          "description": "로컬 PostgreSQL 개발 환경"
+        },
+        {
+          "path": "src/app/layout.tsx",
+          "type": "CREATE",
+          "description": "Next.js 루트 레이아웃"
+        },
+        {
+          "path": "css/grid-system-1450.css",
+          "type": "REFERENCE",
+          "description": "기존 그리드 시스템 참고용"
+        }
+      ],
+      "implementationGuide": "1. Next.js 14 프로젝트 초기화:\\n```bash\\nnpx create-next-app@latest misopin-cms --typescript --tailwind --eslint --app\\ncd misopin-cms\\npnpm install prisma @prisma/client next-auth\\npnpm install @types/node\\n```\\n\\n2. 기본 디렉토리 구조 생성:\\n```\\nsrc/\\n├── app/\\n│   ├── (auth)/\\n│   ├── admin/\\n│   ├── api/\\n│   ├── components/\\n│   ├── lib/\\n│   └── globals.css\\n├── prisma/\\n│   └── schema.prisma\\n└── public/\\n```\\n\\n3. 환경변수 설정 (.env.local):\\n```\\nDATABASE_URL=\\\"postgresql://username:password@localhost:5432/misopin\\\"\\nNEXTAUTH_SECRET=\\\"your-secret-key\\\"\\nNEXTAUTH_URL=\\\"http://localhost:3000\\\"\\n```\\n\\n4. 기존 정적 파일들을 public/ 디렉토리로 복사\\n5. package.json에 필수 스크립트 추가",
+      "verificationCriteria": "Next.js 개발 서버가 정상 구동되고, TypeScript 컴파일이 성공하며, 기존 정적 파일들이 public 경로에서 접근 가능해야 함. PostgreSQL 연결이 정상적으로 설정되어야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용.",
+      "summary": "Next.js 14 + TypeScript + Tailwind CSS v4 + Prisma 기반 미소핀의원 CMS 프로젝트 환경이 성공적으로 구축되었습니다. 기존 정적 사이트 리소스(CSS, 이미지, JS)를 public 디렉토리에 복사하여 호환성을 확보했고, 기존 디자인 시스템(#38b0c9 primary, #9F988C brown, 1450px 그리드)을 Tailwind v4 테마로 마이그레이션했습니다. Docker Compose 설정, Prisma 스키마, 유틸리티 함수, API Health Check 엔드포인트까지 구현하여 개발 서버가 http://localhost:3002에서 정상 실행되고 있습니다.",
+      "completedAt": "2025-09-15T04:47:41.299Z"
+    },
+    {
+      "id": "57adb18c-851c-472f-b52d-04b7bfc0a35e",
+      "name": "Prisma 스키마 설계 및 데이터베이스 초기화",
+      "description": "병원 CMS의 핵심 엔티티들(User, Page, Reservation, Popup, BoardPost)에 대한 Prisma 스키마를 설계하고 데이터베이스를 초기화합니다. Role-based 접근 제어와 JSON 기반 컨텐츠 구조를 포함합니다.",
+      "notes": "JSON 컬럼을 활용한 유연한 컨텐츠 구조 설계. 향후 확장성을 고려한 스키마 설계 필요.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "1837764c-2d71-4cdf-aa61-7436adcaed6e"
+        }
+      ],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:36:41.987Z",
+      "relatedFiles": [
+        {
+          "path": "prisma/schema.prisma",
+          "type": "CREATE",
+          "description": "데이터베이스 스키마 정의"
+        },
+        {
+          "path": "src/lib/db.ts",
+          "type": "CREATE",
+          "description": "Prisma 클라이언트 설정"
+        },
+        {
+          "path": "prisma/seed.ts",
+          "type": "CREATE",
+          "description": "초기 데이터 시드 스크립트"
+        }
+      ],
+      "implementationGuide": "1. prisma/schema.prisma 파일 생성:\\n```prisma\\ngenerator client {\\n  provider = \\\"prisma-client-js\\\"\\n}\\n\\ndatasource db {\\n  provider = \\\"postgresql\\\"\\n  url      = env(\\\"DATABASE_URL\\\")\\n}\\n\\nmodel User {\\n  id        String   @id @default(cuid())\\n  email     String   @unique\\n  name      String\\n  password  String\\n  role      UserRole @default(EDITOR)\\n  isActive  Boolean  @default(true)\\n  lastLogin DateTime?\\n  createdAt DateTime @default(now())\\n  updatedAt DateTime @updatedAt\\n  @@map(\\\"users\\\")\\n}\\n\\nmodel Page {\\n  id          String   @id @default(cuid())\\n  slug        String   @unique\\n  title       String\\n  content     Json\\n  metadata    Json?\\n  isPublished Boolean  @default(false)\\n  version     Int      @default(1)\\n  createdAt   DateTime @default(now())\\n  updatedAt   DateTime @updatedAt\\n  @@map(\\\"pages\\\")\\n}\\n\\nenum UserRole {\\n  SUPER_ADMIN\\n  ADMIN\\n  EDITOR\\n}\\n```\\n\\n2. 초기 마이그레이션 생성 및 적용:\\n```bash\\nnpx prisma migrate dev --name init\\nnpx prisma generate\\n```\\n\\n3. src/lib/db.ts 생성하여 Prisma 클라이언트 설정\\n4. 초기 시드 데이터 생성 (관리자 계정)",
+      "verificationCriteria": "Prisma 마이그레이션이 성공적으로 적용되고, 데이터베이스 테이블이 생성되며, Prisma 클라이언트로 기본 CRUD 작업이 가능해야 함. 초기 관리자 계정이 생성되어야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용."
+    },
+    {
+      "id": "17cdbf06-e258-4b3f-a93e-8d03d37ab0ae",
+      "name": "NextAuth.js 인증 시스템 구현",
+      "description": "NextAuth.js를 사용하여 JWT 기반 인증 시스템을 구현합니다. Credentials Provider와 Role-based 접근 제어를 포함하며, 세션 관리와 보안 미들웨어를 설정합니다.",
+      "notes": "보안을 위해 bcrypt로 패스워드 해싱, CSRF 보호, 세션 토큰 검증 포함. Rate limiting 고려 필요.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "57adb18c-851c-472f-b52d-04b7bfc0a35e"
+        }
+      ],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:36:41.987Z",
+      "relatedFiles": [
+        {
+          "path": "src/lib/auth.ts",
+          "type": "CREATE",
+          "description": "NextAuth 설정 및 인증 로직"
+        },
+        {
+          "path": "src/app/api/auth/[...nextauth]/route.ts",
+          "type": "CREATE",
+          "description": "NextAuth API 라우트"
+        },
+        {
+          "path": "middleware.ts",
+          "type": "CREATE",
+          "description": "인증 미들웨어"
+        },
+        {
+          "path": "src/app/(auth)/login/page.tsx",
+          "type": "CREATE",
+          "description": "로그인 페이지"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "CREATE",
+          "description": "역할 검증 헬퍼 함수"
+        }
+      ],
+      "implementationGuide": "1. src/lib/auth.ts 설정:\\n```typescript\\nimport NextAuth from 'next-auth'\\nimport CredentialsProvider from 'next-auth/providers/credentials'\\nimport bcrypt from 'bcryptjs'\\nimport { PrismaAdapter } from '@auth/prisma-adapter'\\nimport { db } from './db'\\n\\nexport const authOptions = {\\n  adapter: PrismaAdapter(db),\\n  providers: [\\n    CredentialsProvider({\\n      credentials: {\\n        email: { type: 'email' },\\n        password: { type: 'password' }\\n      },\\n      async authorize(credentials) {\\n        // 사용자 검증 로직\\n      }\\n    })\\n  ],\\n  callbacks: {\\n    jwt: ({ token, user }) => {\\n      if (user) {\\n        token.role = user.role\\n      }\\n      return token\\n    },\\n    session: ({ session, token }) => {\\n      session.user.role = token.role\\n      return session\\n    }\\n  }\\n}\\n```\\n\\n2. app/api/auth/[...nextauth]/route.ts 생성\\n3. 미들웨어 설정 (middleware.ts)\\n4. 로그인/로그아웃 페이지 구현\\n5. 역할 기반 접근 제어 헬퍼 함수",
+      "verificationCriteria": "로그인/로그아웃이 정상 작동하고, JWT 토큰이 올바르게 생성되며, 역할별 접근 제어가 정확히 동작해야 함. 보안 헤더가 적절히 설정되어야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용."
+    },
+    {
+      "id": "ee002433-58f6-42fd-9349-dd3fb82e821d",
+      "name": "Shadcn UI 컴포넌트 시스템 구축",
+      "description": "Shadcn UI를 기반으로 관리자 패널에서 사용할 재사용 가능한 컴포넌트 시스템을 구축합니다. 기존 사이트의 브라운 테마(#9F988C)를 반영한 디자인 토큰을 설정하고 핵심 UI 컴포넌트들을 구현합니다.",
+      "notes": "기존 1450px 그리드 시스템과 일관성 유지. 모바일 반응형 고려하여 컴포넌트 설계.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "1837764c-2d71-4cdf-aa61-7436adcaed6e"
+        }
+      ],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:36:41.987Z",
+      "relatedFiles": [
+        {
+          "path": "components.json",
+          "type": "CREATE",
+          "description": "Shadcn UI 설정 파일"
+        },
+        {
+          "path": "tailwind.config.js",
+          "type": "TO_MODIFY",
+          "description": "커스텀 테마 및 디자인 토큰 설정"
+        },
+        {
+          "path": "src/components/ui/",
+          "type": "CREATE",
+          "description": "Shadcn UI 기본 컴포넌트들"
+        },
+        {
+          "path": "src/components/layout/sidebar.tsx",
+          "type": "CREATE",
+          "description": "관리자 사이드바 컴포넌트"
+        },
+        {
+          "path": "src/components/layout/header.tsx",
+          "type": "CREATE",
+          "description": "관리자 헤더 컴포넌트"
+        },
+        {
+          "path": "css/grid-system-1450.css",
+          "type": "REFERENCE",
+          "description": "기존 그리드 시스템 참고",
+          "lineStart": 1,
+          "lineEnd": 50
+        }
+      ],
+      "implementationGuide": "1. Shadcn UI 초기화:\\n```bash\\nnpx shadcn-ui@latest init\\nnpx shadcn-ui@latest add button card input label table\\nnpx shadcn-ui@latest add form select textarea badge\\nnpx shadcn-ui@latest add dialog dropdown-menu\\n```\\n\\n2. tailwind.config.js 커스텀 테마 설정:\\n```javascript\\ntheme: {\\n  extend: {\\n    colors: {\\n      primary: {\\n        50: '#faf9f7',\\n        500: '#9F988C', // 기존 브라운 테마\\n        900: '#6b5d4f'\\n      }\\n    }\\n  }\\n}\\n```\\n\\n3. 공통 컴포넌트 구현:\\n- Layout 컴포넌트 (사이드바, 헤더)\\n- DataTable 컴포넌트 (목록 표시용)\\n- FormField 래퍼 컴포넌트\\n- Loading/Error 상태 컴포넌트\\n- Breadcrumb 네비게이션\\n\\n4. 기존 CSS 패턴을 Tailwind 클래스로 변환",
+      "verificationCriteria": "Shadcn UI 컴포넌트들이 정상 작동하고, 기존 사이트와 일관된 브라운 테마가 적용되며, 반응형 레이아웃이 올바르게 동작해야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용."
+    },
+    {
+      "id": "0515f307-6ea3-4638-905d-d8fad2091d79",
+      "name": "관리자 패널 기본 레이아웃 및 대시보드 구현",
+      "description": "/admin 경로에 관리자 패널의 기본 레이아웃을 구현하고, 대시보드 페이지를 생성합니다. 사이드바 네비게이션, 헤더, 그리고 주요 지표를 표시하는 대시보드를 포함합니다.",
+      "notes": "관리자 권한이 있는 사용자만 접근 가능하도록 보안 설정. 반응형 레이아웃으로 모바일에서도 사용 가능.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "17cdbf06-e258-4b3f-a93e-8d03d37ab0ae"
+        },
+        {
+          "taskId": "ee002433-58f6-42fd-9349-dd3fb82e821d"
+        }
+      ],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:36:41.987Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/admin/layout.tsx",
+          "type": "CREATE",
+          "description": "관리자 패널 기본 레이아웃"
+        },
+        {
+          "path": "src/app/admin/page.tsx",
+          "type": "CREATE",
+          "description": "관리자 대시보드 메인 페이지"
+        },
+        {
+          "path": "src/components/layout/sidebar.tsx",
+          "type": "TO_MODIFY",
+          "description": "사이드바 네비게이션 구현"
+        },
+        {
+          "path": "src/components/layout/header.tsx",
+          "type": "TO_MODIFY",
+          "description": "관리자 헤더 구현"
+        },
+        {
+          "path": "src/components/dashboard/stats-cards.tsx",
+          "type": "CREATE",
+          "description": "대시보드 통계 카드 컴포넌트"
+        }
+      ],
+      "implementationGuide": "1. admin 레이아웃 구현 (src/app/admin/layout.tsx):\\n```typescript\\nimport { Sidebar } from '@/components/layout/sidebar'\\nimport { Header } from '@/components/layout/header'\\n\\nexport default function AdminLayout({ children }) {\\n  return (\\n    <div className=\\\"flex h-screen bg-gray-50\\\">\\n      <Sidebar />\\n      <div className=\\\"flex-1 flex flex-col overflow-hidden\\\">\\n        <Header />\\n        <main className=\\\"flex-1 overflow-x-hidden overflow-y-auto p-6\\\">\\n          {children}\\n        </main>\\n      </div>\\n    </div>\\n  )\\n}\\n```\\n\\n2. 대시보드 페이지 (src/app/admin/page.tsx):\\n- 오늘의 예약 수\\n- 활성 팝업 수\\n- 최근 게시글\\n- 시스템 상태\\n\\n3. 사이드바 네비게이션 메뉴:\\n- 대시보드\\n- 페이지 관리\\n- 예약 관리\\n- 팝업 관리\\n- 게시판 관리\\n- 설정\\n\\n4. 접근 권한 검사 미들웨어 적용",
+      "verificationCriteria": "관리자로 로그인한 사용자만 /admin 경로에 접근 가능하고, 대시보드가 정상 렌더링되며, 사이드바 네비게이션이 올바르게 작동해야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용."
+    },
+    {
+      "id": "e864bd2d-0542-44a4-8c12-b4b94e611f33",
+      "name": "페이지 관리 기능 구현",
+      "description": "about.html, notice.html 등 정적 페이지들을 관리할 수 있는 CMS 기능을 구현합니다. 기존 HTML 구조를 JSON으로 변환하고, 위지윅 에디터를 통해 컨텐츠를 편집할 수 있는 기능을 제공합니다.",
+      "notes": "기존 about.html 구조를 참고하여 섹션 기반 JSON 스키마 설계. 이미지 업로드 및 최적화 기능 포함.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "0515f307-6ea3-4638-905d-d8fad2091d79"
+        }
+      ],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:36:41.987Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/api/pages/route.ts",
+          "type": "CREATE",
+          "description": "페이지 CRUD API 라우트"
+        },
+        {
+          "path": "src/app/api/pages/[slug]/route.ts",
+          "type": "CREATE",
+          "description": "개별 페이지 API 라우트"
+        },
+        {
+          "path": "src/app/admin/pages/page.tsx",
+          "type": "CREATE",
+          "description": "페이지 목록 관리 화면"
+        },
+        {
+          "path": "src/app/admin/pages/[slug]/page.tsx",
+          "type": "CREATE",
+          "description": "페이지 편집 화면"
+        },
+        {
+          "path": "src/lib/html-parser.ts",
+          "type": "CREATE",
+          "description": "HTML-JSON 변환 유틸리티"
+        },
+        {
+          "path": "about.html",
+          "type": "REFERENCE",
+          "description": "기존 HTML 구조 참고",
+          "lineStart": 1,
+          "lineEnd": 200
+        }
+      ],
+      "implementationGuide": "1. Page 관리 API 라우트 구현 (src/app/api/pages/):\\n```typescript\\n// GET /api/pages - 페이지 목록\\n// GET /api/pages/[slug] - 특정 페이지\\n// POST /api/pages - 페이지 생성\\n// PUT /api/pages/[slug] - 페이지 수정\\n// DELETE /api/pages/[slug] - 페이지 삭제\\n```\\n\\n2. 페이지 관리 UI (src/app/admin/pages/):\\n- 페이지 목록 (DataTable)\\n- 페이지 편집 폼 (React Hook Form + Zod)\\n- 위지윅 에디터 (TinyMCE 또는 Tiptap)\\n- 미리보기 기능\\n\\n3. 기존 HTML → JSON 변환 유틸리티:\\n```typescript\\n// src/lib/html-parser.ts\\nexport function parseHtmlToJson(html: string): PageContent {\\n  // Cheerio로 HTML 파싱\\n  // 섹션별 구조화된 JSON 생성\\n}\\n```\\n\\n4. JSON → HTML 렌더링 컴포넌트\\n5. SEO 메타데이터 관리",
+      "verificationCriteria": "페이지 목록 조회, 생성, 수정, 삭제가 정상 작동하고, 위지윅 에디터로 컨텐츠 편집이 가능하며, 미리보기 기능이 올바르게 동작해야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용."
+    },
+    {
+      "id": "4f6de5ed-adf8-44bf-8d74-19fb42cfa9e4",
+      "name": "예약 관리 시스템 구현",
+      "description": "병원 예약을 관리할 수 있는 시스템을 구현합니다. 예약 접수, 상태 관리, 알림 기능을 포함하며, 관리자가 예약을 확인하고 처리할 수 있는 인터페이스를 제공합니다.",
+      "notes": "예약 충돌 검사 로직 포함. 캘린더 뷰 제공하여 날짜별 예약 현황 확인 가능.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "0515f307-6ea3-4638-905d-d8fad2091d79"
+        }
+      ],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:36:41.987Z",
+      "relatedFiles": [
+        {
+          "path": "prisma/schema.prisma",
+          "type": "TO_MODIFY",
+          "description": "Reservation 모델 추가/수정"
+        },
+        {
+          "path": "src/app/api/reservations/route.ts",
+          "type": "CREATE",
+          "description": "예약 CRUD API"
+        },
+        {
+          "path": "src/app/admin/reservations/page.tsx",
+          "type": "CREATE",
+          "description": "예약 관리 메인 페이지"
+        },
+        {
+          "path": "src/components/reservations/reservation-table.tsx",
+          "type": "CREATE",
+          "description": "예약 목록 테이블 컴포넌트"
+        },
+        {
+          "path": "src/components/reservations/reservation-form.tsx",
+          "type": "CREATE",
+          "description": "예약 생성/수정 폼"
+        },
+        {
+          "path": "src/lib/validation/reservation.ts",
+          "type": "CREATE",
+          "description": "예약 데이터 검증 스키마"
+        }
+      ],
+      "implementationGuide": "1. Reservation 모델 확장 (prisma/schema.prisma):\\n```prisma\\nmodel Reservation {\\n  id            String            @id @default(cuid())\\n  patientName   String\\n  phone         String\\n  email         String?\\n  service       String\\n  preferredDate DateTime\\n  preferredTime String\\n  status        ReservationStatus @default(PENDING)\\n  notes         String?\\n  adminNotes    String?\\n  createdAt     DateTime          @default(now())\\n  updatedAt     DateTime          @updatedAt\\n  @@map(\\\"reservations\\\")\\n}\\n```\\n\\n2. 예약 API 라우트 구현:\\n- GET /api/reservations (목록 조회, 필터링)\\n- POST /api/reservations (예약 생성)\\n- PUT /api/reservations/[id] (상태 변경)\\n- DELETE /api/reservations/[id] (예약 취소)\\n\\n3. 관리자 예약 관리 UI:\\n- 예약 목록 (DataTable with filtering)\\n- 상태별 필터링 (대기중/확정/취소/완료)\\n- 예약 상세 정보 모달\\n- 예약 상태 변경 기능\\n\\n4. 예약 폼 컴포넌트 (React Hook Form)\\n5. 이메일/SMS 알림 시스템 (선택사항)",
+      "verificationCriteria": "예약 생성, 조회, 상태 변경이 정상 작동하고, 날짜/상태별 필터링이 가능하며, 예약 충돌 검사가 올바르게 동작해야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용."
+    },
+    {
+      "id": "77127aa4-56e6-4dab-8f52-ac2f54f0f289",
+      "name": "팝업 관리 시스템 구현",
+      "description": "웹사이트에 표시될 팝업을 관리할 수 있는 시스템을 구현합니다. 팝업 생성, 스케줄링, 위치 설정, 활성화/비활성화 기능을 제공하며, 실제 사이트에서 팝업이 표시되도록 연동합니다.",
+      "notes": "팝업 표시 로직에 쿠키 기반 중복 방지 기능 포함. 우선순위에 따른 팝업 순서 관리.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "0515f307-6ea3-4638-905d-d8fad2091d79"
+        }
+      ],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:36:41.987Z",
+      "relatedFiles": [
+        {
+          "path": "prisma/schema.prisma",
+          "type": "TO_MODIFY",
+          "description": "Popup 모델 추가"
+        },
+        {
+          "path": "src/app/api/popups/route.ts",
+          "type": "CREATE",
+          "description": "팝업 CRUD API"
+        },
+        {
+          "path": "src/app/api/popups/active/route.ts",
+          "type": "CREATE",
+          "description": "활성 팝업 조회 API"
+        },
+        {
+          "path": "src/app/admin/popups/page.tsx",
+          "type": "CREATE",
+          "description": "팝업 관리 메인 페이지"
+        },
+        {
+          "path": "src/components/popups/popup-form.tsx",
+          "type": "CREATE",
+          "description": "팝업 생성/편집 폼"
+        },
+        {
+          "path": "src/components/popups/popup-preview.tsx",
+          "type": "CREATE",
+          "description": "팝업 미리보기 컴포넌트"
+        },
+        {
+          "path": "public/js/popup-client.js",
+          "type": "CREATE",
+          "description": "기존 사이트용 팝업 클라이언트 스크립트"
+        }
+      ],
+      "implementationGuide": "1. Popup 모델 확장 (prisma/schema.prisma):\\n```prisma\\nmodel Popup {\\n  id          String   @id @default(cuid())\\n  title       String\\n  content     String\\n  imageUrl    String?\\n  linkUrl     String?\\n  isActive    Boolean  @default(false)\\n  startDate   DateTime\\n  endDate     DateTime\\n  position    Json     // {x, y, width, height}\\n  showOnPages String[] // 표시할 페이지들\\n  displayType PopupType @default(MODAL)\\n  priority    Int      @default(1)\\n  createdAt   DateTime @default(now())\\n  updatedAt   DateTime @updatedAt\\n  @@map(\\\"popups\\\")\\n}\\n\\nenum PopupType {\\n  MODAL\\n  BANNER\\n  SLIDE_IN\\n}\\n```\\n\\n2. 팝업 API 라우트:\\n- GET /api/popups (관리자용)\\n- GET /api/popups/active (사이트용)\\n- POST /api/popups (팝업 생성)\\n- PUT /api/popups/[id] (팝업 수정)\\n- DELETE /api/popups/[id] (팝업 삭제)\\n\\n3. 팝업 관리 UI:\\n- 팝업 목록 및 상태 관리\\n- 팝업 생성/편집 폼\\n- 실시간 미리보기\\n- 드래그 앤 드롭으로 위치 설정\\n\\n4. 클라이언트 팝업 컴포넌트 (기존 사이트 연동용)\\n5. 이미지 업로드 및 최적화",
+      "verificationCriteria": "팝업 생성, 수정, 활성화/비활성화가 정상 작동하고, 스케줄링된 팝업이 올바른 시간에 표시되며, 위치 설정이 정확히 반영되어야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용."
+    },
+    {
+      "id": "4982f52a-8984-4e2d-bdbe-4806715b1289",
+      "name": "게시판 관리 시스템 구현",
+      "description": "공지사항, 이벤트, FAQ 등 다양한 게시판을 관리할 수 있는 시스템을 구현합니다. 게시글 작성, 수정, 삭제, 공개/비공개 설정, 상단 고정 기능을 제공합니다.",
+      "notes": "기존 notice.html 페이지와 연동하여 게시글이 실제 사이트에 표시되도록 구현. 조회수 증가 로직 포함.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "0515f307-6ea3-4638-905d-d8fad2091d79"
+        }
+      ],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:36:41.987Z",
+      "relatedFiles": [
+        {
+          "path": "prisma/schema.prisma",
+          "type": "TO_MODIFY",
+          "description": "BoardPost 모델 추가"
+        },
+        {
+          "path": "src/app/api/boards/[type]/route.ts",
+          "type": "CREATE",
+          "description": "게시판별 API 라우트"
+        },
+        {
+          "path": "src/app/api/posts/route.ts",
+          "type": "CREATE",
+          "description": "게시글 CRUD API"
+        },
+        {
+          "path": "src/app/admin/boards/page.tsx",
+          "type": "CREATE",
+          "description": "게시판 관리 메인 페이지"
+        },
+        {
+          "path": "src/app/admin/boards/[type]/page.tsx",
+          "type": "CREATE",
+          "description": "게시판별 관리 페이지"
+        },
+        {
+          "path": "src/components/boards/post-editor.tsx",
+          "type": "CREATE",
+          "description": "게시글 에디터 컴포넌트"
+        },
+        {
+          "path": "src/components/boards/post-list.tsx",
+          "type": "CREATE",
+          "description": "게시글 목록 컴포넌트"
+        }
+      ],
+      "implementationGuide": "1. BoardPost 모델 확장 (prisma/schema.prisma):\\n```prisma\\nmodel BoardPost {\\n  id          String    @id @default(cuid())\\n  boardType   BoardType\\n  title       String\\n  content     String    @db.Text\\n  excerpt     String?\\n  author      String\\n  isPublished Boolean   @default(false)\\n  isPinned    Boolean   @default(false)\\n  viewCount   Int       @default(0)\\n  tags        String[]\\n  imageUrl    String?\\n  createdAt   DateTime  @default(now())\\n  updatedAt   DateTime  @updatedAt\\n  publishedAt DateTime?\\n  @@map(\\\"board_posts\\\")\\n}\\n\\nenum BoardType {\\n  NOTICE\\n  EVENT\\n  FAQ\\n  NEWS\\n}\\n```\\n\\n2. 게시판 API 라우트:\\n- GET /api/boards/[type] (게시글 목록)\\n- GET /api/posts/[id] (게시글 상세)\\n- POST /api/posts (게시글 생성)\\n- PUT /api/posts/[id] (게시글 수정)\\n- DELETE /api/posts/[id] (게시글 삭제)\\n\\n3. 게시판 관리 UI:\\n- 게시판 타입별 목록\\n- 게시글 에디터 (위지윅)\\n- 이미지 업로드\\n- 태그 관리\\n- 게시글 상태 관리\\n\\n4. SEO 최적화 (메타 태그, 구조화 데이터)\\n5. 게시글 검색 및 필터링",
+      "verificationCriteria": "게시글 생성, 수정, 삭제가 정상 작동하고, 게시판 타입별 분류가 올바르며, 공개/비공개 및 상단 고정 기능이 정확히 동작해야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용."
+    },
+    {
+      "id": "5a746d87-83a4-4cb4-9997-5e778415d18c",
+      "name": "이미지 업로드 및 최적화 시스템 구현",
+      "description": "CMS에서 사용할 이미지 업로드, 최적화, 관리 시스템을 구현합니다. Cloudinary 연동을 통한 자동 압축, WebP 변환, 리사이징 기능을 제공하며, 이미지 라이브러리 관리 기능을 포함합니다.",
+      "notes": "업로드 파일 크기 제한 및 포맷 검증 포함. 이미지 압축률과 품질 균형 고려.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "0515f307-6ea3-4638-905d-d8fad2091d79"
+        }
+      ],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:36:41.987Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/api/upload/route.ts",
+          "type": "CREATE",
+          "description": "이미지 업로드 API"
+        },
+        {
+          "path": "src/components/upload/image-uploader.tsx",
+          "type": "CREATE",
+          "description": "이미지 업로드 컴포넌트"
+        },
+        {
+          "path": "src/components/upload/image-gallery.tsx",
+          "type": "CREATE",
+          "description": "이미지 라이브러리 컴포넌트"
+        },
+        {
+          "path": "src/lib/cloudinary.ts",
+          "type": "CREATE",
+          "description": "Cloudinary 설정 및 헬퍼"
+        },
+        {
+          "path": "src/lib/image-utils.ts",
+          "type": "CREATE",
+          "description": "이미지 처리 유틸리티"
+        },
+        {
+          "path": ".env.local",
+          "type": "TO_MODIFY",
+          "description": "Cloudinary 환경변수 추가"
+        }
+      ],
+      "implementationGuide": "1. Cloudinary 설정 및 연동:\\n```bash\\nnpm install cloudinary next-cloudinary\\n```\\n\\n2. 이미지 업로드 API (src/app/api/upload/route.ts):\\n```typescript\\nimport { v2 as cloudinary } from 'cloudinary'\\n\\ncloudinary.config({\\n  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,\\n  api_key: process.env.CLOUDINARY_API_KEY,\\n  api_secret: process.env.CLOUDINARY_API_SECRET\\n})\\n\\nexport async function POST(request: Request) {\\n  // 이미지 업로드 및 최적화 로직\\n}\\n```\\n\\n3. 이미지 관리 컴포넌트:\\n- 드래그 앤 드롭 업로드\\n- 이미지 미리보기\\n- 이미지 라이브러리 (갤러리)\\n- 이미지 검색 및 필터링\\n- 이미지 메타데이터 관리\\n\\n4. Next.js Image 컴포넌트 최적화:\\n- WebP 자동 변환\\n- 반응형 이미지\\n- Lazy loading\\n\\n5. 기존 이미지 파일 마이그레이션 유틸리티",
+      "verificationCriteria": "이미지 업로드가 정상 작동하고, 자동 최적화(WebP 변환, 압축)가 적용되며, 이미지 라이브러리에서 검색 및 관리가 가능해야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용."
+    },
+    {
+      "id": "b2321605-7dcf-4c92-aac4-a91df734c44c",
+      "name": "시스템 통합 및 최종 테스트",
+      "description": "구현된 모든 기능들을 통합하고 종합적인 테스트를 수행합니다. 기존 정적 사이트와의 연동을 확인하고, 성능 최적화를 적용하며, 보안 검증을 실시합니다.",
+      "notes": "프로덕션 환경 설정 가이드 작성. 데이터베이스 백업 및 복구 절차 수립.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "e864bd2d-0542-44a4-8c12-b4b94e611f33"
+        },
+        {
+          "taskId": "4f6de5ed-adf8-44bf-8d74-19fb42cfa9e4"
+        },
+        {
+          "taskId": "77127aa4-56e6-4dab-8f52-ac2f54f0f289"
+        },
+        {
+          "taskId": "4982f52a-8984-4e2d-bdbe-4806715b1289"
+        },
+        {
+          "taskId": "5a746d87-83a4-4cb4-9997-5e778415d18c"
+        }
+      ],
+      "createdAt": "2025-09-15T04:36:41.987Z",
+      "updatedAt": "2025-09-15T04:36:41.987Z",
+      "relatedFiles": [
+        {
+          "path": "__tests__/integration/",
+          "type": "CREATE",
+          "description": "통합 테스트 스위트"
+        },
+        {
+          "path": "e2e/",
+          "type": "CREATE",
+          "description": "E2E 테스트 스위트"
+        },
+        {
+          "path": "next.config.js",
+          "type": "TO_MODIFY",
+          "description": "프로덕션 최적화 설정"
+        },
+        {
+          "path": "README.md",
+          "type": "CREATE",
+          "description": "프로젝트 문서화"
+        },
+        {
+          "path": "docs/deployment.md",
+          "type": "CREATE",
+          "description": "배포 가이드"
+        },
+        {
+          "path": "docs/api.md",
+          "type": "CREATE",
+          "description": "API 문서"
+        }
+      ],
+      "implementationGuide": "1. 통합 테스트 구현:\\n```typescript\\n// __tests__/integration/\\n- auth.test.ts (인증 플로우)\\n- pages.test.ts (페이지 관리)\\n- reservations.test.ts (예약 시스템)\\n- popups.test.ts (팝업 시스템)\\n- boards.test.ts (게시판 시스템)\\n```\\n\\n2. E2E 테스트 (Playwright):\\n- 로그인/로그아웃 플로우\\n- 관리자 워크플로우\\n- 권한별 접근 제어\\n- 모바일 반응형 테스트\\n\\n3. 성능 최적화:\\n- Next.js 빌드 최적화\\n- 이미지 최적화 검증\\n- API 응답 시간 개선\\n- 데이터베이스 쿼리 최적화\\n\\n4. 보안 검증:\\n- OWASP Top 10 보안 체크\\n- SQL Injection 방지 테스트\\n- XSS 방지 검증\\n- CSRF 보호 확인\\n\\n5. 기존 사이트 연동 테스트:\\n- 정적 파일 서빙 확인\\n- API 엔드포인트 연동\\n- 팝업 표시 테스트\\n\\n6. 문서화 및 배포 준비",
+      "verificationCriteria": "모든 기능이 통합되어 정상 작동하고, 성능 요구사항을 만족하며, 보안 검증을 통과하고, 기존 사이트와 원활히 연동되어야 함. E2E 테스트가 모두 통과해야 함.",
+      "analysisResult": "Next.js 14 + Prisma + PostgreSQL 기반 병원 CMS 시스템 구축. 기존 정적 사이트를 유지하면서 /admin 경로에 관리자 패널을 구축하는 하이브리드 접근법. 점진적 마이그레이션을 통해 정적 → 동적 전환하며, 페이지/예약/팝업/게시판 관리 기능 제공. OWASP 보안 준수, Role-based 접근 제어, 성능 최적화 적용."
+    }
+  ]
+}

@@ -238,7 +238,8 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Quick Links - Now with navigation */}
+        {/* Quick Links - Hidden */}
+        {/*
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-6">
           <button
             onClick={() => router.push('/admin/reservations')}
@@ -297,8 +298,10 @@ export default function AdminPage() {
             </div>
           </button>
         </div>
+        */}
 
-        {/* Additional Admin Functions */}
+        {/* Additional Admin Functions - Hidden */}
+        {/*
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <button
             onClick={() => router.push('/admin/settings')}
@@ -345,6 +348,7 @@ export default function AdminPage() {
             </button>
           )}
         </div>
+        */}
     </div>
   );
 }

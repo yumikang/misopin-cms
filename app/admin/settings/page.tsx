@@ -22,6 +22,7 @@ import { ContactSettings } from "./components/ContactSettings";
 import { SeoSettings } from "./components/SeoSettings";
 import { BusinessSettings } from "./components/BusinessSettings";
 import { ApiSettings } from "./components/ApiSettings";
+import { ClinicInfoSettings } from "./components/ClinicInfoSettings";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Setting[]>([]);
@@ -137,7 +138,7 @@ export default function SettingsPage() {
       case 'general':
         return <GeneralSettings {...commonProps} />;
       case 'contact':
-        return <ContactSettings {...commonProps} />;
+        return <ClinicInfoSettings />; // Use new ClinicInfo component
       case 'seo':
         return <SeoSettings {...commonProps} />;
       case 'business':
