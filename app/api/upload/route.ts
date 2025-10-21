@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import sharp from 'sharp';
+import fs from 'fs/promises';
+import path from 'path';
 
-// Supabase 클라이언트 초기화 (환경 변수 검증 포함)
-function createSupabaseClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// 업로드 디렉토리 (배포와 무관하게 보존됨)
+const UPLOAD_DIR = '/var/www/misopin-cms-uploads';
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Supabase configuration is missing. Please check environment variables.');
-  }
-
-  return createClient(supabaseUrl, supabaseKey);
-}
+// 로컬 개발 환경에서는 프로젝트 내 uploads 폴더 사용
+const getUploadDir = () => {
+  return process.env.NODE_ENV === 'production'
+    ? UPLOAD_DIR
+    : path.join(process.cwd(), 'public', 'uploads');
+};
 
 // 허용된 이미지 형식
 const ALLOWED_FORMATS = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -49,8 +48,14 @@ interface UploadResponse {
 
 export async function POST(request: NextRequest): Promise<NextResponse<UploadResponse>> {
   try {
-    // Supabase 클라이언트 생성
-    const supabase = createSupabaseClient();
+    const uploadDir = getUploadDir();
+
+    // 업로드 디렉토리 존재 확인 및 생성
+    try {
+      await fs.access(uploadDir);
+    } catch {
+      await fs.mkdir(uploadDir, { recursive: true });
+    }
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -97,28 +102,25 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
     const urls: { original?: string; thumbnail?: string; small?: string; medium?: string; large?: string } = {};
 
-    // 원본 이미지 업로드
-    const originalPath = `${folder}/${fileName}.${fileExt}`;
-    const { error: originalError } = await supabase.storage
-      .from('images')
-      .upload(originalPath, buffer, {
-        contentType: file.type,
-        cacheControl: '3600'
-      });
-
-    if (originalError) {
-      return NextResponse.json(
-        { success: false, error: `원본 업로드 실패: ${originalError.message}` },
-        { status: 500 }
-      );
+    // 폴더 경로 생성
+    const folderPath = path.join(uploadDir, folder);
+    try {
+      await fs.access(folderPath);
+    } catch {
+      await fs.mkdir(folderPath, { recursive: true });
     }
 
-    // 원본 이미지 URL 생성
-    const { data: { publicUrl: originalUrl } } = supabase.storage
-      .from('images')
-      .getPublicUrl(originalPath);
+    // 원본 이미지 저장
+    const originalFileName = `${fileName}.${fileExt}`;
+    const originalFilePath = path.join(folderPath, originalFileName);
+    await fs.writeFile(originalFilePath, buffer);
 
-    urls.original = originalUrl;
+    // URL 생성 (프로덕션과 개발 환경 분리)
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? '/uploads'
+      : '/uploads';
+
+    urls.original = `${baseUrl}/${folder}/${originalFileName}`;
 
     // 최적화가 활성화된 경우 다양한 크기로 변환
     if (optimize) {
@@ -134,23 +136,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
               .webp({ quality: 85 })
               .toBuffer();
 
-            const optimizedPath = `${folder}/${fileName}-${size}.webp`;
+            const optimizedFileName = `${fileName}-${size}.webp`;
+            const optimizedFilePath = path.join(folderPath, optimizedFileName);
 
-            const { data: optimizedData, error: optimizedError } = await supabase.storage
-              .from('images')
-              .upload(optimizedPath, optimized, {
-                contentType: 'image/webp',
-                cacheControl: '3600'
-              });
+            await fs.writeFile(optimizedFilePath, optimized);
 
-            if (!optimizedError && optimizedData) {
-              const { data: { publicUrl } } = supabase.storage
-                .from('images')
-                .getPublicUrl(optimizedPath);
-
-              if (size === 'thumbnail' || size === 'small' || size === 'medium' || size === 'large') {
-                urls[size] = publicUrl;
-              }
+            if (size === 'thumbnail' || size === 'small' || size === 'medium' || size === 'large') {
+              urls[size] = `${baseUrl}/${folder}/${optimizedFileName}`;
             }
           } catch (err) {
             console.error(`Failed to create ${size} version:`, err);
@@ -162,7 +154,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
     return NextResponse.json({
       success: true,
       data: {
-        original: urls.original || originalPath,
+        original: urls.original,
         ...urls,
         metadata: {
           width: metadata.width,
@@ -185,39 +177,45 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
 // 이미지 삭제 엔드포인트
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
-    // Supabase 클라이언트 생성
-    const supabase = createSupabaseClient();
-
+    const uploadDir = getUploadDir();
     const { searchParams } = new URL(request.url);
-    const path = searchParams.get('path');
+    const filePath = searchParams.get('path');
 
-    if (!path) {
+    if (!filePath) {
       return NextResponse.json(
         { success: false, error: '삭제할 파일 경로가 제공되지 않았습니다.' },
         { status: 400 }
       );
     }
 
-    // Supabase Storage에서 파일 삭제
-    const { error } = await supabase.storage
-      .from('images')
-      .remove([path]);
+    // /uploads/ 제거하고 실제 파일 경로 생성
+    const relativePath = filePath.replace(/^\/uploads\//, '');
+    const fullPath = path.join(uploadDir, relativePath);
 
-    if (error) {
+    // 파일 삭제
+    try {
+      await fs.unlink(fullPath);
+    } catch (error) {
+      console.error('File delete error:', error);
       return NextResponse.json(
-        { success: false, error: `파일 삭제 실패: ${error.message}` },
+        { success: false, error: '파일 삭제 실패' },
         { status: 500 }
       );
     }
 
     // 관련된 모든 크기의 이미지도 삭제
-    const basePath = path.replace(/\.[^/.]+$/, '');
+    const dirPath = path.dirname(fullPath);
+    const baseName = path.basename(fullPath, path.extname(fullPath));
     const sizes = ['thumbnail', 'small', 'medium', 'large'];
-    const pathsToDelete = sizes.map(size => `${basePath}-${size}.webp`);
 
-    await supabase.storage
-      .from('images')
-      .remove(pathsToDelete);
+    for (const size of sizes) {
+      const optimizedPath = path.join(dirPath, `${baseName}-${size}.webp`);
+      try {
+        await fs.unlink(optimizedPath);
+      } catch {
+        // 파일이 없으면 무시
+      }
+    }
 
     return NextResponse.json({ success: true });
 
