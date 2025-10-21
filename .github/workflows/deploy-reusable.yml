@@ -127,14 +127,29 @@ jobs:
             mkdir -p /var/www/misopin-cms-uploads
 
             # Migrate existing uploads if they exist in old locations
+            # Try public/uploads first
             if [ -d "${{ inputs.deploy_path }}/public/uploads" ] && [ ! -L "${{ inputs.deploy_path }}/public/uploads" ]; then
               echo "Migrating existing uploads from ${{ inputs.deploy_path }}/public/uploads"
               cp -rn ${{ inputs.deploy_path }}/public/uploads/* /var/www/misopin-cms-uploads/ 2>/dev/null || true
             fi
 
+            # Then try .next/standalone/public/uploads
             if [ -d "${{ inputs.deploy_path }}/.next/standalone/public/uploads" ] && [ ! -L "${{ inputs.deploy_path }}/.next/standalone/public/uploads" ]; then
               echo "Migrating existing uploads from ${{ inputs.deploy_path }}/.next/standalone/public/uploads"
               cp -rn ${{ inputs.deploy_path }}/.next/standalone/public/uploads/* /var/www/misopin-cms-uploads/ 2>/dev/null || true
+            fi
+
+            # IMPORTANT: Ensure all subdirectories exist
+            mkdir -p /var/www/misopin-cms-uploads/board
+            mkdir -p /var/www/misopin-cms-uploads/popups
+
+            # If symlink already exists, copy files from the symlink target
+            if [ -L "${{ inputs.deploy_path }}/.next/standalone/public/uploads" ]; then
+              LINK_TARGET=$(readlink -f "${{ inputs.deploy_path }}/.next/standalone/public/uploads" 2>/dev/null || echo "")
+              if [ -n "$LINK_TARGET" ] && [ -d "$LINK_TARGET" ] && [ "$LINK_TARGET" != "/var/www/misopin-cms-uploads" ]; then
+                echo "Copying files from existing symlink target: $LINK_TARGET"
+                cp -rn "$LINK_TARGET"/* /var/www/misopin-cms-uploads/ 2>/dev/null || true
+              fi
             fi
 
             # Link CMS standalone public/uploads to persistent uploads folder
@@ -151,6 +166,12 @@ jobs:
 
             # DEBUG: Show file structure
             echo "=== Debugging file structure ==="
+            echo "Searching for popups folder in all possible locations:"
+            find ${{ inputs.deploy_path }} -type d -name "popups" 2>/dev/null || echo "No popups folder found"
+            echo ""
+            echo "Searching for popup images:"
+            find ${{ inputs.deploy_path }} -name "*1njmxzb406vk.png" 2>/dev/null || echo "Popup image not found in deploy path"
+            echo ""
             echo "Files in /var/www/misopin-cms-uploads:"
             find /var/www/misopin-cms-uploads -type f 2>/dev/null | head -20
             echo ""

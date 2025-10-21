@@ -371,7 +371,7 @@ export default function BoardPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-4 items-center gap-4 hidden">
                 <Label htmlFor="post-excerpt" className="text-right">요약</Label>
                 <Textarea
                   id="post-excerpt"
@@ -467,7 +467,7 @@ export default function BoardPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-4 items-center gap-4 hidden">
                 <Label htmlFor="post-tags" className="text-right">태그</Label>
                 <Input
                   id="post-tags"
