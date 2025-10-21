@@ -99,7 +99,7 @@ jobs:
       - name: Deploy public files
         uses: burnett01/rsync-deployments@6.0.0
         with:
-          switches: -avzr
+          switches: -avzr --exclude='uploads'
           path: public/
           remote_path: ${{ inputs.deploy_path }}/.next/standalone/public/
           remote_host: ${{ secrets.SERVER_HOST }}
@@ -116,17 +116,38 @@ jobs:
           remote_user: ${{ secrets.SERVER_USER }}
           remote_key: ${{ secrets.SERVER_SSH_KEY }}
 
-      - name: Setup uploads symlink for static site
+      - name: Setup uploads symlink for CMS and static site
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            # Remove existing uploads folder/link and create fresh symbolic link
+            # Create persistent uploads directory outside of standalone
+            mkdir -p /var/www/misopin-cms-uploads
+
+            # Migrate existing uploads if they exist in old locations
+            if [ -d "${{ inputs.deploy_path }}/public/uploads" ] && [ ! -L "${{ inputs.deploy_path }}/public/uploads" ]; then
+              echo "Migrating existing uploads from ${{ inputs.deploy_path }}/public/uploads"
+              cp -rn ${{ inputs.deploy_path }}/public/uploads/* /var/www/misopin-cms-uploads/ 2>/dev/null || true
+            fi
+
+            if [ -d "${{ inputs.deploy_path }}/.next/standalone/public/uploads" ] && [ ! -L "${{ inputs.deploy_path }}/.next/standalone/public/uploads" ]; then
+              echo "Migrating existing uploads from ${{ inputs.deploy_path }}/.next/standalone/public/uploads"
+              cp -rn ${{ inputs.deploy_path }}/.next/standalone/public/uploads/* /var/www/misopin-cms-uploads/ 2>/dev/null || true
+            fi
+
+            # Link CMS standalone public/uploads to persistent uploads folder
+            rm -rf ${{ inputs.deploy_path }}/.next/standalone/public/uploads
+            ln -s /var/www/misopin-cms-uploads ${{ inputs.deploy_path }}/.next/standalone/public/uploads
+            echo "CMS Symlink: ${{ inputs.deploy_path }}/.next/standalone/public/uploads -> /var/www/misopin-cms-uploads"
+
+            # Link static site uploads to persistent uploads folder
             rm -rf /var/www/misopin.com/uploads
-            ln -s /var/www/misopin-cms/public/uploads /var/www/misopin.com/uploads
-            echo "Symlink created: /var/www/misopin.com/uploads -> /var/www/misopin-cms/public/uploads"
+            ln -s /var/www/misopin-cms-uploads /var/www/misopin.com/uploads
+            echo "Static site Symlink: /var/www/misopin.com/uploads -> /var/www/misopin-cms-uploads"
+
+            echo "Upload files count: $(ls -1 /var/www/misopin-cms-uploads 2>/dev/null | wc -l)"
 
       - name: Restart PM2 application
         uses: appleboy/ssh-action@v1.0.0
