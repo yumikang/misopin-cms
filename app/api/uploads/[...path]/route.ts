@@ -24,11 +24,12 @@ const MIME_TYPES: Record<string, string> = {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
     const uploadDir = getUploadDir();
-    const filePath = params.path.join('/');
+    const { path: pathArray } = await params;
+    const filePath = pathArray.join('/');
     const fullPath = path.join(uploadDir, filePath);
 
     // 보안: 디렉토리 traversal 방지
@@ -55,8 +56,8 @@ export async function GET(
     const ext = path.extname(fullPath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-    // 파일 반환
-    return new NextResponse(fileBuffer, {
+    // 파일 반환 (Buffer를 Uint8Array로 변환)
+    return new NextResponse(new Uint8Array(fileBuffer), {
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=31536000, immutable',
