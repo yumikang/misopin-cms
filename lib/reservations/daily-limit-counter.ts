@@ -95,19 +95,16 @@ export async function canCreateReservation(
   date: Date,
   serviceType: ServiceType
 ): Promise<boolean> {
-  // 1️⃣ 한도 조회 (FOR UPDATE로 락)
-  const limits = await tx.$queryRaw<Array<{
-    soft_limit: number;
-    hard_limit: number;
-    is_active: boolean;
-  }>>`
-    SELECT soft_limit, hard_limit, is_active
-    FROM service_reservation_limits
-    WHERE service_type = ${serviceType}::service_type
-    FOR UPDATE
-  `;
+  // 1️⃣ 한도 조회
+  const limit = await tx.service_reservation_limits.findUnique({
+    where: { serviceType },
+    select: {
+      hardLimit: true,
+      isActive: true
+    }
+  });
 
-  if (!limits[0] || !limits[0].is_active) {
+  if (!limit || !limit.isActive) {
     return false;
   }
 
@@ -121,7 +118,7 @@ export async function canCreateReservation(
   });
 
   // 3️⃣ 하드 리미트 체크
-  return currentCount < limits[0].hard_limit;
+  return currentCount < limit.hardLimit;
 }
 
 /**
