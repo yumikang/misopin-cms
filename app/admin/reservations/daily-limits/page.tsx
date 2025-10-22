@@ -107,7 +107,7 @@ export default function ReservationLimitsPage() {
 
     try {
       if (formData.softLimit > formData.hardLimit) {
-        setError('소프트 한도는 하드 한도보다 클 수 없습니다.');
+        setError('권장 인원은 최대 인원보다 클 수 없습니다.');
         return;
       }
 
@@ -222,7 +222,7 @@ export default function ReservationLimitsPage() {
         <CardHeader>
           <CardTitle>시술별 예약 한도</CardTitle>
           <CardDescription>
-            소프트 한도: 자동 마감 기준 / 하드 한도: 절대 최대값
+            권장 인원: 여유롭게 받을 수 있는 인원 / 최대 인원: 절대 받지 않는 한계
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -235,8 +235,8 @@ export default function ReservationLimitsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[200px]">시술명</TableHead>
-                  <TableHead className="text-center">소프트 한도</TableHead>
-                  <TableHead className="text-center">하드 한도</TableHead>
+                  <TableHead className="text-center">권장 인원</TableHead>
+                  <TableHead className="text-center">최대 인원</TableHead>
                   <TableHead className="text-center">상태</TableHead>
                   <TableHead className="text-center">작업</TableHead>
                 </TableRow>
@@ -296,7 +296,7 @@ export default function ReservationLimitsPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="softLimit">소프트 한도</Label>
+                <Label htmlFor="softLimit">권장 인원</Label>
                 <Input
                   id="softLimit"
                   type="number"
@@ -304,10 +304,10 @@ export default function ReservationLimitsPage() {
                   value={formData.softLimit}
                   onChange={(e) => setFormData({ ...formData, softLimit: parseInt(e.target.value) || 1 })}
                 />
-                <p className="text-xs text-gray-500">자동 마감 기준 인원</p>
+                <p className="text-xs text-gray-500">여기까지는 여유롭게 예약 받음</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="hardLimit">하드 한도</Label>
+                <Label htmlFor="hardLimit">최대 인원</Label>
                 <Input
                   id="hardLimit"
                   type="number"
@@ -315,7 +315,7 @@ export default function ReservationLimitsPage() {
                   value={formData.hardLimit}
                   onChange={(e) => setFormData({ ...formData, hardLimit: parseInt(e.target.value) || 1 })}
                 />
-                <p className="text-xs text-gray-500">절대 최대 인원</p>
+                <p className="text-xs text-gray-500">이 인원 초과 시 예약 차단</p>
               </div>
             </div>
             <Alert>
