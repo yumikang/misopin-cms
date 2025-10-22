@@ -177,22 +177,39 @@ model popups {
   updatedAt   DateTime
 }
 
+model service_reservation_limits {
+  id          String      @id @default(cuid())
+  serviceType ServiceType @unique
+  softLimit   Int         @default(8)
+  hardLimit   Int         @default(10)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("service_reservation_limits")
+}
+
 model reservations {
-  id            String            @id
-  patientName   String
-  phone         String
-  email         String?
-  birthDate     DateTime
-  gender        Gender
-  treatmentType TreatmentType
-  preferredDate DateTime
-  preferredTime String
-  status        ReservationStatus @default(PENDING)
-  notes         String?
-  adminNotes    String?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime
-  service       ServiceType
+  id              String            @id
+  patientName     String
+  phone           String
+  email           String?
+  birthDate       DateTime
+  gender          Gender
+  treatmentType   TreatmentType
+  preferredDate   DateTime          @db.Date
+  preferredTime   String
+  status          ReservationStatus @default(PENDING)
+  notes           String?
+  adminNotes      String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  service         ServiceType
+  statusChangedAt DateTime          @default(now())
+  statusChangedBy String?
+
+  @@index([preferredDate, service, status])
+  @@index([status])
 }
 
 model seo_settings {
@@ -294,6 +311,8 @@ enum ReservationStatus {
   CONFIRMED
   CANCELLED
   COMPLETED
+  NO_SHOW
+  REJECTED
 }
 
 enum ServiceType {

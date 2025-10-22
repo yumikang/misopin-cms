@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Gender, TreatmentType, ReservationStatus, ServiceType } from '@prisma/client';
+import { canCreateReservation } from '@/lib/reservations/daily-limit-counter';
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,24 +45,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create reservation in database using Prisma
-    const reservation = await prisma.reservations.create({
-      data: {
-        id: crypto.randomUUID(),
-        patientName: body.patient_name,
-        phone: body.phone,
-        email: body.email || null,
-        birthDate: birthDate,
-        gender: body.gender as Gender,
-        treatmentType: body.treatment_type as TreatmentType,
-        service: body.service as ServiceType,
-        preferredDate: preferredDate,
-        preferredTime: body.preferred_time,
-        status: 'PENDING' as ReservationStatus,
-        notes: body.notes || null,
-        adminNotes: null,
-        updatedAt: new Date()
+    // Service type
+    const serviceType = body.service as ServiceType;
+
+    // Create reservation with limit validation using transaction
+    const reservation = await prisma.$transaction(async (tx) => {
+      // 1. Check if reservation can be created (uses FOR UPDATE lock)
+      const canCreate = await canCreateReservation(tx, preferredDate, serviceType);
+
+      if (!canCreate) {
+        throw new Error('RESERVATION_FULL');
       }
+
+      // 2. Create reservation
+      const newReservation = await tx.reservations.create({
+        data: {
+          id: crypto.randomUUID(),
+          patientName: body.patient_name,
+          phone: body.phone,
+          email: body.email || null,
+          birthDate: birthDate,
+          gender: body.gender as Gender,
+          treatmentType: body.treatment_type as TreatmentType,
+          service: serviceType,
+          preferredDate: preferredDate,
+          preferredTime: body.preferred_time,
+          status: 'PENDING' as ReservationStatus,
+          notes: body.notes || null,
+          adminNotes: null,
+          statusChangedAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+
+      return newReservation;
     });
 
     // Send success response
@@ -86,6 +103,23 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('Reservation error:', error);
+
+    // Handle specific error: reservation limit reached
+    if (error instanceof Error && error.message === 'RESERVATION_FULL') {
+      return NextResponse.json(
+        {
+          error: 'Reservation limit reached',
+          message: '해당 날짜의 예약이 마감되었습니다. 다른 날짜를 선택해 주세요.'
+        },
+        {
+          status: 409,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+          }
+        }
+      );
+    }
+
     return NextResponse.json(
       {
         error: 'Internal server error',

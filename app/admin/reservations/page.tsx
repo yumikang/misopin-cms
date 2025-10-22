@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -101,6 +102,7 @@ const timeSlots = [
 ];
 
 export default function ReservationsPage() {
+  const router = useRouter();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -327,9 +329,17 @@ export default function ReservationsPage() {
           <h1 className="text-2xl font-bold text-gray-900">예약 관리</h1>
           <p className="text-gray-600 mt-1">진료 예약을 관리합니다</p>
         </div>
-        <Button onClick={() => handleOpenDialog()}>
-          새 예약 등록
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => router.push('/admin/reservations/daily-limits')}
+          >
+            📊 예약 한도 수정
+          </Button>
+          <Button onClick={() => handleOpenDialog()}>
+            새 예약 등록
+          </Button>
+        </div>
       </div>
 
       {/* Statistics Cards */}

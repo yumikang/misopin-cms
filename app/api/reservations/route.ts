@@ -268,10 +268,14 @@ export async function PUT(request: Request) {
       }
     }
 
-    // Prepare update data - map frontend field names to Prisma model field names
+    // Update reservation
+    // Note: No counter adjustment needed - we use real-time COUNT for availability
     const updateData: Prisma.reservationsUpdateInput = {};
 
-    if (body.status) updateData.status = body.status;
+    if (body.status) {
+      updateData.status = body.status;
+      updateData.statusChangedAt = new Date();
+    }
     if (body.patient_name) updateData.patientName = body.patient_name;
     if (body.patient_phone) updateData.phone = body.patient_phone;
     if (body.patient_email !== undefined) updateData.email = body.patient_email;
@@ -280,7 +284,6 @@ export async function PUT(request: Request) {
     if (body.department) updateData.service = body.department;
     if (body.notes !== undefined) updateData.notes = body.notes;
 
-    // Update reservation in database
     const updatedReservation = await prisma.reservations.update({
       where: { id },
       data: updateData
@@ -338,10 +341,12 @@ export async function DELETE(request: Request) {
     }
 
     // Cancel instead of delete
+    // Note: No counter adjustment needed - we use real-time COUNT for availability
     await prisma.reservations.update({
       where: { id },
       data: {
-        status: 'CANCELLED'
+        status: 'CANCELLED',
+        statusChangedAt: new Date(),
       }
     });
 
