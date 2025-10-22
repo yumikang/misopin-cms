@@ -22,17 +22,8 @@ export async function GET(
     const { user } = authResult;
     const { id } = await params;
 
-    const template = await prisma.blockTemplate.findUnique({
+    const template = await prisma.block_templates.findUnique({
       where: { id },
-      include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
     });
 
     if (!template) {
@@ -81,7 +72,7 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
 
-    const existingTemplate = await prisma.blockTemplate.findUnique({
+    const existingTemplate = await prisma.block_templates.findUnique({
       where: { id }
     });
 
@@ -115,7 +106,7 @@ export async function PUT(
 
     // 이름 중복 체크 (다른 템플릿과 중복되지 않는지)
     if (name && name !== existingTemplate.name) {
-      const duplicateTemplate = await prisma.blockTemplate.findFirst({
+      const duplicateTemplate = await prisma.block_templates.findFirst({
         where: {
           name,
           createdBy: existingTemplate.createdBy,
@@ -131,7 +122,7 @@ export async function PUT(
       }
     }
 
-    const updatedTemplate = await prisma.blockTemplate.update({
+    const updatedTemplate = await prisma.block_templates.update({
       where: { id },
       data: {
         ...(name && { name }),
@@ -141,15 +132,6 @@ export async function PUT(
         ...(isPublic !== undefined && { isPublic }),
         ...(templateData && { templateData }),
         ...(tags && { tags })
-      },
-      include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
       }
     });
 
@@ -184,7 +166,7 @@ export async function DELETE(
     const { user } = authResult;
     const { id } = await params;
 
-    const existingTemplate = await prisma.blockTemplate.findUnique({
+    const existingTemplate = await prisma.block_templates.findUnique({
       where: { id }
     });
 
@@ -206,7 +188,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.blockTemplate.delete({
+    await prisma.block_templates.delete({
       where: { id }
     });
 
@@ -240,7 +222,7 @@ export async function POST(
     const { user } = authResult;
     const { id } = await params;
 
-    const template = await prisma.blockTemplate.findUnique({
+    const template = await prisma.block_templates.findUnique({
       where: { id }
     });
 
@@ -260,20 +242,11 @@ export async function POST(
     }
 
     // 사용 횟수 증가
-    const updatedTemplate = await prisma.blockTemplate.update({
+    const updatedTemplate = await prisma.block_templates.update({
       where: { id },
       data: {
         usageCount: {
           increment: 1
-        }
-      },
-      include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
         }
       }
     });

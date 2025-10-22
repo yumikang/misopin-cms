@@ -10,7 +10,7 @@ async function analyzeDatabase() {
 
   try {
     // Users
-    const users = await prisma.user.findMany({
+    const users = await prisma.users.findMany({
       select: {
         id: true,
         email: true,
@@ -21,9 +21,9 @@ async function analyzeDatabase() {
         createdAt: true,
         _count: {
           select: {
-            uploadedFiles: true,
-            contentVersions: true,
-            blockTemplates: true,
+            file_uploads: true,
+            content_versions: true,
+            block_templates: true,
           },
         },
       },
@@ -33,20 +33,20 @@ async function analyzeDatabase() {
     users.forEach((user) => {
       console.log(`  [${user.role}] ${user.name} (${user.email})`);
       console.log(`    Active: ${user.isActive}, Last Login: ${user.lastLogin || 'Never'}`);
-      console.log(`    Files: ${user._count.uploadedFiles}, Versions: ${user._count.contentVersions}, Templates: ${user._count.blockTemplates}`);
+      console.log(`    Files: ${user._count.file_uploads}, Versions: ${user._count.content_versions}, Templates: ${user._count.block_templates}`);
     });
     console.log('');
 
     // Reservations
-    const reservations = await prisma.reservation.findMany({
+    const reservations = await prisma.reservations.findMany({
       orderBy: { createdAt: 'desc' },
       take: 10,
     });
-    const reservationStats = await prisma.reservation.groupBy({
+    const reservationStats = await prisma.reservations.groupBy({
       by: ['status'],
       _count: true,
     });
-    console.log('📅 RESERVATIONS (' + (await prisma.reservation.count()) + ' total)');
+    console.log('📅 RESERVATIONS (' + (await prisma.reservations.count()) + ' total)');
     console.log('-'.repeat(80));
     reservationStats.forEach((stat) => {
       console.log(`  ${stat.status}: ${stat._count} reservations`);
@@ -58,7 +58,7 @@ async function analyzeDatabase() {
     console.log('');
 
     // Popups
-    const popups = await prisma.popup.findMany({
+    const popups = await prisma.popups.findMany({
       orderBy: { createdAt: 'desc' },
     });
     const activePopups = popups.filter((p) => p.isActive);
@@ -72,15 +72,15 @@ async function analyzeDatabase() {
     console.log('');
 
     // Board Posts
-    const boardPosts = await prisma.boardPost.findMany({
+    const boardPosts = await prisma.board_posts.findMany({
       orderBy: { createdAt: 'desc' },
       take: 10,
     });
-    const boardStats = await prisma.boardPost.groupBy({
+    const boardStats = await prisma.board_posts.groupBy({
       by: ['boardType', 'isPublished'],
       _count: true,
     });
-    console.log('📝 BOARD POSTS (' + (await prisma.boardPost.count()) + ' total)');
+    console.log('📝 BOARD POSTS (' + (await prisma.board_posts.count()) + ' total)');
     console.log('-'.repeat(80));
     boardStats.forEach((stat) => {
       console.log(`  ${stat.boardType} (${stat.isPublished ? 'Published' : 'Draft'}): ${stat._count} posts`);
@@ -92,10 +92,10 @@ async function analyzeDatabase() {
     console.log('');
 
     // Static Pages
-    const staticPages = await prisma.staticPage.findMany({
+    const staticPages = await prisma.static_pages.findMany({
       include: {
         _count: {
-          select: { versions: true },
+          select: { static_page_versions: true },
         },
       },
     });
@@ -103,12 +103,12 @@ async function analyzeDatabase() {
     console.log('-'.repeat(80));
     staticPages.forEach((page) => {
       console.log(`  ${page.slug} - ${page.title}`);
-      console.log(`    Path: ${page.filePath}, Versions: ${page._count.versions}`);
+      console.log(`    Path: ${page.filePath}, Versions: ${page._count.static_page_versions}`);
     });
     console.log('');
 
     // Clinic Info
-    const clinicInfo = await prisma.clinicInfo.findFirst({
+    const clinicInfo = await prisma.clinic_info.findFirst({
       where: { isActive: true },
     });
     console.log('🏥 CLINIC INFO');
@@ -129,7 +129,7 @@ async function analyzeDatabase() {
     console.log('');
 
     // System Settings
-    const systemSettings = await prisma.systemSetting.findMany();
+    const systemSettings = await prisma.system_settings.findMany();
     console.log('⚙️ SYSTEM SETTINGS (' + systemSettings.length + ' total)');
     console.log('-'.repeat(80));
     systemSettings.forEach((setting) => {
@@ -138,21 +138,21 @@ async function analyzeDatabase() {
     console.log('');
 
     // File Uploads
-    const fileUploads = await prisma.fileUpload.findMany({
+    const fileUploads = await prisma.file_uploads.findMany({
       take: 10,
       orderBy: { uploadedAt: 'desc' },
       include: {
-        uploadedBy: {
+        users: {
           select: { name: true },
         },
       },
     });
-    const fileStats = await prisma.fileUpload.groupBy({
+    const fileStats = await prisma.file_uploads.groupBy({
       by: ['category'],
       _count: true,
       _sum: { size: true },
     });
-    console.log('📁 FILE UPLOADS (' + (await prisma.fileUpload.count()) + ' total)');
+    console.log('📁 FILE UPLOADS (' + (await prisma.file_uploads.count()) + ' total)');
     console.log('-'.repeat(80));
     fileStats.forEach((stat) => {
       const totalSizeMB = ((stat._sum.size || 0) / 1024 / 1024).toFixed(2);
@@ -161,15 +161,15 @@ async function analyzeDatabase() {
     console.log('  Recent 5:');
     fileUploads.slice(0, 5).forEach((file) => {
       const sizeMB = (file.size / 1024 / 1024).toFixed(2);
-      console.log(`    - ${file.originalName} (${sizeMB} MB) by ${file.uploadedBy.name}`);
+      console.log(`    - ${file.originalName} (${sizeMB} MB) by ${file.users.name}`);
     });
     console.log('');
 
     // Web Builder - Pages
-    const pages = await prisma.page.findMany({
+    const pages = await prisma.pages.findMany({
       include: {
         _count: {
-          select: { pageBlocks: true },
+          select: { page_blocks: true },
         },
       },
     });
@@ -177,19 +177,19 @@ async function analyzeDatabase() {
     console.log('-'.repeat(80));
     pages.forEach((page) => {
       console.log(`  /${page.slug} - ${page.title} (v${page.version})`);
-      console.log(`    Published: ${page.isPublished}, Blocks: ${page._count.pageBlocks}`);
+      console.log(`    Published: ${page.isPublished}, Blocks: ${page._count.page_blocks}`);
     });
     console.log('');
 
     // Content Blocks
-    const contentBlocks = await prisma.contentBlock.findMany({
+    const contentBlocks = await prisma.content_blocks.findMany({
       include: {
         _count: {
-          select: { pageBlocks: true, versions: true },
+          select: { page_blocks: true, content_versions: true },
         },
       },
     });
-    const blockStats = await prisma.contentBlock.groupBy({
+    const blockStats = await prisma.content_blocks.groupBy({
       by: ['type', 'isGlobal'],
       _count: true,
     });
@@ -201,14 +201,14 @@ async function analyzeDatabase() {
     console.log('');
 
     // Block Templates
-    const blockTemplates = await prisma.blockTemplate.findMany({
+    const blockTemplates = await prisma.block_templates.findMany({
       include: {
-        creator: {
+        users: {
           select: { name: true },
         },
       },
     });
-    const templateStats = await prisma.blockTemplate.groupBy({
+    const templateStats = await prisma.block_templates.groupBy({
       by: ['category'],
       _count: true,
     });

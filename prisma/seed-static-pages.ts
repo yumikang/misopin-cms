@@ -107,7 +107,7 @@ async function main() {
       console.log(`   ✅ ${parseResult.sections.length}개 섹션 파싱 완료`);
 
       // 3. 기존 페이지 확인
-      const existingPage = await prisma.staticPage.findUnique({
+      const existingPage = await prisma.static_pages.findUnique({
         where: { slug: pageInfo.slug },
       });
 
@@ -117,18 +117,21 @@ async function main() {
       }
 
       // 4. 페이지 생성
-      const page = await prisma.staticPage.create({
+      const page = await prisma.static_pages.create({
         data: {
+          id: crypto.randomUUID(),
           slug: pageInfo.slug,
           title: pageInfo.title,
           filePath: pageInfo.filePath,
           sections: parseResult.sections as unknown as Prisma.InputJsonValue,
+          lastEdited: new Date(),
         },
       });
 
       // 5. 초기 버전 생성
-      await prisma.staticPageVersion.create({
+      await prisma.static_page_versions.create({
         data: {
+          id: crypto.randomUUID(),
           pageId: page.id,
           version: 1,
           sections: parseResult.sections as unknown as Prisma.InputJsonValue,
@@ -156,14 +159,14 @@ async function main() {
   console.log(`   총계: ${PRIORITY_PAGES.length}개\n`);
 
   // 생성된 페이지 목록 출력
-  const allPages = await prisma.staticPage.findMany({
+  const allPages = await prisma.static_pages.findMany({
     select: {
       slug: true,
       title: true,
       filePath: true,
       _count: {
         select: {
-          versions: true,
+          static_page_versions: true,
         },
       },
     },
@@ -173,7 +176,7 @@ async function main() {
   allPages.forEach((page, index) => {
     console.log(`   ${index + 1}. ${page.title} (${page.slug})`);
     console.log(`      파일: ${page.filePath}`);
-    console.log(`      버전: ${page._count.versions}개\n`);
+    console.log(`      버전: ${page._count.static_page_versions}개\n`);
   });
 }
 

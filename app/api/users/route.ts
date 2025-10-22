@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     const isActive = searchParams.get('is_active');
     const search = searchParams.get('search');
 
-    const users = await prisma.user.findMany({
+    const users = await prisma.users.findMany({
       where: {
         ...(role && role !== 'all' && { role: role as 'SUPER_ADMIN' | 'ADMIN' | 'EDITOR' }),
         ...(isActive !== null && isActive !== 'all' && { isActive: isActive === 'true' }),
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Check if email already exists
-    const existing = await prisma.user.findUnique({
+    const existing = await prisma.users.findUnique({
       where: { email: body.email }
     });
 
@@ -82,13 +82,15 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
     // Create user
-    const newUser = await prisma.user.create({
+    const newUser = await prisma.users.create({
       data: {
+        id: crypto.randomUUID(),
         email: body.email,
         name: body.name,
         password: hashedPassword,
         role: body.role || 'EDITOR',
         isActive: body.isActive !== false,
+        updatedAt: new Date(),
       },
       select: {
         id: true,
@@ -131,7 +133,7 @@ export async function PUT(request: Request) {
     const body = await request.json();
 
     // Check if user exists
-    const existing = await prisma.user.findUnique({
+    const existing = await prisma.users.findUnique({
       where: { id }
     });
 
@@ -147,7 +149,7 @@ export async function PUT(request: Request) {
       const tempPassword = generateTempPassword();
       const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-      await prisma.user.update({
+      await prisma.users.update({
         where: { id },
         data: { password: hashedPassword },
       });
@@ -160,7 +162,7 @@ export async function PUT(request: Request) {
     }
 
     // Update user data
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.users.update({
       where: { id },
       data: {
         ...(body.name && { name: body.name }),
@@ -202,7 +204,7 @@ export async function DELETE(request: Request) {
     }
 
     // Check if user exists
-    const existing = await prisma.user.findUnique({
+    const existing = await prisma.users.findUnique({
       where: { id }
     });
 
@@ -214,7 +216,7 @@ export async function DELETE(request: Request) {
     }
 
     // Don't actually delete, just deactivate
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id },
       data: { isActive: false },
     });

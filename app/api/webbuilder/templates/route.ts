@@ -69,17 +69,8 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     const [templates, total] = await Promise.all([
-      prisma.blockTemplate.findMany({
+      prisma.block_templates.findMany({
         where,
-        include: {
-          creator: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        },
         orderBy: [
           { usageCount: 'desc' },
           { createdAt: 'desc' }
@@ -87,7 +78,7 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit
       }),
-      prisma.blockTemplate.count({ where })
+      prisma.block_templates.count({ where })
     ]);
 
     return NextResponse.json<WebBuilderResponse<{
@@ -159,7 +150,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 중복 이름 체크 (같은 사용자가 만든 템플릿 중)
-    const existingTemplate = await prisma.blockTemplate.findFirst({
+    const existingTemplate = await prisma.block_templates.findFirst({
       where: {
         name,
         createdBy: user.id
@@ -173,8 +164,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const template = await prisma.blockTemplate.create({
+    const template = await prisma.block_templates.create({
       data: {
+        id: crypto.randomUUID(),
         name,
         description,
         category,
@@ -182,16 +174,8 @@ export async function POST(request: NextRequest) {
         isPublic,
         createdBy: user.id,
         templateData,
-        tags
-      },
-      include: {
-        creator: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
+        tags,
+        updatedAt: new Date()
       }
     });
 

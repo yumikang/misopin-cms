@@ -22,7 +22,7 @@ async function main() {
 
   const email = await question('이메일 주소를 입력하세요: ');
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: { email },
     select: { id: true, email: true, name: true, role: true }
   });
@@ -48,7 +48,7 @@ async function main() {
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  await prisma.user.update({
+  await prisma.users.update({
     where: { id: user.id },
     data: { password: hashedPassword }
   });

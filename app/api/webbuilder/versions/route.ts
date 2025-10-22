@@ -27,17 +27,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const versions = await prisma.contentVersion.findMany({
+    const versions = await prisma.content_versions.findMany({
       where: { blockId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
       orderBy: { version: 'desc' },
       take: limit,
     });
@@ -79,7 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 복원할 버전 가져오기
-    const version = await prisma.contentVersion.findUnique({
+    const version = await prisma.content_versions.findUnique({
       where: { id: versionId },
     });
 
@@ -91,7 +82,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 현재 블록 상태 가져오기
-    const currentBlock = await prisma.contentBlock.findUnique({
+    const currentBlock = await prisma.content_blocks.findUnique({
       where: { id: blockId },
     });
 
@@ -103,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 최신 버전 번호 가져오기
-    const latestVersion = await prisma.contentVersion.findFirst({
+    const latestVersion = await prisma.content_versions.findFirst({
       where: { blockId },
       orderBy: { version: 'desc' },
     });
@@ -111,8 +102,9 @@ export async function POST(request: NextRequest) {
     const nextVersion = (latestVersion?.version || 0) + 1;
 
     // 새 버전 생성 (복원 기록)
-    await prisma.contentVersion.create({
+    await prisma.content_versions.create({
       data: {
+        id: crypto.randomUUID(),
         blockId,
         version: nextVersion,
         content: version.content as Prisma.InputJsonValue,
@@ -124,7 +116,7 @@ export async function POST(request: NextRequest) {
     });
 
     // 블록 업데이트
-    const restoredBlock = await prisma.contentBlock.update({
+    const restoredBlock = await prisma.content_blocks.update({
       where: { id: blockId },
       data: {
         content: version.content as Prisma.InputJsonValue,
@@ -170,7 +162,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // 보관할 버전 ID 조회
-    const versionsToKeep = await prisma.contentVersion.findMany({
+    const versionsToKeep = await prisma.content_versions.findMany({
       where: { blockId },
       orderBy: { version: 'desc' },
       take: keepCount,
@@ -180,7 +172,7 @@ export async function DELETE(request: NextRequest) {
     const idsToKeep = versionsToKeep.map((v) => v.id);
 
     // 오래된 버전 삭제
-    const deleted = await prisma.contentVersion.deleteMany({
+    const deleted = await prisma.content_versions.deleteMany({
       where: {
         blockId,
         id: {

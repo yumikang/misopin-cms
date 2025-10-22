@@ -27,26 +27,26 @@ export async function GET(request: NextRequest) {
     }
 
     // 페이지 조회
-    const page = await prisma.page.findUnique({
+    const page = await prisma.pages.findUnique({
       where: {
         slug: pageSlug,
         isPublished: true, // 공개된 페이지만
       },
       include: {
-        pageBlocks: {
+        page_blocks: {
           where: {
             isVisible: true, // 보이는 블록만
             ...(sectionName ? { sectionName } : {}),
           },
           include: {
-            block: true,
+            content_blocks: true,
           },
           orderBy: [
             { sectionName: 'asc' },
             { order: 'asc' },
           ],
         },
-        seoSetting: true,
+        seo_settings: true,
       },
     });
 
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 섹션별로 그룹화
-    const sections = page.pageBlocks.reduce((acc: Record<string, Array<{
+    const sections = page.page_blocks.reduce((acc: Record<string, Array<{
       id: string;
       type: string;
       content: unknown;
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
       settings: unknown;
       order: number;
     }>>, pb) => {
-      if (!pb.block || !pb.block.isActive) return acc; // 블록이 없거나 비활성화 상태면 스킵
+      if (!pb.content_blocks || !pb.content_blocks.isActive) return acc; // 블록이 없거나 비활성화 상태면 스킵
 
       if (!acc[pb.sectionName]) {
         acc[pb.sectionName] = [];
@@ -74,16 +74,16 @@ export async function GET(request: NextRequest) {
 
       // 커스텀 스타일과 블록 스타일 병합
       const mergedStyles = {
-        ...(pb.block.styles as Record<string, unknown> || {}),
+        ...(pb.content_blocks.styles as Record<string, unknown> || {}),
         ...(pb.customStyles as Record<string, unknown> || {}),
       };
 
       acc[pb.sectionName].push({
-        id: pb.block.id,
-        type: pb.block.type,
-        content: pb.block.content,
+        id: pb.content_blocks.id,
+        type: pb.content_blocks.type,
+        content: pb.content_blocks.content,
         styles: mergedStyles,
-        settings: pb.block.settings,
+        settings: pb.content_blocks.settings,
         order: pb.order,
       });
 
@@ -99,15 +99,15 @@ export async function GET(request: NextRequest) {
         metadata: page.metadata,
       },
       sections,
-      seo: page.seoSetting ? {
-        metaTitle: page.seoSetting.metaTitle || page.title,
-        metaDescription: page.seoSetting.metaDescription,
-        metaKeywords: page.seoSetting.metaKeywords,
-        ogTitle: page.seoSetting.ogTitle || page.seoSetting.metaTitle || page.title,
-        ogDescription: page.seoSetting.ogDescription || page.seoSetting.metaDescription,
-        ogImage: page.seoSetting.ogImage,
-        canonicalUrl: page.seoSetting.canonicalUrl,
-        structuredData: page.seoSetting.structuredData,
+      seo: page.seo_settings ? {
+        metaTitle: page.seo_settings.metaTitle || page.title,
+        metaDescription: page.seo_settings.metaDescription,
+        metaKeywords: page.seo_settings.metaKeywords,
+        ogTitle: page.seo_settings.ogTitle || page.seo_settings.metaTitle || page.title,
+        ogDescription: page.seo_settings.ogDescription || page.seo_settings.metaDescription,
+        ogImage: page.seo_settings.ogImage,
+        canonicalUrl: page.seo_settings.canonicalUrl,
+        structuredData: page.seo_settings.structuredData,
       } : null,
     };
 

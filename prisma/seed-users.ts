@@ -13,32 +13,38 @@ async function main() {
 
   const users = [
     {
+      id: crypto.randomUUID(),
       email: 'wonjang@misopin.com',
       name: '김지식',
       password,
       role: 'SUPER_ADMIN' as const,
       isActive: true,
+      updatedAt: new Date(),
     },
     {
+      id: crypto.randomUUID(),
       email: 'teamlead@misopin.com',
       name: '팀장님',
       password,
       role: 'ADMIN' as const,
       isActive: true,
+      updatedAt: new Date(),
     },
     {
+      id: crypto.randomUUID(),
       email: 'editor@misopin.com',
       name: '미소핀',
       password,
       role: 'EDITOR' as const,
       isActive: true,
+      updatedAt: new Date(),
     },
   ];
 
   console.log(`📝 Creating ${users.length} users...`);
 
   for (const user of users) {
-    const created = await prisma.user.upsert({
+    const created = await prisma.users.upsert({
       where: { email: user.email },
       update: { password: user.password },  // 비밀번호도 업데이트
       create: user,

@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     endDate.setDate(0); // Last day of the month
 
     // Fetch reservations for the month
-    const reservations = await prisma.reservation.findMany({
+    const reservations = await prisma.reservations.findMany({
       where: {
         preferredDate: {
           gte: startDate,

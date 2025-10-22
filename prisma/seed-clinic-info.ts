@@ -6,7 +6,7 @@ async function main() {
   console.log('🌱 Starting clinic info seed...\n');
 
   // Check if data already exists
-  const existing = await prisma.clinicInfo.findFirst({
+  const existing = await prisma.clinic_info.findFirst({
     where: { isActive: true },
   });
 
@@ -22,8 +22,9 @@ async function main() {
   // Create initial clinic info
   console.log('📝 Creating initial clinic information...');
 
-  const clinicInfo = await prisma.clinicInfo.create({
+  const clinicInfo = await prisma.clinic_info.create({
     data: {
+      id: crypto.randomUUID(),
       // 연락처
       phonePrimary: '061-277-1001',
       phoneSecondary: null,
@@ -55,6 +56,7 @@ async function main() {
       isActive: true,
       version: 1,
       lastUpdatedBy: null,
+      updatedAt: new Date(),
     },
   });
 

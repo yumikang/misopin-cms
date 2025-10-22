@@ -28,10 +28,10 @@ export async function GET(request: NextRequest) {
 
     // 특정 페이지의 블록만 조회
     if (pageId) {
-      const pageBlocks = await prisma.pageBlock.findMany({
+      const pageBlocks = await prisma.page_blocks.findMany({
         where: { pageId },
         include: {
-          block: true,
+          content_blocks: true,
         },
         orderBy: [
           { sectionName: 'asc' },
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 모든 블록 조회
-    const blocks = await prisma.contentBlock.findMany({
+    const blocks = await prisma.content_blocks.findMany({
       where,
       orderBy: { createdAt: 'desc' },
     });
@@ -79,20 +79,23 @@ export async function POST(request: NextRequest) {
 
     const body: ContentBlockData = await request.json();
 
-    const block = await prisma.contentBlock.create({
+    const block = await prisma.content_blocks.create({
       data: {
+        id: crypto.randomUUID(),
         name: body.name,
         type: body.type,
         content: body.content as unknown as Prisma.InputJsonValue,
         styles: (body.styles || null) as Prisma.InputJsonValue,
         settings: (body.settings || null) as Prisma.InputJsonValue,
         isGlobal: body.isGlobal || false,
+        updatedAt: new Date(),
       },
     });
 
     // 버전 기록 생성
-    await prisma.contentVersion.create({
+    await prisma.content_versions.create({
       data: {
+        id: crypto.randomUUID(),
         blockId: block.id,
         version: 1,
         content: block.content as Prisma.InputJsonValue,
@@ -109,7 +112,7 @@ export async function POST(request: NextRequest) {
       message: 'Block created successfully',
     });
   } catch (error) {
-    console.error('Error creating block:', error);
+    console.error('Error creating content_blocks:', error);
     return NextResponse.json<WebBuilderResponse<null>>(
       { success: false, error: 'Failed to create block' },
       { status: 500 }
@@ -143,7 +146,7 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
 
     // 현재 버전 가져오기
-    const currentBlock = await prisma.contentBlock.findUnique({
+    const currentBlock = await prisma.content_blocks.findUnique({
       where: { id: blockId },
     });
 
@@ -155,7 +158,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // 최신 버전 번호 가져오기
-    const latestVersion = await prisma.contentVersion.findFirst({
+    const latestVersion = await prisma.content_versions.findFirst({
       where: { blockId },
       orderBy: { version: 'desc' },
     });
@@ -163,8 +166,9 @@ export async function PATCH(request: NextRequest) {
     const nextVersion = (latestVersion?.version || 0) + 1;
 
     // 버전 기록 저장
-    await prisma.contentVersion.create({
+    await prisma.content_versions.create({
       data: {
+        id: crypto.randomUUID(),
         blockId,
         version: nextVersion,
         content: (body.content || currentBlock.content) as Prisma.InputJsonValue,
@@ -176,7 +180,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     // 블록 업데이트
-    const updatedBlock = await prisma.contentBlock.update({
+    const updatedBlock = await prisma.content_blocks.update({
       where: { id: blockId },
       data: {
         name: body.name || undefined,
@@ -194,7 +198,7 @@ export async function PATCH(request: NextRequest) {
       message: 'Block updated successfully',
     });
   } catch (error) {
-    console.error('Error updating block:', error);
+    console.error('Error updating content_blocks:', error);
     return NextResponse.json<WebBuilderResponse<null>>(
       { success: false, error: 'Failed to update block' },
       { status: 500 }
@@ -224,7 +228,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Soft delete (isActive를 false로 설정)
-    await prisma.contentBlock.update({
+    await prisma.content_blocks.update({
       where: { id: blockId },
       data: { isActive: false },
     });
@@ -234,7 +238,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Block deleted successfully',
     });
   } catch (error) {
-    console.error('Error deleting block:', error);
+    console.error('Error deleting content_blocks:', error);
     return NextResponse.json<WebBuilderResponse<null>>(
       { success: false, error: 'Failed to delete block' },
       { status: 500 }

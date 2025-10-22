@@ -22,10 +22,10 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const page = await prisma.staticPage.findUnique({
+    const page = await prisma.static_pages.findUnique({
       where: { id },
       include: {
-        versions: {
+        static_page_versions: {
           orderBy: { version: 'desc' },
           take: 10,
         },
@@ -72,10 +72,10 @@ export async function PUT(
     }
 
     // 페이지 조회
-    const page = await prisma.staticPage.findUnique({
+    const page = await prisma.static_pages.findUnique({
       where: { id },
       include: {
-        versions: {
+        static_page_versions: {
           orderBy: { version: 'desc' },
           take: 1,
         },
@@ -103,11 +103,11 @@ export async function PUT(
     }
 
     // 데이터베이스 업데이트
-    const latestVersion = page.versions[0]?.version || 0;
+    const latestVersion = page.static_page_versions[0]?.version || 0;
     const newVersion = latestVersion + 1;
 
     // 페이지 업데이트
-    const updatedPage = await prisma.staticPage.update({
+    const updatedPage = await prisma.static_pages.update({
       where: { id },
       data: {
         sections: sectionsToJson(sections),
@@ -116,8 +116,9 @@ export async function PUT(
     });
 
     // 새 버전 생성
-    await prisma.staticPageVersion.create({
+    await prisma.static_page_versions.create({
       data: {
+        id: crypto.randomUUID(),
         pageId: id,
         version: newVersion,
         sections: sectionsToJson(sections),
@@ -158,7 +159,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     // 페이지 존재 확인
-    const page = await prisma.staticPage.findUnique({
+    const page = await prisma.static_pages.findUnique({
       where: { id },
     });
 
@@ -170,7 +171,7 @@ export async function DELETE(
     }
 
     // 페이지 삭제 (Cascade로 버전도 함께 삭제)
-    await prisma.staticPage.delete({
+    await prisma.static_pages.delete({
       where: { id },
     });
 

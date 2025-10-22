@@ -30,10 +30,10 @@ export async function GET(request: NextRequest) {
     const where: { pageId: string; sectionName?: string } = { pageId };
     if (sectionName) where.sectionName = sectionName;
 
-    const pageBlocks = await prisma.pageBlock.findMany({
+    const pageBlocks = await prisma.page_blocks.findMany({
       where,
       include: {
-        block: true,
+        content_blocks: true,
       },
       orderBy: [
         { sectionName: 'asc' },
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 해당 섹션의 최대 order 값 조회
-    const maxOrder = await prisma.pageBlock.findFirst({
+    const maxOrder = await prisma.page_blocks.findFirst({
       where: { pageId, sectionName },
       orderBy: { order: 'desc' },
       select: { order: true },
@@ -94,16 +94,18 @@ export async function POST(request: NextRequest) {
     const newOrder = order !== undefined ? order : (maxOrder?.order || 0) + 1;
 
     // 새 PageBlock 생성
-    const pageBlock = await prisma.pageBlock.create({
+    const pageBlock = await prisma.page_blocks.create({
       data: {
+        id: crypto.randomUUID(),
         pageId,
         blockId,
         sectionName,
         order: newOrder,
         customStyles: (customStyles || null) as Prisma.InputJsonValue,
+        updatedAt: new Date(),
       },
       include: {
-        block: true,
+        content_blocks: true,
       },
     });
 
@@ -147,11 +149,11 @@ export async function PATCH(request: NextRequest) {
     if (customStyles !== undefined) updateData.customStyles = customStyles;
     if (isVisible !== undefined) updateData.isVisible = isVisible;
 
-    const updatedPageBlock = await prisma.pageBlock.update({
+    const updatedPageBlock = await prisma.page_blocks.update({
       where: { id: pageBlockId },
       data: updateData,
       include: {
-        block: true,
+        content_blocks: true,
       },
     });
 
@@ -161,7 +163,7 @@ export async function PATCH(request: NextRequest) {
       message: 'Page block updated successfully',
     });
   } catch (error) {
-    console.error('Error updating page block:', error);
+    console.error('Error updating page content_blocks:', error);
     return NextResponse.json<WebBuilderResponse<null>>(
       { success: false, error: 'Failed to update page block' },
       { status: 500 }
@@ -193,7 +195,7 @@ export async function PUT(request: NextRequest) {
     // 트랜잭션으로 일괄 업데이트
     await prisma.$transaction(
       blocks.map((block) =>
-        prisma.pageBlock.updateMany({
+        prisma.page_blocks.updateMany({
           where: {
             pageId,
             sectionName,
@@ -241,7 +243,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await prisma.pageBlock.delete({
+    await prisma.page_blocks.delete({
       where: { id: pageBlockId },
     });
 

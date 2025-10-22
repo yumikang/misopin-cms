@@ -21,7 +21,7 @@ export async function POST(
   try {
     const { id } = await params;
     // 페이지 조회
-    const page = await prisma.staticPage.findUnique({
+    const page = await prisma.static_pages.findUnique({
       where: { id },
     });
 
@@ -46,7 +46,7 @@ export async function POST(
     }
 
     // 데이터베이스 업데이트
-    const updatedPage = await prisma.staticPage.update({
+    const updatedPage = await prisma.static_pages.update({
       where: { id },
       data: {
         sections: sectionsToJson(parseResult.sections),

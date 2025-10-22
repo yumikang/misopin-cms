@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  const pages = await prisma.staticPage.findMany({
+  const pages = await prisma.static_pages.findMany({
     where: {
       slug: {
         in: ['privacy', 'stipulation']

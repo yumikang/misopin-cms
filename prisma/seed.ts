@@ -9,41 +9,47 @@ async function main() {
   const editorPassword = await hash("editor123", 12);
 
   // Create Super Admin
-  const superAdmin = await prisma.user.upsert({
+  const superAdmin = await prisma.users.upsert({
     where: { email: "admin@misopin.com" },
     update: {},
     create: {
+      id: crypto.randomUUID(),
       email: "admin@misopin.com",
       name: "슈퍼 관리자",
       password: adminPassword,
       role: UserRole.SUPER_ADMIN,
       isActive: true,
+      updatedAt: new Date(),
     },
   });
 
   // Create Admin
-  const admin = await prisma.user.upsert({
+  const admin = await prisma.users.upsert({
     where: { email: "manager@misopin.com" },
     update: {},
     create: {
+      id: crypto.randomUUID(),
       email: "manager@misopin.com",
       name: "일반 관리자",
       password: adminPassword,
       role: UserRole.ADMIN,
       isActive: true,
+      updatedAt: new Date(),
     },
   });
 
   // Create Editor
-  const editor = await prisma.user.upsert({
+  const editor = await prisma.users.upsert({
     where: { email: "editor@misopin.com" },
     update: {},
     create: {
+      id: crypto.randomUUID(),
       email: "editor@misopin.com",
       name: "편집자",
       password: editorPassword,
       role: UserRole.EDITOR,
       isActive: true,
+      updatedAt: new Date(),
     },
   });
 
@@ -105,8 +111,12 @@ async function main() {
   ];
 
   for (const reservation of sampleReservations) {
-    await prisma.reservation.create({
-      data: reservation,
+    await prisma.reservations.create({
+      data: {
+        id: crypto.randomUUID(),
+        ...reservation,
+        updatedAt: new Date(),
+      },
     });
   }
 
@@ -119,7 +129,7 @@ async function main() {
       linkUrl: "/reservation",
       startDate: new Date("2024-01-01"),
       endDate: new Date("2024-02-29"),
-      position: { x: 50, y: 50, width: 400, height: 300 },
+      position: "CENTER",
       showOnPages: ["home", "about"],
       displayType: PopupType.MODAL,
       priority: 3,
@@ -132,7 +142,7 @@ async function main() {
       linkUrl: null,
       startDate: new Date("2024-02-01"),
       endDate: new Date("2024-02-15"),
-      position: { x: 0, y: 0, width: 100, height: 80 },
+      position: "TOP",
       showOnPages: [],
       displayType: PopupType.BANNER,
       priority: 5,
@@ -145,7 +155,7 @@ async function main() {
       linkUrl: "/health-tips",
       startDate: new Date("2024-01-15"),
       endDate: new Date("2024-12-31"),
-      position: { x: 80, y: 20, width: 320, height: 250 },
+      position: "BOTTOM_RIGHT",
       showOnPages: ["home"],
       displayType: PopupType.SLIDE_IN,
       priority: 1,
@@ -158,7 +168,7 @@ async function main() {
       linkUrl: null,
       startDate: new Date("2024-02-20"),
       endDate: new Date("2024-03-10"),
-      position: { x: 50, y: 50, width: 450, height: 200 },
+      position: "CENTER",
       showOnPages: [],
       displayType: PopupType.MODAL,
       priority: 4,
@@ -167,8 +177,12 @@ async function main() {
   ];
 
   for (const popup of samplePopups) {
-    await prisma.popup.create({
-      data: popup,
+    await prisma.popups.create({
+      data: {
+        id: crypto.randomUUID(),
+        ...popup,
+        updatedAt: new Date(),
+      },
     });
   }
 
@@ -242,8 +256,12 @@ async function main() {
   ];
 
   for (const post of sampleBoardPosts) {
-    await prisma.boardPost.create({
-      data: post,
+    await prisma.board_posts.create({
+      data: {
+        id: crypto.randomUUID(),
+        ...post,
+        updatedAt: new Date(),
+      },
     });
   }
 
@@ -418,8 +436,12 @@ async function main() {
   ];
 
   for (const page of samplePages) {
-    await prisma.page.create({
-      data: page,
+    await prisma.pages.create({
+      data: {
+        id: crypto.randomUUID(),
+        ...page,
+        updatedAt: new Date(),
+      },
     });
   }
 
@@ -491,10 +513,14 @@ async function main() {
   ];
 
   for (const setting of systemSettings) {
-    await prisma.systemSetting.upsert({
+    await prisma.system_settings.upsert({
       where: { key: setting.key },
-      update: { value: setting.value, category: setting.category },
-      create: setting,
+      update: { value: setting.value, category: setting.category, updatedAt: new Date() },
+      create: {
+        id: crypto.randomUUID(),
+        ...setting,
+        updatedAt: new Date(),
+      },
     });
   }
 

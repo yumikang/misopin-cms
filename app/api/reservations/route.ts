@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 export async function GET() {
   try {
     // Get reservations from database using Prisma
-    const reservations = await prisma.reservation.findMany({
+    const reservations = await prisma.reservations.findMany({
       orderBy: {
         createdAt: 'desc'
       }
@@ -244,7 +244,7 @@ export async function PUT(request: Request) {
     const body = await request.json();
 
     // Get existing reservation from database
-    const existingReservation = await prisma.reservation.findUnique({
+    const existingReservation = await prisma.reservations.findUnique({
       where: { id }
     });
 
@@ -269,7 +269,7 @@ export async function PUT(request: Request) {
     }
 
     // Prepare update data - map frontend field names to Prisma model field names
-    const updateData: Prisma.ReservationUpdateInput = {};
+    const updateData: Prisma.reservationsUpdateInput = {};
 
     if (body.status) updateData.status = body.status;
     if (body.patient_name) updateData.patientName = body.patient_name;
@@ -281,7 +281,7 @@ export async function PUT(request: Request) {
     if (body.notes !== undefined) updateData.notes = body.notes;
 
     // Update reservation in database
-    const updatedReservation = await prisma.reservation.update({
+    const updatedReservation = await prisma.reservations.update({
       where: { id },
       data: updateData
     });
@@ -325,7 +325,7 @@ export async function DELETE(request: Request) {
 
   try {
     // Get existing reservation from database
-    const existingReservation = await prisma.reservation.findUnique({
+    const existingReservation = await prisma.reservations.findUnique({
       where: { id }
     });
 
@@ -338,7 +338,7 @@ export async function DELETE(request: Request) {
     }
 
     // Cancel instead of delete
-    await prisma.reservation.update({
+    await prisma.reservations.update({
       where: { id },
       data: {
         status: 'CANCELLED'

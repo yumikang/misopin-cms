@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Fetch active clinic info
-    const clinicInfo = await prisma.clinicInfo.findFirst({
+    const clinicInfo = await prisma.clinic_info.findFirst({
       where: { isActive: true },
     });
 
@@ -145,7 +145,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Get current record to check version
-    const current = await prisma.clinicInfo.findUnique({
+    const current = await prisma.clinic_info.findUnique({
       where: { id: body.id },
       select: { version: true, isActive: true },
     });
@@ -175,7 +175,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update clinic info with incremented version
-    const updatedInfo = await prisma.clinicInfo.update({
+    const updatedInfo = await prisma.clinic_info.update({
       where: {
         id: body.id,
         version: body.version, // Ensure version matches

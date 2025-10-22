@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const seoSetting = await prisma.sEOSetting.findUnique({
+    const seoSetting = await prisma.seo_settings.findUnique({
       where: { pageId },
     });
 
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 페이지 존재 확인
-    const page = await prisma.page.findUnique({
+    const page = await prisma.pages.findUnique({
       where: { id: pageId },
     });
 
@@ -94,9 +94,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Upsert SEO 설정
-    const seoSetting = await prisma.sEOSetting.upsert({
+    const seoSetting = await prisma.seo_settings.upsert({
       where: { pageId },
       create: {
+        id: crypto.randomUUID(),
         pageId,
         metaTitle: seoData.metaTitle,
         metaDescription: seoData.metaDescription,
@@ -106,6 +107,7 @@ export async function POST(request: NextRequest) {
         ogImage: seoData.ogImage,
         canonicalUrl: seoData.canonicalUrl,
         structuredData: (seoData.structuredData || null) as Prisma.InputJsonValue,
+        updatedAt: new Date(),
       },
       update: {
         metaTitle: seoData.metaTitle,
@@ -116,6 +118,7 @@ export async function POST(request: NextRequest) {
         ogImage: seoData.ogImage,
         canonicalUrl: seoData.canonicalUrl,
         structuredData: (seoData.structuredData || null) as Prisma.InputJsonValue,
+        updatedAt: new Date(),
       },
     });
 
@@ -154,7 +157,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await prisma.sEOSetting.delete({
+    await prisma.seo_settings.delete({
       where: { pageId },
     });
 

@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const { email, password } = await request.json();
 
     // Find user in database
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: {
         id: true,
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update last login
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: user.id },
       data: { lastLogin: new Date() },
     });

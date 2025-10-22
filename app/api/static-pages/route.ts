@@ -28,10 +28,10 @@ export async function GET(request: NextRequest) {
 
     // 특정 페이지 조회
     if (slug) {
-      const page = await prisma.staticPage.findUnique({
+      const page = await prisma.static_pages.findUnique({
         where: { slug },
         include: {
-          versions: {
+          static_page_versions: {
             orderBy: { version: 'desc' },
             take: 10,
           },
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 전체 페이지 목록 조회 (제외 목록 필터링)
-    const pages = await prisma.staticPage.findMany({
+    const pages = await prisma.static_pages.findMany({
       where: {
         slug: {
           notIn: EXCLUDED_PAGES
@@ -117,18 +117,21 @@ export async function POST(request: NextRequest) {
     }
 
     // 페이지 생성
-    const page = await prisma.staticPage.create({
+    const page = await prisma.static_pages.create({
       data: {
+        id: crypto.randomUUID(),
         slug,
         title,
         filePath,
         sections: sectionsToJson(parseResult.sections),
+        lastEdited: new Date(),
       },
     });
 
     // 초기 버전 생성
-    await prisma.staticPageVersion.create({
+    await prisma.static_page_versions.create({
       data: {
+        id: crypto.randomUUID(),
         pageId: page.id,
         version: 1,
         sections: sectionsToJson(parseResult.sections),

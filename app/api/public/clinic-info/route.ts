@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
   try {
     // Fetch active clinic info
-    const clinicInfo = await prisma.clinicInfo.findFirst({
+    const clinicInfo = await prisma.clinic_info.findFirst({
       where: { isActive: true },
       select: {
         id: true,

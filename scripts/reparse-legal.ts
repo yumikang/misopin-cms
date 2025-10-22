@@ -16,7 +16,7 @@ async function main() {
   for (const slug of slugs) {
     console.log(`\n========== ${slug} 파싱 중 ==========`);
 
-    const page = await prisma.staticPage.findUnique({
+    const page = await prisma.static_pages.findUnique({
       where: { slug }
     });
 
@@ -35,7 +35,7 @@ async function main() {
         continue;
       }
 
-      await prisma.staticPage.update({
+      await prisma.static_pages.update({
         where: { slug },
         data: { sections: sectionsToJson(result.sections) }
       });

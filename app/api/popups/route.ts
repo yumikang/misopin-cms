@@ -39,6 +39,7 @@ export async function POST(request: Request) {
         isActive: body.isActive ?? body.is_active ?? true,
         startDate: new Date(body.startDate || body.start_date),
         endDate: new Date(body.endDate || body.end_date),
+        updatedAt: new Date(),
       },
     });
 

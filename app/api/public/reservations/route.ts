@@ -45,8 +45,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Create reservation in database using Prisma
-    const reservation = await prisma.reservation.create({
+    const reservation = await prisma.reservations.create({
       data: {
+        id: crypto.randomUUID(),
         patientName: body.patient_name,
         phone: body.phone,
         email: body.email || null,
@@ -58,7 +59,8 @@ export async function POST(request: NextRequest) {
         preferredTime: body.preferred_time,
         status: 'PENDING' as ReservationStatus,
         notes: body.notes || null,
-        adminNotes: null
+        adminNotes: null,
+        updatedAt: new Date()
       }
     });
 
