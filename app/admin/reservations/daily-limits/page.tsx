@@ -197,7 +197,7 @@ export default function ReservationLimitsPage() {
           <h1 className="text-3xl font-bold text-gray-900">예약 한도 관리</h1>
           <p className="text-gray-500 mt-1">시술별 일일 예약 한도를 설정합니다</p>
         </div>
-        <Badge variant="outline" className="text-lg px-4 py-2">
+        <Badge variant="outline" className="text-lg px-4 py-2 hidden">
           <Settings className="w-4 h-4 mr-2" />
           활성: {activeLimits}/6
         </Badge>
@@ -261,7 +261,7 @@ export default function ReservationLimitsPage() {
                           checked={limit.isActive}
                           onCheckedChange={() => handleToggleActive(limit)}
                         />
-                        <Badge variant={limit.isActive ? 'default' : 'outline'}>
+                        <Badge variant={limit.isActive ? 'default' : 'outline'} className="hidden">
                           {limit.isActive ? '활성' : '비활성'}
                         </Badge>
                       </div>
