@@ -222,7 +222,7 @@ export default function ReservationLimitsPage() {
         <CardHeader>
           <CardTitle>시술별 예약 한도</CardTitle>
           <CardDescription>
-            권장 인원: 여유롭게 받을 수 있는 인원 / 최대 인원: 절대 받지 않는 한계
+            권장 인원: 여유롭게 받을 수 있는 인원 / 최대 인원: 해당 인원 초과 시 예약 차단
           </CardDescription>
         </CardHeader>
         <CardContent>
