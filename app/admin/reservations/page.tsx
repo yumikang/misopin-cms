@@ -343,7 +343,7 @@ export default function ReservationsPage() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">전체</CardTitle>
@@ -378,7 +378,7 @@ export default function ReservationsPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-red-600">취소/미방문</CardTitle>
+            <CardTitle className="text-sm font-medium text-red-600 whitespace-nowrap">취소/미방문</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.cancelled}</div>
