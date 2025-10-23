@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       available: availability.available,
       remaining: availability.remaining,
       currentCount: availability.currentCount,
-      limit: availability.softLimit,
+      limit: availability.dailyLimit,
       level: availability.level,
       message,
     });
