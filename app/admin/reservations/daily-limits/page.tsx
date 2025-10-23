@@ -196,7 +196,7 @@ export default function ReservationLimitsPage() {
 
       {/* 알림 */}
       {error && (
-        <Alert variant="destructive" onClose={() => setError(null)}>
+        <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
