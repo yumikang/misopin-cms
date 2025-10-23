@@ -484,7 +484,7 @@ export default function PopupsPage() {
                     setFormData({ ...formData, display_type: value })
                   }
                 >
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger id="display_type" className="col-span-3">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -505,7 +505,7 @@ export default function PopupsPage() {
                     setFormData({ ...formData, position: value })
                   }
                 >
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger id="position" className="col-span-3">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
