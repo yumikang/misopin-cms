@@ -180,8 +180,7 @@ model popups {
 model service_reservation_limits {
   id          String      @id @default(cuid())
   serviceType ServiceType @unique
-  softLimit   Int         @default(8)
-  hardLimit   Int         @default(10)
+  dailyLimit  Int         @default(10)
   isActive    Boolean     @default(true)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt

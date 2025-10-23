@@ -36,8 +36,7 @@ import { Switch } from "@/components/ui/switch";
 interface ServiceLimit {
   id: string;
   serviceType: ServiceType;
-  softLimit: number;
-  hardLimit: number;
+  dailyLimit: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -71,8 +70,7 @@ export default function ReservationLimitsPage() {
 
   // 폼 데이터
   const [formData, setFormData] = useState({
-    softLimit: 8,
-    hardLimit: 10,
+    dailyLimit: 10,
   });
 
   // 데이터 로드
@@ -106,12 +104,7 @@ export default function ReservationLimitsPage() {
     if (!editingLimit) return;
 
     try {
-      if (formData.softLimit > formData.hardLimit) {
-        setError('권장 인원은 최대 인원보다 클 수 없습니다.');
-        return;
-      }
-
-      if (formData.softLimit < 1 || formData.hardLimit < 1) {
+      if (formData.dailyLimit < 1) {
         setError('한도는 1 이상이어야 합니다.');
         return;
       }
@@ -122,8 +115,7 @@ export default function ReservationLimitsPage() {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            softLimit: formData.softLimit,
-            hardLimit: formData.hardLimit,
+            dailyLimit: formData.dailyLimit,
           })
         }
       );
@@ -179,8 +171,7 @@ export default function ReservationLimitsPage() {
   // 수정 모드
   const handleEdit = (limit: ServiceLimit) => {
     setFormData({
-      softLimit: limit.softLimit,
-      hardLimit: limit.hardLimit,
+      dailyLimit: limit.dailyLimit,
     });
     setEditingLimit(limit);
     setShowDialog(true);
@@ -194,7 +185,7 @@ export default function ReservationLimitsPage() {
       {/* 헤더 */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">예약 한도 관리</h1>
+          <h1 className="text-3xl font-bold text-gray-900">시술별 예약인원 한도 관리</h1>
           <p className="text-gray-500 mt-1">시술별 일일 예약 한도를 설정합니다</p>
         </div>
         <Badge variant="outline" className="text-lg px-4 py-2 hidden">
@@ -222,7 +213,7 @@ export default function ReservationLimitsPage() {
         <CardHeader>
           <CardTitle>시술별 예약 한도</CardTitle>
           <CardDescription>
-            권장 인원: 여유롭게 받을 수 있는 인원 / 최대 인원: 해당 인원 초과 시 예약 차단
+            일일 한도: 해당 인원 초과 시 예약 차단
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -235,8 +226,7 @@ export default function ReservationLimitsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[200px]">시술명</TableHead>
-                  <TableHead className="text-center">권장 인원</TableHead>
-                  <TableHead className="text-center">최대 인원</TableHead>
+                  <TableHead className="text-center">일일 한도</TableHead>
                   <TableHead className="text-center">상태</TableHead>
                   <TableHead className="text-center">작업</TableHead>
                 </TableRow>
@@ -248,11 +238,7 @@ export default function ReservationLimitsPage() {
                       {serviceTypeLabels[limit.serviceType]}
                     </TableCell>
                     <TableCell className="text-center">
-                      <span className="text-lg font-semibold">{limit.softLimit}</span>
-                      <span className="text-gray-500 ml-1">명</span>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <span className="text-lg font-semibold">{limit.hardLimit}</span>
+                      <span className="text-lg font-semibold">{limit.dailyLimit}</span>
                       <span className="text-gray-500 ml-1">명</span>
                     </TableCell>
                     <TableCell className="text-center">
@@ -294,29 +280,16 @@ export default function ReservationLimitsPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="softLimit">권장 인원</Label>
-                <Input
-                  id="softLimit"
-                  type="number"
-                  min="1"
-                  value={formData.softLimit}
-                  onChange={(e) => setFormData({ ...formData, softLimit: parseInt(e.target.value) || 1 })}
-                />
-                <p className="text-xs text-gray-500">여기까지는 여유롭게 예약 받음</p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="hardLimit">최대 인원</Label>
-                <Input
-                  id="hardLimit"
-                  type="number"
-                  min="1"
-                  value={formData.hardLimit}
-                  onChange={(e) => setFormData({ ...formData, hardLimit: parseInt(e.target.value) || 1 })}
-                />
-                <p className="text-xs text-gray-500">이 인원 초과 시 예약 차단</p>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="dailyLimit">일일 한도</Label>
+              <Input
+                id="dailyLimit"
+                type="number"
+                min="1"
+                value={formData.dailyLimit}
+                onChange={(e) => setFormData({ ...formData, dailyLimit: parseInt(e.target.value) || 1 })}
+              />
+              <p className="text-xs text-gray-500">이 인원 초과 시 예약 차단</p>
             </div>
             <Alert>
               <AlertDescription className="text-sm">

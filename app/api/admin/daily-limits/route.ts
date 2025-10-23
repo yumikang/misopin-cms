@@ -18,8 +18,7 @@ export async function GET() {
     const transformedLimits = limits.map((limit) => ({
       id: limit.id,
       serviceType: limit.serviceType,
-      softLimit: limit.softLimit,
-      hardLimit: limit.hardLimit,
+      dailyLimit: limit.dailyLimit,
       isActive: limit.isActive,
       createdAt: limit.createdAt.toISOString(),
       updatedAt: limit.updatedAt.toISOString(),
@@ -49,7 +48,7 @@ export async function GET() {
  * Body:
  * {
  *   limits: [
- *     { serviceType: 'WRINKLE_BOTOX', softLimit: 8, hardLimit: 10 },
+ *     { serviceType: 'WRINKLE_BOTOX', dailyLimit: 10 },
  *     ...
  *   ]
  * }
@@ -81,26 +80,11 @@ export async function PUT(request: NextRequest) {
         );
       }
 
-      if (
-        typeof limit.softLimit !== 'number' ||
-        typeof limit.hardLimit !== 'number' ||
-        limit.softLimit < 1 ||
-        limit.hardLimit < 1
-      ) {
+      if (typeof limit.dailyLimit !== 'number' || limit.dailyLimit < 1) {
         return NextResponse.json(
           {
-            error: 'Invalid limit values',
-            details: 'softLimit and hardLimit must be positive numbers',
-          },
-          { status: 400 }
-        );
-      }
-
-      if (limit.softLimit > limit.hardLimit) {
-        return NextResponse.json(
-          {
-            error: 'Invalid limit configuration',
-            details: `softLimit cannot exceed hardLimit for ${limit.serviceType}`,
+            error: 'Invalid limit value',
+            details: 'dailyLimit must be a positive number',
           },
           { status: 400 }
         );
@@ -109,8 +93,8 @@ export async function PUT(request: NextRequest) {
 
     // Update all limits
     const updatedLimits = await Promise.all(
-      body.limits.map((limit: { serviceType: ServiceType; softLimit: number; hardLimit: number }) =>
-        upsertLimit(limit.serviceType, limit.softLimit, limit.hardLimit)
+      body.limits.map((limit: { serviceType: ServiceType; dailyLimit: number }) =>
+        upsertLimit(limit.serviceType, limit.dailyLimit)
       )
     );
 
@@ -119,8 +103,7 @@ export async function PUT(request: NextRequest) {
       limits: updatedLimits.map((limit) => ({
         id: limit.id,
         serviceType: limit.serviceType,
-        softLimit: limit.softLimit,
-        hardLimit: limit.hardLimit,
+        dailyLimit: limit.dailyLimit,
         isActive: limit.isActive,
       })),
       message: '한도 설정이 완료되었습니다.',
@@ -145,8 +128,7 @@ export async function PUT(request: NextRequest) {
  * - serviceType: ServiceType (required)
  *
  * Body:
- * - softLimit: number (optional)
- * - hardLimit: number (optional)
+ * - dailyLimit: number (optional)
  * - isActive: boolean (optional)
  */
 export async function PATCH(request: NextRequest) {
@@ -187,8 +169,7 @@ export async function PATCH(request: NextRequest) {
         limit: {
           id: updatedLimit.id,
           serviceType: updatedLimit.serviceType,
-          softLimit: updatedLimit.softLimit,
-          hardLimit: updatedLimit.hardLimit,
+          dailyLimit: updatedLimit.dailyLimit,
           isActive: updatedLimit.isActive,
         },
         message: `${serviceType} 한도가 ${body.isActive ? '활성화' : '비활성화'}되었습니다.`,
@@ -196,54 +177,26 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Handle limit updates
-    if (body.softLimit !== undefined || body.hardLimit !== undefined) {
-      // Get current values first
-      const limits = await getAllLimits();
-      const currentLimit = limits.find((l) => l.serviceType === serviceType);
-
-      if (!currentLimit) {
-        return NextResponse.json(
-          {
-            error: 'Limit not found',
-            details: `No limit configuration found for ${serviceType}`,
-          },
-          { status: 404 }
-        );
-      }
-
-      const softLimit = body.softLimit ?? currentLimit.softLimit;
-      const hardLimit = body.hardLimit ?? currentLimit.hardLimit;
-
+    if (body.dailyLimit !== undefined) {
       // Validation
-      if (softLimit < 1 || hardLimit < 1) {
+      if (typeof body.dailyLimit !== 'number' || body.dailyLimit < 1) {
         return NextResponse.json(
           {
-            error: 'Invalid limit values',
-            details: 'softLimit and hardLimit must be greater than 0',
+            error: 'Invalid limit value',
+            details: 'dailyLimit must be a positive number',
           },
           { status: 400 }
         );
       }
 
-      if (softLimit > hardLimit) {
-        return NextResponse.json(
-          {
-            error: 'Invalid limit configuration',
-            details: 'softLimit cannot exceed hardLimit',
-          },
-          { status: 400 }
-        );
-      }
-
-      const updatedLimit = await upsertLimit(serviceType, softLimit, hardLimit);
+      const updatedLimit = await upsertLimit(serviceType, body.dailyLimit);
 
       return NextResponse.json({
         success: true,
         limit: {
           id: updatedLimit.id,
           serviceType: updatedLimit.serviceType,
-          softLimit: updatedLimit.softLimit,
-          hardLimit: updatedLimit.hardLimit,
+          dailyLimit: updatedLimit.dailyLimit,
           isActive: updatedLimit.isActive,
         },
         message: '한도가 업데이트되었습니다.',
@@ -253,7 +206,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Nothing to update',
-        details: 'Provide softLimit, hardLimit, or isActive to update',
+        details: 'Provide dailyLimit or isActive to update',
       },
       { status: 400 }
     );

@@ -9,10 +9,9 @@ import { Prisma, ServiceType, ReservationStatus } from '@prisma/client';
 interface AvailabilityResult {
   available: boolean;
   currentCount: number;
-  softLimit: number;
-  hardLimit: number;
+  dailyLimit: number;
   remaining: number;
-  level: 'available' | 'limited' | 'full';
+  level: 'available' | 'full';
 }
 
 /**
@@ -29,8 +28,7 @@ export async function checkAvailability(
   const limit = await prisma.service_reservation_limits.findUnique({
     where: { serviceType },
     select: {
-      softLimit: true,
-      hardLimit: true,
+      dailyLimit: true,
       isActive: true
     }
   });
@@ -40,8 +38,7 @@ export async function checkAvailability(
     return {
       available: false,
       currentCount: 0,
-      softLimit: 0,
-      hardLimit: 0,
+      dailyLimit: 0,
       remaining: 0,
       level: 'full'
     };
@@ -59,24 +56,16 @@ export async function checkAvailability(
   });
 
   // 3️⃣ 가용성 계산
-  const remaining = Math.max(0, limit.hardLimit - currentCount);
+  const remaining = Math.max(0, limit.dailyLimit - currentCount);
   const available = remaining > 0;
 
-  // 4️⃣ 경고 레벨 결정
-  let level: 'available' | 'limited' | 'full';
-  if (remaining === 0) {
-    level = 'full';
-  } else if (remaining <= 2 || currentCount >= limit.softLimit) {
-    level = 'limited';
-  } else {
-    level = 'available';
-  }
+  // 4️⃣ 경고 레벨 결정 (단순화: 가능 또는 마감)
+  const level: 'available' | 'full' = remaining > 0 ? 'available' : 'full';
 
   return {
     available,
     currentCount,
-    softLimit: limit.softLimit,
-    hardLimit: limit.hardLimit,
+    dailyLimit: limit.dailyLimit,
     remaining,
     level
   };
@@ -99,7 +88,7 @@ export async function canCreateReservation(
   const limit = await tx.service_reservation_limits.findUnique({
     where: { serviceType },
     select: {
-      hardLimit: true,
+      dailyLimit: true,
       isActive: true
     }
   });
@@ -117,8 +106,8 @@ export async function canCreateReservation(
     }
   });
 
-  // 3️⃣ 하드 리미트 체크
-  return currentCount < limit.hardLimit;
+  // 3️⃣ 일일 한도 체크
+  return currentCount < limit.dailyLimit;
 }
 
 /**
@@ -135,21 +124,18 @@ export async function getAllLimits() {
  */
 export async function upsertLimit(
   serviceType: ServiceType,
-  softLimit: number,
-  hardLimit: number
+  dailyLimit: number
 ) {
   return await prisma.service_reservation_limits.upsert({
     where: { serviceType },
     update: {
-      softLimit,
-      hardLimit,
+      dailyLimit,
       updatedAt: new Date()
     },
     create: {
       id: `limit_${serviceType}`,
       serviceType,
-      softLimit,
-      hardLimit,
+      dailyLimit,
       isActive: true
     }
   });
