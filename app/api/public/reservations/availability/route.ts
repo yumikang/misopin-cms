@@ -67,8 +67,6 @@ export async function GET(request: NextRequest) {
     let message: string;
     if (availability.level === 'full') {
       message = '해당 날짜는 예약이 마감되었습니다.';
-    } else if (availability.level === 'limited') {
-      message = `예약 가능 인원이 ${availability.remaining}명 남았습니다. 서둘러 예약하세요!`;
     } else {
       message = `예약 가능합니다. (잔여: ${availability.remaining}명)`;
     }
