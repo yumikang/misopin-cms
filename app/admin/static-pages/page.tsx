@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FileText, Edit, RefreshCw, Clock, Sparkles } from "lucide-react";
+import { FileText, Edit, Clock, Sparkles } from "lucide-react";
 
 interface StaticPage {
   id: string;
@@ -41,7 +41,13 @@ export default function StaticPagesPage() {
       const response = await fetch("/api/static-pages");
       if (!response.ok) throw new Error("Failed to fetch pages");
       const data = await response.json();
-      setPages(data.pages || []);
+
+      // 이용약관과 개인정보 처리방침은 UI에서 제외
+      const filteredPages = (data.pages || []).filter(
+        (page: StaticPage) => page.slug !== 'stipulation' && page.slug !== 'privacy'
+      );
+
+      setPages(filteredPages);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load pages");
     } finally {
@@ -178,14 +184,6 @@ export default function StaticPagesPage() {
                           </Button>
                         </Link>
                       )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleReparse(page.id)}
-                        title="HTML 파일에서 섹션 정보 재추출"
-                      >
-                        <RefreshCw className="h-4 w-4" />
-                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
