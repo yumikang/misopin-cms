@@ -66,6 +66,7 @@ export async function GET(request: NextRequest) {
         filePath: true,
         lastEdited: true,
         createdAt: true,
+        editMode: true,
       },
     });
 

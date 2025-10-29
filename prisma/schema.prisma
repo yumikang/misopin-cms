@@ -232,13 +232,20 @@ model static_page_versions {
   pageId       String
   version      Int
   sections     Json
+
+  // 🆕 요소별 변경 추적
+  changeType   String?      @db.VarChar(50)  // 'element_update', 'bulk_update', 'reparse'
+  changedData  Json?        // { elementId, oldValue, newValue, elementType }
+
   changedBy    String
-  changeNote   String?
+  changeNote   String?      @db.Text
   createdAt    DateTime     @default(now())
   static_pages static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, version])
   @@index([pageId])
+  @@index([changeType])
+  @@index([createdAt])
 }
 
 model static_pages {
@@ -247,9 +254,42 @@ model static_pages {
   title                String
   filePath             String
   sections             Json
+
+  // 🆕 TipTap 편집 시스템 필드
+  editMode             EditMode               @default(PARSER)
+  lastParsedAt         DateTime?
+  syncStatus           SyncStatus             @default(SYNCED)
+  lastSyncedAt         DateTime?
+
   lastEdited           DateTime
   createdAt            DateTime               @default(now())
   static_page_versions static_page_versions[]
+  editable_elements    editable_elements[]    // 🆕 추가
+
+  @@index([editMode])
+  @@index([syncStatus])
+}
+
+model editable_elements {
+  id           String       @id @default(cuid())
+  pageId       String
+  elementId    String       @db.VarChar(100)
+  elementType  ElementType
+  selector     String       @db.VarChar(500)
+  label        String       @db.VarChar(255)
+  currentValue String       @db.Text
+  sectionName  String?      @db.VarChar(100)
+  order        Int          @default(0)
+
+  page         static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([pageId, elementId])
+  @@index([pageId])
+  @@index([sectionName])
+  @@index([pageId, order])
 }
 
 model system_settings {
@@ -344,4 +384,23 @@ enum UserRole {
   SUPER_ADMIN
   ADMIN
   EDITOR
+}
+
+enum EditMode {
+  PARSER      // 기존 HTML 파싱 방식
+  ATTRIBUTE   // data-editable 속성 방식 (TipTap)
+}
+
+enum ElementType {
+  TEXT           // 순수 텍스트
+  HTML           // HTML 포함 텍스트 (TipTap 사용)
+  IMAGE          // 이미지 src
+  BACKGROUND     // 배경 이미지
+}
+
+enum SyncStatus {
+  SYNCED         // DB와 파일이 동기화됨
+  PENDING        // 파일 업데이트 대기 중
+  CONFLICT       // 충돌 발생
+  ERROR          // 동기화 오류
 }

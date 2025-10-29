@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -13,19 +14,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FileText, Edit, RefreshCw, Clock } from "lucide-react";
+import { FileText, Edit, RefreshCw, Clock, Sparkles } from "lucide-react";
 
 interface StaticPage {
   id: string;
   slug: string;
   title: string;
   filePath: string;
-  isPublished: boolean;
   lastEdited: string;
   createdAt: string;
+  editMode: 'PARSER' | 'ATTRIBUTE';
 }
 
 export default function StaticPagesPage() {
+  const router = useRouter();
   const [pages, setPages] = useState<StaticPage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -131,7 +133,6 @@ export default function StaticPagesPage() {
                 <TableHead>제목</TableHead>
                 <TableHead>슬러그</TableHead>
                 <TableHead>파일 경로</TableHead>
-                <TableHead className="hidden">상태</TableHead>
                 <TableHead>마지막 수정</TableHead>
                 <TableHead className="text-right">작업</TableHead>
               </TableRow>
@@ -148,13 +149,6 @@ export default function StaticPagesPage() {
                   <TableCell>
                     <span className="text-xs text-gray-500">{page.filePath}</span>
                   </TableCell>
-                  <TableCell className="hidden">
-                    {page.isPublished ? (
-                      <Badge variant="default">게시중</Badge>
-                    ) : (
-                      <Badge variant="secondary">미게시</Badge>
-                    )}
-                  </TableCell>
                   <TableCell>
                     <div className="flex items-center text-sm text-gray-600">
                       <Clock className="h-3 w-3 mr-1" />
@@ -167,12 +161,23 @@ export default function StaticPagesPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Link href={`/admin/static-pages/${page.id}`}>
-                        <Button variant="default" size="sm">
+                      {page.editMode === 'ATTRIBUTE' ? (
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => router.push(`/admin/static-pages/${page.slug}/edit`)}
+                        >
                           <Edit className="h-4 w-4 mr-1" />
                           편집
                         </Button>
-                      </Link>
+                      ) : (
+                        <Link href={`/admin/static-pages/${page.id}`}>
+                          <Button variant="default" size="sm">
+                            <Edit className="h-4 w-4 mr-1" />
+                            편집
+                          </Button>
+                        </Link>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
@@ -180,13 +185,6 @@ export default function StaticPagesPage() {
                         title="HTML 파일에서 섹션 정보 재추출"
                       >
                         <RefreshCw className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(page.id, page.title)}
-                      >
-                        삭제
                       </Button>
                     </div>
                   </TableCell>
