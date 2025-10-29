@@ -148,19 +148,6 @@ const ElementImagePicker: React.FC<ElementImagePickerProps> = ({
         </Label>
       </div>
 
-      {/* Alt 텍스트 */}
-      {onAltChange && (
-        <div>
-          <Label htmlFor={`alt-${label}`}>대체 텍스트 (선택)</Label>
-          <Input
-            id={`alt-${label}`}
-            type="text"
-            placeholder="이미지 설명"
-            value={alt}
-            onChange={(e) => onAltChange(e.target.value)}
-          />
-        </div>
-      )}
     </div>
   );
 };
