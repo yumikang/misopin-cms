@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Save, X, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Save, X, Loader2, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface SaveControlsProps {
   isDirty: boolean;
@@ -21,6 +22,7 @@ const SaveControls: React.FC<SaveControlsProps> = ({
   onSave,
   onCancel
 }) => {
+  const router = useRouter();
   const formatLastSaved = (date: Date) => {
     const now = new Date();
     const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -43,10 +45,17 @@ const SaveControls: React.FC<SaveControlsProps> = ({
   };
 
   return (
-    <div className="sticky top-0 z-10 border-b">
+    <div className="border-b">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* 왼쪽: 상태 표시 */}
+        {/* 왼쪽: 뒤로가기 + 상태 표시 */}
         <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
           {isDirty && !isSaving && (
             <div className="flex items-center gap-2 text-yellow-600">
               <AlertCircle size={16} />
