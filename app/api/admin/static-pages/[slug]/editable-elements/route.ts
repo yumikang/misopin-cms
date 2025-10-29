@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-import { groupBySection } from '@/lib/static-pages/attribute-parser';
-import type { SectionGroup } from '@/lib/static-pages/attribute-types';
 
 const prisma = new PrismaClient();
 
@@ -95,34 +93,16 @@ export async function GET(
       );
     }
 
-    // Transform database records to EditableElement format
-    const elements = page.editable_elements.map(el => ({
+    // Transform database records to ParsedSection format (frontend compatibility)
+    const editableElements = page.editable_elements.map(el => ({
       id: el.elementId,
-      type: el.elementType,
+      type: el.elementType.toLowerCase() as 'text' | 'html' | 'image' | 'background',
       selector: el.selector,
-      currentValue: el.currentValue,
+      content: el.currentValue,
       label: el.label,
       sectionName: el.sectionName || 'default',
       order: el.order,
     }));
-
-    // Group elements by section
-    const sectionGroups = groupBySection(elements);
-
-    // Convert to SectionGroup format with order
-    const sections: Record<string, SectionGroup> = {};
-    let sectionOrder = 0;
-
-    for (const [sectionName, sectionElements] of Object.entries(sectionGroups)) {
-      sections[sectionName] = {
-        name: sectionName,
-        order: sectionOrder++,
-        elements: sectionElements,
-      };
-    }
-
-    // Flatten section groups into array for frontend compatibility
-    const editableElements = Object.values(sections).flatMap(section => section.elements);
 
     return NextResponse.json({
       success: true,
@@ -130,7 +110,7 @@ export async function GET(
       pageId: page.id,
       pageTitle: page.title,
       editMode: page.editMode,
-      totalElements: elements.length,
+      totalElements: editableElements.length,
       lastParsedAt: page.lastParsedAt?.toISOString() || null,
     });
   } catch (error) {

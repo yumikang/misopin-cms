@@ -43,7 +43,7 @@ const SaveControls: React.FC<SaveControlsProps> = ({
   };
 
   return (
-    <div className="sticky top-0 z-10 bg-white border-b shadow-sm">
+    <div className="sticky top-0 z-10 border-b">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* 왼쪽: 상태 표시 */}
         <div className="flex items-center gap-3">
