@@ -82,6 +82,24 @@ const SECTION_DISPLAY_NAMES: Record<string, SectionInfo> = {
     order: 30,
   },
 
+  // 시술 종류 섹션 (treatments) - diet 페이지 전용
+  'treatments': {
+    sectionName: 'treatments',
+    displayName: '시술 종류',
+    emoji: '💉',
+    description: '시술 종류 소개 및 설명',
+    order: 25,
+  },
+
+  // 맞춤형 프로그램 섹션 (program) - diet 페이지 전용
+  'program': {
+    sectionName: 'program',
+    displayName: '맞춤 프로그램',
+    emoji: '📊',
+    description: '맞춤형 프로그램 안내',
+    order: 35,
+  },
+
   // 절차/단계 섹션 (process)
   'process': {
     sectionName: 'process',
