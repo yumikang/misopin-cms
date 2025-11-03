@@ -136,7 +136,8 @@ export async function upsertLimit(
       id: `limit_${serviceType}`,
       serviceType,
       dailyLimit,
-      isActive: true
+      isActive: true,
+      updatedAt: new Date()
     }
   });
 }

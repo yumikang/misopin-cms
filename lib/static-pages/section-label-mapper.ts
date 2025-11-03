@@ -100,6 +100,15 @@ const SECTION_DISPLAY_NAMES: Record<string, SectionInfo> = {
     order: 35,
   },
 
+  // 베스트 시술 섹션 (best-treatments) - index 페이지 전용
+  'best-treatments': {
+    sectionName: 'best-treatments',
+    displayName: '베스트 시술',
+    emoji: '⭐',
+    description: '미소핀의원 베스트 시술 슬라이더',
+    order: 15,
+  },
+
   // 절차/단계 섹션 (process)
   'process': {
     sectionName: 'process',

@@ -109,6 +109,52 @@ model content_versions {
   @@index([changedBy])
 }
 
+model editable_elements {
+  id           String       @id
+  pageId       String
+  elementId    String       @db.VarChar(100)
+  elementType  ElementType
+  selector     String       @db.VarChar(500)
+  label        String       @db.VarChar(255)
+  currentValue String
+  sectionName  String?      @db.VarChar(100)
+  order        Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime
+  static_pages static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, elementId])
+  @@index([elementType])
+  @@index([pageId])
+  @@index([pageId, order])
+  @@index([sectionName])
+  @@index([updatedAt])
+}
+
+model element_changes {
+  id           String         @id
+  pageId       String
+  changeType   ChangeType_new
+  version      Int
+  elementId    String?        @db.VarChar(100)
+  elementType  ElementType?
+  beforeValue  String?
+  afterValue   String?
+  diffSummary  String?
+  changedBy    String?
+  changedAt    DateTime       @default(now())
+  reason       String?
+  userAgent    String?
+  ipAddress    String?        @db.VarChar(45)
+  static_pages static_pages   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([changeType])
+  @@index([changedAt])
+  @@index([changedBy])
+  @@index([elementId])
+  @@index([pageId, version])
+}
+
 model file_uploads {
   id           String   @id
   filename     String
@@ -177,17 +223,6 @@ model popups {
   updatedAt   DateTime
 }
 
-model service_reservation_limits {
-  id          String      @id @default(cuid())
-  serviceType ServiceType @unique
-  dailyLimit  Int         @default(10)
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  @@map("service_reservation_limits")
-}
-
 model reservations {
   id              String            @id
   patientName     String
@@ -202,7 +237,7 @@ model reservations {
   notes           String?
   adminNotes      String?
   createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  updatedAt       DateTime
   service         ServiceType
   statusChangedAt DateTime          @default(now())
   statusChangedBy String?
@@ -227,25 +262,37 @@ model seo_settings {
   pages           pages    @relation(fields: [pageId], references: [id], onDelete: Cascade)
 }
 
+model service_reservation_limits {
+  id          String      @id
+  serviceType ServiceType @unique
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime
+  dailyLimit  Int         @default(10)
+}
+
 model static_page_versions {
   id           String       @id
   pageId       String
   version      Int
   sections     Json
-
-  // 🆕 요소별 변경 추적
-  changeType   String?      @db.VarChar(50)  // 'element_update', 'bulk_update', 'reparse'
-  changedData  Json?        // { elementId, oldValue, newValue, elementType }
-
   changedBy    String
-  changeNote   String?      @db.Text
+  changeNote   String?
   createdAt    DateTime     @default(now())
+  changeType   String?      @db.VarChar(50)
+  changedData  Json?
+  changeSource String?      @db.VarChar(50)
+  ipAddress    String?      @db.VarChar(45)
+  userAgent    String?
   static_pages static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, version])
-  @@index([pageId])
   @@index([changeType])
+  @@index([changedBy])
   @@index([createdAt])
+  @@index([pageId, createdAt])
+  @@index([pageId])
+  @@index([pageId, version])
 }
 
 model static_pages {
@@ -254,42 +301,52 @@ model static_pages {
   title                String
   filePath             String
   sections             Json
-
-  // 🆕 TipTap 편집 시스템 필드
-  editMode             EditMode               @default(PARSER)
-  lastParsedAt         DateTime?
-  syncStatus           SyncStatus             @default(SYNCED)
-  lastSyncedAt         DateTime?
-
   lastEdited           DateTime
   createdAt            DateTime               @default(now())
+  editMode             EditMode               @default(PARSER)
+  lastParsedAt         DateTime?
+  lastSyncedAt         DateTime?
+  syncStatus           SyncStatus             @default(SYNCED)
+  syncError            String?
+  syncRetryCount       Int                    @default(0)
+  fileHash             String?
+  version              Int                    @default(1)
+  lockStatus           LockStatus             @default(UNLOCKED)
+  lockedBy             String?
+  lockedAt             DateTime?
+  lockExpiry           DateTime?
+  createdBy            String?
+  updatedBy            String?
+  updatedAt            DateTime               @default(now())
+  editable_elements    editable_elements[]
+  element_changes      element_changes[]
   static_page_versions static_page_versions[]
-  editable_elements    editable_elements[]    // 🆕 추가
+  sync_queue           sync_queue[]
 
   @@index([editMode])
+  @@index([lockStatus, lockedBy])
+  @@index([slug, version])
   @@index([syncStatus])
+  @@index([updatedAt])
 }
 
-model editable_elements {
-  id           String       @id @default(cuid())
+model sync_queue {
+  id           String       @id
   pageId       String
-  elementId    String       @db.VarChar(100)
-  elementType  ElementType
-  selector     String       @db.VarChar(500)
-  label        String       @db.VarChar(255)
-  currentValue String       @db.Text
-  sectionName  String?      @db.VarChar(100)
-  order        Int          @default(0)
-
-  page         static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
-
+  operation    String       @db.VarChar(50)
+  priority     Int          @default(5)
+  attempts     Int          @default(0)
+  maxAttempts  Int          @default(3)
+  lastError    String?
+  status       String       @default("pending")
+  scheduledAt  DateTime     @default(now())
+  processedAt  DateTime?
   createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  static_pages static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
-  @@unique([pageId, elementId])
   @@index([pageId])
-  @@index([sectionName])
-  @@index([pageId, order])
+  @@index([status])
+  @@index([status, priority, scheduledAt])
 }
 
 model system_settings {
@@ -334,9 +391,38 @@ enum BoardType {
   EVENT
 }
 
+enum ChangeType_new {
+  CREATED
+  UPDATED
+  DELETED
+  PUBLISHED
+  UNPUBLISHED
+  RESTORED
+  BULK_UPDATE
+  REPARSE
+}
+
+enum EditMode {
+  PARSER
+  ATTRIBUTE
+}
+
+enum ElementType {
+  TEXT
+  HTML
+  IMAGE
+  BACKGROUND
+}
+
 enum Gender {
   MALE
   FEMALE
+}
+
+enum LockStatus {
+  UNLOCKED
+  LOCKED
+  EXPIRED
 }
 
 enum PopupType {
@@ -363,6 +449,15 @@ enum ServiceType {
   OTHER_CONSULTATION
 }
 
+enum SyncStatus {
+  SYNCED
+  PENDING
+  CONFLICT
+  ERROR
+  IN_PROGRESS
+  FAILED
+}
+
 enum TemplateCategory {
   UI
   LAYOUT
@@ -384,23 +479,4 @@ enum UserRole {
   SUPER_ADMIN
   ADMIN
   EDITOR
-}
-
-enum EditMode {
-  PARSER      // 기존 HTML 파싱 방식
-  ATTRIBUTE   // data-editable 속성 방식 (TipTap)
-}
-
-enum ElementType {
-  TEXT           // 순수 텍스트
-  HTML           // HTML 포함 텍스트 (TipTap 사용)
-  IMAGE          // 이미지 src
-  BACKGROUND     // 배경 이미지
-}
-
-enum SyncStatus {
-  SYNCED         // DB와 파일이 동기화됨
-  PENDING        // 파일 업데이트 대기 중
-  CONFLICT       // 충돌 발생
-  ERROR          // 동기화 오류
 }

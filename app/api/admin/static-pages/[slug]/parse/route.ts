@@ -144,6 +144,7 @@ export async function POST(
       // Insert new elements
       const created = await tx.editable_elements.createMany({
         data: parseResult.elements.map(el => ({
+          id: crypto.randomUUID(),
           pageId: page.id,
           elementId: el.id,
           elementType: el.type,
@@ -152,6 +153,7 @@ export async function POST(
           currentValue: el.currentValue,
           sectionName: el.sectionName,
           order: el.order,
+          updatedAt: new Date(),
         })),
       });
 

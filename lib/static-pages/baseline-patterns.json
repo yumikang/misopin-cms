@@ -1,0 +1,294 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2025-11-03T04:25:55.116Z",
+  "patterns": [
+    {
+      "type": "event_handler",
+      "pattern": "openKakaoChat();",
+      "hash": "97a9443a38dadd1f83fa4371a77f0938e957155e6b675d4512595717190e837f",
+      "elementSelector": "a.kakao",
+      "attributeName": "onclick",
+      "lineNumber": 0,
+      "filePath": "acne.html",
+      "catalogedAt": "2025-11-03T04:25:55.114Z",
+      "riskLevel": "safe"
+    },
+    {
+      "type": "event_handler",
+      "pattern": "window.open('../privacy.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')",
+      "hash": "6b1477716dcfa7a79fc3942484bd5c69b8a3f8af29a62baa64d3fb630275db90",
+      "elementSelector": "a:nth-of-type(1)",
+      "attributeName": "onclick",
+      "lineNumber": 0,
+      "filePath": "acne.html",
+      "catalogedAt": "2025-11-03T04:25:55.114Z",
+      "riskLevel": "safe"
+    },
+    {
+      "type": "event_handler",
+      "pattern": "window.open('../stipulation.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')",
+      "hash": "63bcdf5617c9c7bf6f0bf1e57d6bb48722130d94770b5ba76a8b2904ff18d286",
+      "elementSelector": "a:nth-of-type(2)",
+      "attributeName": "onclick",
+      "lineNumber": 0,
+      "filePath": "acne.html",
+      "catalogedAt": "2025-11-03T04:25:55.114Z",
+      "riskLevel": "safe"
+    },
+    {
+      "type": "event_handler",
+      "pattern": "window.open('../fee-schedule.html', 'window', 'width=800; height=800; left=150; top=0; scrollbars=yes')",
+      "hash": "04ecf717e69973fd5174ce3159ce5eee81fce73d749d16dd0834637ec9129c3f",
+      "elementSelector": "a:nth-of-type(3)",
+      "attributeName": "onclick",
+      "lineNumber": 0,
+      "filePath": "acne.html",
+      "catalogedAt": "2025-11-03T04:25:55.114Z",
+      "riskLevel": "safe"
+    },
+    {
+      "type": "javascript_url",
+      "pattern": "javascript:void(0);",
+      "hash": "91b1ed43260340acf8496310f0e1d5a25dc40b4b77b4710914f092c0d1bd3714",
+      "elementSelector": "a.kakao",
+      "attributeName": "href",
+      "lineNumber": 0,
+      "filePath": "acne.html",
+      "catalogedAt": "2025-11-03T04:25:55.116Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "javascript_url",
+      "pattern": "javascript:void(0)",
+      "hash": "ad131d92c859c899429835f6ed79cbee0df35dac6fede8ba4a0fb2b78477b2f5",
+      "elementSelector": "a:nth-of-type(3)",
+      "attributeName": "href",
+      "lineNumber": 0,
+      "filePath": "acne.html",
+      "catalogedAt": "2025-11-03T04:25:55.116Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\nfunction fmain_submit(f){\n    if (!$(\"#prv_check\").is(\":checked\")) {\n        alert(\"개인정보취급방침의 내용에 동의하셔야 작성가능 합니다.\");\n        return false;\n    }\n    return true;\n}\nfeather.replace();\nfunction Num_ck(obj) {\n    var val = obj.value;\n    if(isNaN(val)) {\n        alert(\"숫자만 입력해 주세요\");\n        obj.value = val.replace(/[^0-9]/gi, '');\n    }\n}\nfunction korean_ck(obj) {\n    var val = obj.value;\n    var korean = /^[가-힣ㄱ-ㅎㅏ-ㅣㆍ ᆢ\\s]*$/;\n    if (!korean.test(val)) {\n        alert(\"한글만 입력해 주세요\");\n        ob...[truncated]",
+      "hash": "9146b7cf331ff643d08eac1c2830174aace439948e61a254f5af6eed6eea0709",
+      "elementSelector": "script:nth-of-type(8)",
+      "lineNumber": 0,
+      "filePath": "acne.html",
+      "catalogedAt": "2025-11-03T04:25:55.116Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n    AOS.init({\n        once: true,\n        duration: 1000,\n        offset: 100\n    });\n",
+      "hash": "fe79102040a5b7a67de3ed24e1f724b06cc3e2abf31269a91f848193f96cdd2d",
+      "elementSelector": "script:nth-of-type(3)",
+      "lineNumber": 0,
+      "filePath": "diet.html",
+      "catalogedAt": "2025-11-03T04:25:55.108Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n    AOS.init({\n        duration: 1000,\n        easing: \"ease-in-out\",\n        once: true\n    });\n",
+      "hash": "02012001de0102a15926b76e80c08f304dbac1c34dc57d991c86c496820111c9",
+      "elementSelector": "script:nth-of-type(10)",
+      "lineNumber": 0,
+      "filePath": "acne.html",
+      "catalogedAt": "2025-11-03T04:25:55.116Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n    // AOS 초기화\n    AOS.init({\n        once: true,  // 애니메이션을 한 번만 실행\n        offset: 100, // 트리거 지점 오프셋\n        easing: 'ease-in-out' // 이징 효과\n    });\n",
+      "hash": "290795b82b16b8465e9bc8092afb821a207aeb7e817c3ea9be39c896701476ec",
+      "elementSelector": "script:nth-of-type(2)",
+      "lineNumber": 0,
+      "filePath": "botox.html",
+      "catalogedAt": "2025-11-03T04:25:55.112Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "event_handler",
+      "pattern": "window.open('privacy.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no');",
+      "hash": "08260cd242cadf6804f035db614b4015d22b97ab031ae7693e65336dae190817",
+      "elementSelector": "a:nth-of-type(1)",
+      "attributeName": "onclick",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.091Z",
+      "riskLevel": "safe"
+    },
+    {
+      "type": "event_handler",
+      "pattern": "window.open('privacy.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')",
+      "hash": "9d74df9eec9d2b64ca3017d191c95d2e45883a1a2a6fa9bc05ad979e24a056bc",
+      "elementSelector": "a:nth-of-type(1)",
+      "attributeName": "onclick",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.091Z",
+      "riskLevel": "safe"
+    },
+    {
+      "type": "event_handler",
+      "pattern": "window.open('stipulation.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')",
+      "hash": "43784f07cb83fdaf2eeeed71e884eb423093af53f5bd59a71c7c16f9610297f7",
+      "elementSelector": "a:nth-of-type(2)",
+      "attributeName": "onclick",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.091Z",
+      "riskLevel": "safe"
+    },
+    {
+      "type": "event_handler",
+      "pattern": "window.open('fee-schedule.html', 'window', 'width=800; height=800; left=150; top=0; scrollbars=yes')",
+      "hash": "423cf3f177f7554bf56b1bf280aca01d72fbc6d8a352a9a4837f497f0357a09a",
+      "elementSelector": "a:nth-of-type(3)",
+      "attributeName": "onclick",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.091Z",
+      "riskLevel": "safe"
+    },
+    {
+      "type": "event_handler",
+      "pattern": "return fmain_submit(this);",
+      "hash": "743accc8c33f55704f3b5bf0c3fa9b07bbbf682bc907d6019b87003bc95ae3f8",
+      "elementSelector": "form.consult",
+      "attributeName": "onsubmit",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.093Z",
+      "riskLevel": "safe"
+    },
+    {
+      "type": "event_handler",
+      "pattern": "korean_ck(this)",
+      "hash": "dad7bd71e35e32788ee89bd313844e040ce2bd289cc3daea26d7446ddca8382a",
+      "elementSelector": "input#wr_name",
+      "attributeName": "oninput",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "safe"
+    },
+    {
+      "type": "event_handler",
+      "pattern": "Num_ck(this)",
+      "hash": "7bba3a7063624b2c760b7556e41211b4fa6bb40cef5465b2f03138bd81d140ec",
+      "elementSelector": "input#sh_phone",
+      "attributeName": "oninput",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n// Cache-busting script loader for api-client.js\n(function() {\n  'use strict';\n\n  const timestamp = Date.now();\n  const buildVersion = '1.2.0'; // Update this when making changes\n  const cacheBuster = `v=${buildVersion}&t=${timestamp}`;\n\n  console.log('[Cache Buster] Loading api-client.js with:', cacheBuster);\n\n  const script = document.createElement('script');\n  script.src = `js/api-client.js?${cacheBuster}`;\n  script.async = false; // Ensure synchronous loading\n  script.onload = function() {\n...[truncated]",
+      "hash": "ecfe0dd6d1522ae92eebb42d1fbb635892d7412ad3f7c34fa15b26b817209fde",
+      "elementSelector": "script:nth-of-type(2)",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n// 자바스크립트에서 사용하는 전역변수 선언\nvar g5_url       = \"https://skincare1007.shiningcorp.com\";\nvar g5_bbs_url   = \"https://skincare1007.shiningcorp.com/bbs\";\nvar g5_is_member = \"\";\nvar g5_is_admin  = \"\";\nvar g5_is_mobile = \"\";\nvar g5_bo_table  = \"\";\nvar g5_sca       = \"\";\nvar g5_editor    = \"\";\nvar g5_cookie_domain = \"\";\n",
+      "hash": "840d0a1c156cb6c02ac912de2e5f71571f778f12b42a6e06284b2a2fb2efffea",
+      "elementSelector": "script:nth-of-type(3)",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n// designkits 파라미터 추가 코드 비활성화\n// $(document).on('click', 'a', function() {\n//   var href = $(this).attr('href');\n//   href += (href.indexOf('?') == -1 ? '?' : '&') + 'designkits=1';\n//   $(this).attr('href', href);\n// });\n",
+      "hash": "4c2f4c1f3dcd160c2b17d2b495fd0eed6e9b87062671b0d094e90a3fb87c804b",
+      "elementSelector": "script:nth-of-type(1)",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n    // GSAP 히어로 애니메이션\n    window.addEventListener('load', function() {\n        if (typeof gsap !== 'undefined') {\n            // MISOPIN 텍스트 애니메이션 (최적화)\n            gsap.fromTo('.h1_mst01 .ltr',\n                {\n                    opacity: 0,\n                    y: 30,\n                    scale: 0.9\n                },\n                {\n                    opacity: 1,\n                    y: 0,\n                    scale: 1,\n                    duration: 0.8,\n                    stagger: 0.06,\n ...[truncated]",
+      "hash": "2b90cb4ea9066755dda7bf0a10380b6e43942d27f9d87eb8c3f2e631301dbe72",
+      "elementSelector": "script:nth-of-type(2)",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n    const inc01_slide = new Swiper(\".inc01_slide\", {\n        loop:true,\n        speed:1200,\n        slidesPerView:1,\n        centeredSlides:true,\n        slideDuplicateClass: 'clone',\n        spaceBetween:30,\n        slideActiveClass: 'on',\n        breakpoints: {\n            // 모바일\n            320: {\n                slidesPerView: 1,\n                spaceBetween: 20\n            },\n            // 태블릿\n            768: {\n                slidesPerView: 1.5,\n                spaceBetween: 60\n        ...[truncated]",
+      "hash": "31b84131a0b0168e1c7f90addfdfd6e2a9a59f9f06750f8ac5f366aa4010b77b",
+      "elementSelector": "script:nth-of-type(1)",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n// YouTube IFrame API 로드\nvar snsVideoTag = document.createElement('script');\nsnsVideoTag.src = 'https://www.youtube.com/iframe_api';\nvar firstScriptTag = document.getElementsByTagName('script')[0];\nfirstScriptTag.parentNode.insertBefore(snsVideoTag, firstScriptTag);\n\nvar snsPlayer;\n\n// YouTube API가 준비되면 실행\nfunction onYouTubeIframeAPIReady() {\n    snsPlayer = new YT.Player('sns_video_player', {\n        width: '100%',\n        height: '100%',\n        videoId: 'lXSzAac7cZ8', // 미소핀의원 YouTube 비디오\n  ...[truncated]",
+      "hash": "fa2c42375281f6db95cb78cbe4ad1e4877f0115df02465827924e3bb742ecddd",
+      "elementSelector": "script:nth-of-type(2)",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n    const inc05_slide = new Swiper(\".inc05_slide\", {\n        loop:true,\n        speed:1200,\n        slidesPerView:2,\n        spaceBetween:40,\n        autoplay: {\n            delay: 3000,\n            disableOnInteraction: false\n        },\n        breakpoints: {\n            320: {\n                slidesPerView: 1,\n                spaceBetween: 20\n            },\n            768: {\n                slidesPerView: 2,\n                spaceBetween: 30\n            },\n            1024: {\n                ...[truncated]",
+      "hash": "cebf8b54362473a07303f5eab0dad9229d26504bb70f5c830d3f6056296391f2",
+      "elementSelector": "script:nth-of-type(3)",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\nfunction fmain_submit(f){        \n    if (!$(\"#prv_check\").is(\":checked\")) {\n        alert(\"개인정보취급방침의 내용에 동의하셔야 작성가능 합니다.\");\n        return false;\n    }\n    return true;\n}\n    AOS.init();\nfeather.replace();\nfunction Num_ck(obj) { \n    var val = obj.value; \n    if(isNaN(val)) { \n        alert(\"숫자만 입력해 주세요\"); \n        obj.value = val.replace(/[^0-9]/gi, ''); \n    }  \n}\nfunction korean_ck(obj) {\n    var val = obj.value;\n    var korean = /^[가-힣ㄱ-ㅎㅏ-ㅣㆍ ᆢ\\s]*$/;\n    if (!korean.test(val)) {\n        a...[truncated]",
+      "hash": "701072249cf18fbaf1790eebeadf79ad44dddff3e79847b6a2df48f3f1ed7e6b",
+      "elementSelector": "script:nth-of-type(2)",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "monitored"
+    },
+    {
+      "type": "inline_script",
+      "pattern": "\n// Load test suite in development or when manually requested\nif (window.location.hostname === 'localhost' ||\n    window.location.hostname === '127.0.0.1' ||\n    window.location.search.includes('debug=true') ||\n    window.location.search.includes('test=true')) {\n\n  const testScript = document.createElement('script');\n  testScript.src = 'js/popup-test-suite.js';\n  testScript.onload = function() {\n    console.log('[Debug] Popup test suite loaded');\n  };\n  document.head.appendChild(testScript);\n}\n\n...[truncated]",
+      "hash": "b66a865351f76812ccf3b9bf70340340685a89bdfa52d7b6196f2d56d2948266",
+      "elementSelector": "script:nth-of-type(5)",
+      "lineNumber": 0,
+      "filePath": "index.html",
+      "catalogedAt": "2025-11-03T04:25:55.094Z",
+      "riskLevel": "monitored"
+    }
+  ],
+  "fileHashes": {
+    "tattoo.html": "e0502744ed38678ecc47440ed071aab8d7b0cd3a34c3def7d436ac83b125bb7d",
+    "skinbooster.html": "78898e1137234a2254cb6069f3e44efa83e0ed7a46b63ef587bff76a620ed101",
+    "peeling.html": "5fac400d5aafec1e7f2a54c0f8e366c00d718ee5625dc9e13be968228afe9cb1",
+    "mole.html": "ccf1c27783a08a1815a0a4798636246fdb993c20d9aafdb3a603a2635f609301",
+    "milia.html": "b9394c416d7318901ec545c53c94b9c92657eac3c8e5a19a73f7297fb457d777",
+    "lifting.html": "dff87bd73ed6da374d7322a2cac22711f179db4e2524addc8567385b59a485d4",
+    "jeomin.html": "ee7c621bbb78a1a73acad56764c406cc332df177aece79dad477851aa8ac02c4",
+    "index.html": "c30e2a5921929fd91cad6a7676cf4c13af59886c71e3dc2a30c8250790c9848f",
+    "hair-removal.html": "ddf763fc87d5b78a6f9670a906454db26047ba4baab7468e62baf7dba91fa78b",
+    "filler.html": "853ba088d769ef11d6db3883a3c3f5f6d90bc84854e8d4341510f93509d97fc8",
+    "diet.html": "5657f34f33b6540f9ae1bc1d08260b1e2b7ac575685d7889d68c1fb7c99f37fa",
+    "botox.html": "df8e7c2505919a46a66b1986b51da473b58917a29ac7ed27d8855053da0514fb",
+    "acne.html": "17b2b7653344d5cfe67c942b45f6256c7df15e8a44a3d556ac7459fcfdf19a8b"
+  }
+}

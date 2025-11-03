@@ -36,7 +36,7 @@ const EditableElement: React.FC<EditableElementProps> = ({
     switch (element.type) {
       case 'text':
         return (
-          <div>
+          <div className="space-y-2">
             <Label htmlFor={`text-${element.id}`}>{element.label}</Label>
             <Input
               id={`text-${element.id}`}
@@ -51,7 +51,7 @@ const EditableElement: React.FC<EditableElementProps> = ({
 
       case 'html':
         return (
-          <div>
+          <div className="space-y-2">
             <Label>{element.label}</Label>
             <ElementTipTapEditor
               content={element.content || ''}

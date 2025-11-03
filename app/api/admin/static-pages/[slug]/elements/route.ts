@@ -51,9 +51,14 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ slug: string }> }
 ) {
+  console.log('=== 🔍 PATCH /api/admin/static-pages/[slug]/elements ===');
+
   // Verify authentication
   const user = verifyAdminToken(request);
+  console.log('✅ Auth verified:', user ? `${user.email} (${user.role})` : '❌ FAILED');
+
   if (!user) {
+    console.log('❌ 401: No authentication');
     return NextResponse.json(
       {
         success: false,
@@ -66,10 +71,14 @@ export async function PATCH(
 
   try {
     const { slug } = await context.params;
+    console.log('📄 Slug:', slug);
+
     const body = await request.json();
+    console.log('📦 Request body:', JSON.stringify(body, null, 2));
 
     // Validate request body
     if (!Array.isArray(body.updates) || body.updates.length === 0) {
+      console.log('❌ 400: updates 배열이 없거나 비어있음');
       return NextResponse.json(
         {
           success: false,
@@ -81,10 +90,12 @@ export async function PATCH(
     }
 
     const updates: ElementUpdateRequest[] = body.updates;
+    console.log(`✅ Updates count: ${updates.length}`);
 
     // Validate each update request
     for (const update of updates) {
-      if (!update.elementId || !update.newValue || !update.elementType) {
+      if (!update.elementId || update.newValue === undefined || update.newValue === null || !update.elementType) {
+        console.log('❌ 400: 업데이트 항목 검증 실패:', update);
         return NextResponse.json(
           {
             success: false,
@@ -95,8 +106,10 @@ export async function PATCH(
         );
       }
     }
+    console.log('✅ All updates validated');
 
     // Fetch page data
+    console.log('🔍 Querying database for page...');
     const page = await prisma.static_pages.findUnique({
       where: { slug },
       select: {
@@ -115,6 +128,7 @@ export async function PATCH(
     });
 
     if (!page) {
+      console.log('❌ 404: Page not found for slug:', slug);
       return NextResponse.json(
         {
           success: false,
@@ -125,7 +139,15 @@ export async function PATCH(
       );
     }
 
+    console.log('✅ Page found:', {
+      id: page.id,
+      filePath: page.filePath,
+      editMode: page.editMode,
+      elementsFound: page.editable_elements.length
+    });
+
     if (page.editMode !== 'ATTRIBUTE') {
+      console.log(`❌ 400: Invalid edit mode: ${page.editMode} (expected ATTRIBUTE)`);
       return NextResponse.json(
         {
           success: false,
@@ -137,10 +159,15 @@ export async function PATCH(
     }
 
     // Verify all elements exist
+    const foundIds = page.editable_elements.map(el => el.elementId);
+    const requestedIds = updates.map(u => u.elementId);
+    console.log('🔍 Element ID check:');
+    console.log('  Requested:', requestedIds);
+    console.log('  Found:', foundIds);
+
     if (page.editable_elements.length !== updates.length) {
-      const foundIds = page.editable_elements.map(el => el.elementId);
-      const requestedIds = updates.map(u => u.elementId);
       const missingIds = requestedIds.filter(id => !foundIds.includes(id));
+      console.log(`❌ 404: Missing elements: ${missingIds.join(', ')}`);
 
       return NextResponse.json(
         {
@@ -152,7 +179,10 @@ export async function PATCH(
       );
     }
 
+    console.log('✅ All elements verified');
+
     // Update HTML file with all changes
+    console.log('📝 Updating HTML file...');
     const updateResult = await updateMultipleElements(
       page.filePath,
       updates,
@@ -163,7 +193,15 @@ export async function PATCH(
       }
     );
 
+    console.log('📝 HTML update result:', {
+      success: updateResult.success,
+      message: updateResult.message,
+      error: updateResult.error,
+      backupPath: updateResult.backupPath
+    });
+
     if (!updateResult.success) {
+      console.log(`❌ 400: HTML update failed: ${updateResult.message}`);
       return NextResponse.json(
         {
           success: false,
@@ -175,8 +213,10 @@ export async function PATCH(
     }
 
     // Update database and create version using transaction
+    console.log('💾 Starting database transaction...');
     const result = await prisma.$transaction(async (tx) => {
       // Update all elements in database
+      console.log('  📝 Updating elements in database...');
       const updatePromises = updates.map(update =>
         tx.editable_elements.update({
           where: {
@@ -192,6 +232,7 @@ export async function PATCH(
       );
 
       const updatedElements = await Promise.all(updatePromises);
+      console.log(`  ✅ Updated ${updatedElements.length} elements in DB`);
 
       // Create version record
       const changeSnapshot = updates.map(update => {
@@ -206,6 +247,7 @@ export async function PATCH(
         };
       });
 
+      console.log('  📦 Creating version record...');
       const version = await tx.static_page_versions.create({
         data: {
           id: `ver_${Date.now()}_${Math.random().toString(36).substring(7)}`,
@@ -218,8 +260,10 @@ export async function PATCH(
           changedBy: user.id,
         },
       });
+      console.log('  ✅ Version created:', version.id);
 
       // Update page sync status
+      console.log('  🔄 Updating page sync status...');
       await tx.static_pages.update({
         where: { id: page.id },
         data: {
@@ -228,9 +272,12 @@ export async function PATCH(
           lastSyncedAt: new Date(),
         },
       });
+      console.log('  ✅ Sync status updated');
 
       return { updatedElements, version };
     });
+
+    console.log('✅ Transaction completed successfully');
 
     return NextResponse.json({
       success: true,
@@ -242,13 +289,15 @@ export async function PATCH(
       },
     });
   } catch (error) {
-    console.error('Error updating elements:', error);
+    console.error('❌ Error updating elements:', error);
+    console.error('Stack:', error instanceof Error ? error.stack : 'No stack');
 
     return NextResponse.json(
       {
         success: false,
         error: '요소 업데이트 중 오류가 발생했습니다',
         code: 'INTERNAL_ERROR',
+        details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
     );

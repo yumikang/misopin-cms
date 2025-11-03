@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
+import {
+  getSectionInfo,
+  getFriendlyLabel,
+  getElementTypeIcon,
+  compareSections,
+  type SectionInfo
+} from '@/lib/static-pages/section-label-mapper';
 
 const prisma = new PrismaClient();
 
@@ -93,24 +100,67 @@ export async function GET(
       );
     }
 
-    // Transform database records to ParsedSection format (frontend compatibility)
-    const editableElements = page.editable_elements.map(el => ({
-      id: el.elementId,
-      type: el.elementType.toLowerCase() as 'text' | 'html' | 'image' | 'background',
-      selector: el.selector,
-      content: el.currentValue,
-      label: el.label,
-      sectionName: el.sectionName || 'default',
-      order: el.order,
-    }));
+    // Group elements by section
+    const sectionsMap = new Map<string, {
+      sectionInfo: SectionInfo;
+      elements: Array<{
+        id: string;
+        type: 'text' | 'html' | 'image' | 'background';
+        selector: string;
+        content: string;
+        label: string;
+        friendlyLabel: string;
+        icon: string;
+        order: number;
+      }>;
+    }>();
+
+    // Process each element and group by section
+    page.editable_elements.forEach(el => {
+      const sectionName = el.sectionName || 'default';
+      const sectionInfo = getSectionInfo(sectionName);
+
+      if (!sectionsMap.has(sectionName)) {
+        sectionsMap.set(sectionName, {
+          sectionInfo,
+          elements: [],
+        });
+      }
+
+      const section = sectionsMap.get(sectionName)!;
+      section.elements.push({
+        id: el.elementId,
+        type: el.elementType.toLowerCase() as 'text' | 'html' | 'image' | 'background',
+        selector: el.selector,
+        content: el.currentValue,
+        label: el.label,
+        friendlyLabel: getFriendlyLabel(el.label),
+        icon: getElementTypeIcon(el.elementType),
+        order: el.order,
+      });
+    });
+
+    // Convert to array and sort sections by order
+    const sections = Array.from(sectionsMap.values())
+      .map(({ sectionInfo, elements }) => ({
+        sectionName: sectionInfo.sectionName,
+        displayName: sectionInfo.displayName,
+        emoji: sectionInfo.emoji,
+        description: sectionInfo.description,
+        order: sectionInfo.order,
+        elementCount: elements.length,
+        elements: elements.sort((a, b) => a.order - b.order),
+      }))
+      .sort((a, b) => a.order - b.order);
 
     return NextResponse.json({
       success: true,
-      editableElements,
+      sections,
       pageId: page.id,
       pageTitle: page.title,
       editMode: page.editMode,
-      totalElements: editableElements.length,
+      totalSections: sections.length,
+      totalElements: page.editable_elements.length,
       lastParsedAt: page.lastParsedAt?.toISOString() || null,
     });
   } catch (error) {

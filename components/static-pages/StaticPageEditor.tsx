@@ -168,6 +168,16 @@ const StaticPageEditor: React.FC<StaticPageEditorProps> = ({ slug, token }) => {
         }))
       );
 
+      // Transform to API format: updates array with elementId, newValue, elementType
+      // Filter out BACKGROUND elements - they should be edited through image upload, not text editor
+      const updates = flatElements
+        .filter((element) => element.type.toUpperCase() !== 'BACKGROUND')
+        .map((element) => ({
+          elementId: element.id,
+          newValue: element.content,
+          elementType: element.type.toUpperCase() // TEXT, HTML, IMAGE, etc.
+        }));
+
       const response = await fetch(
         `/api/admin/static-pages/${slug}/elements`,
         {
@@ -177,7 +187,7 @@ const StaticPageEditor: React.FC<StaticPageEditorProps> = ({ slug, token }) => {
             Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
-            sections: flatElements
+            updates: updates
           })
         }
       );
