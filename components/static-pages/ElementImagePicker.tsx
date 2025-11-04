@@ -53,8 +53,12 @@ const ElementImagePicker: React.FC<ElementImagePickerProps> = ({
       const data = await response.json();
 
       if (data.url) {
-        onChange(data.url);
-        setUrlInput(data.url);
+        // Convert relative URL to absolute URL using CMS domain
+        const absoluteUrl = data.url.startsWith('http')
+          ? data.url
+          : `https://cms.one-q.xyz${data.url}`;
+        onChange(absoluteUrl);
+        setUrlInput(absoluteUrl);
       }
     } catch (error) {
       console.error('Upload error:', error);
