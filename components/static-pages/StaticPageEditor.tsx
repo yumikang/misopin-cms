@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import EditableSection from './EditableSection';
 import SaveControls from './SaveControls';
+import ElementImagePicker from './ElementImagePicker';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -326,34 +327,18 @@ const StaticPageEditor: React.FC<StaticPageEditorProps> = ({ slug, token }) => {
                               </div>
 
                               {element.type === 'image' || element.type === 'background' ? (
-                                <div className="space-y-2">
-                                  <input
-                                    type="text"
-                                    value={element.content}
-                                    onChange={(e) =>
-                                      handleElementChange(
-                                        section.sectionName,
-                                        elementIndex,
-                                        'content',
-                                        e.target.value
-                                      )
-                                    }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="이미지 URL을 입력하세요"
-                                  />
-                                  {element.content && (
-                                    <div className="relative w-full h-48 bg-gray-100 rounded-md overflow-hidden">
-                                      <img
-                                        src={element.content}
-                                        alt={element.friendlyLabel}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                          e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3E이미지 없음%3C/text%3E%3C/svg%3E';
-                                        }}
-                                      />
-                                    </div>
-                                  )}
-                                </div>
+                                <ElementImagePicker
+                                  label={element.friendlyLabel}
+                                  value={element.content}
+                                  onChange={(url) =>
+                                    handleElementChange(
+                                      section.sectionName,
+                                      elementIndex,
+                                      'content',
+                                      url
+                                    )
+                                  }
+                                />
                               ) : element.type === 'html' ? (
                                 <div
                                   contentEditable
