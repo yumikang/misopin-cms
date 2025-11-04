@@ -42,9 +42,12 @@ export default function StaticPagesPage() {
       if (!response.ok) throw new Error("Failed to fetch pages");
       const data = await response.json();
 
-      // 이용약관과 개인정보 처리방침은 UI에서 제외
+      // 이용약관, 개인정보 처리방침, 퀵메뉴는 UI에서 제외
       const filteredPages = (data.pages || []).filter(
-        (page: StaticPage) => page.slug !== 'stipulation' && page.slug !== 'privacy'
+        (page: StaticPage) =>
+          page.slug !== 'stipulation' &&
+          page.slug !== 'privacy' &&
+          page.slug !== 'quickmenu'
       );
 
       setPages(filteredPages);

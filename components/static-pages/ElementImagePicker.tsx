@@ -101,40 +101,16 @@ const ElementImagePicker: React.FC<ElementImagePickerProps> = ({
         </div>
       )}
 
-      {/* URL 입력 */}
-      <div className="flex gap-2">
-        <Input
-          type="text"
-          placeholder="이미지 URL 입력"
-          value={urlInput}
-          onChange={(e) => setUrlInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              handleUrlSubmit();
-            }
-          }}
-        />
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleUrlSubmit}
-          disabled={!urlInput.trim()}
-        >
-          적용
-        </Button>
-      </div>
-
-      {/* 파일 업로드 */}
+      {/* 파일 업로드 (메인) */}
       <div className="flex items-center gap-2">
         <Label
           htmlFor={`file-upload-${label}`}
           className="flex-1 cursor-pointer"
         >
-          <div className="flex items-center justify-center gap-2 border rounded-md p-2 hover:bg-gray-50">
-            <Upload size={16} />
-            <span className="text-sm">
-              {isUploading ? '업로드 중...' : '파일 업로드'}
+          <div className="flex items-center justify-center gap-2 border-2 rounded-md p-3 hover:bg-blue-50 hover:border-blue-300 transition-colors bg-white">
+            <Upload size={20} className="text-blue-600" />
+            <span className="text-sm font-medium text-blue-600">
+              {isUploading ? '업로드 중...' : '📷 이미지 선택'}
             </span>
           </div>
           <input
@@ -146,6 +122,37 @@ const ElementImagePicker: React.FC<ElementImagePickerProps> = ({
             className="hidden"
           />
         </Label>
+      </div>
+
+      <p className="text-xs text-gray-500 text-center">JPG, PNG, GIF, WebP (최대 5MB)</p>
+
+      {/* URL 입력 (옵션) */}
+      <div className="pt-2 border-t">
+        <p className="text-xs text-gray-600 mb-2">또는 이미지 URL 직접 입력</p>
+        <div className="flex gap-2">
+          <Input
+            type="text"
+            placeholder="https://example.com/image.jpg"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleUrlSubmit();
+              }
+            }}
+            className="text-sm"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleUrlSubmit}
+            disabled={!urlInput.trim()}
+          >
+            적용
+          </Button>
+        </div>
       </div>
 
     </div>

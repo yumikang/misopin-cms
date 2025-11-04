@@ -1,6 +1,4 @@
-<!doctype html>
-<html lang="ko">
-<head>
+<!DOCTYPE html><html lang="ko"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes">
 <meta http-equiv="imagetoolbar" content="no">
@@ -15,6 +13,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
 <link rel="stylesheet" href="css/vendor/default.css">
 <link rel="stylesheet" href="css/components/quickmenu.css">
 <link rel="stylesheet" href="css/components/top_menu.css">
@@ -490,7 +489,6 @@ var g5_cookie_domain = "";
     object-position: center center;
 }
 
-
 .doctor_content {
     position: absolute;
     right: 0;
@@ -514,7 +512,6 @@ var g5_cookie_domain = "";
     margin-bottom: 0.5rem;
     position: relative;
 }
-
 
 .doctor_line {
     flex: 1;
@@ -823,10 +820,9 @@ var g5_cookie_domain = "";
 </style>
 <link rel="stylesheet" href="css/responsive.css">
 <link rel="stylesheet" href="css/index-custom.css">
-<script src="js/mobile-nav.js" defer></script>
+<script src="js/mobile-nav.js" defer=""></script>
 </head>
 <body>
-
 
 <style>
 /* rem 기준 설정 - 가이드에 따른 16px 기준 */
@@ -856,7 +852,6 @@ html {
     --misopin-shadow-light: rgba(0,0,0,0.05);
 }
 
-
 /* 미소핀 추가 색상 테마 적용 */
 #top_nav_wrap {
     background-color: #fff !important;
@@ -885,8 +880,6 @@ html {
     border-color: var(--misopin-primary) !important;
 }
 
-
-
 /* 버튼 색상 */
 .inc01_lnk, .more_btn {
     background-color: var(--misopin-primary) !important;
@@ -897,7 +890,6 @@ html {
     background-color: var(--misopin-secondary) !important;
     border-color: var(--misopin-secondary) !important;
 }
-
 
 /* 추가 전역 스타일 통일 */
 body {
@@ -1217,7 +1209,7 @@ table thead, th {
         <div id="top_nav_wrap">
             <!-- 로고 -->
             <div id="top_logo">
-                <a href="index.html"><img src="img/misopin-temporary-logo.png" srcset="img/misopin-temporary-logo.png 2048w, img/misopin-temporary-logo.png 1024w, img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 100px, 150px" alt="미소핀의원" style="height: 50px;" /></a>
+                <a href="index.html"><img src="img/misopin-temporary-logo.png" srcset="img/misopin-temporary-logo.png 2048w, img/misopin-temporary-logo.png 1024w, img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 100px, 150px" alt="미소핀의원" style="height: 50px;"></a>
             </div>
             <div class="right">
                 <nav id="r_menu">
@@ -1286,7 +1278,7 @@ table thead, th {
     <div id="mo_hd_wrapper">
         <!-- 모바일 로고 -->
         <div id="mo_logo">
-            <a href="index.html"><img src="img/misopin-temporary-logo.png" alt="미소핀의원" style="height: 3.125rem;" /></a>
+            <a href="index.html"><img src="img/misopin-temporary-logo.png" alt="미소핀의원" style="height: 3.125rem;"></a>
         </div>
         
         <!-- 햄버거 메뉴 버튼 -->
@@ -1494,12 +1486,12 @@ table thead, th {
                     </div>
                     <div class="info">
                         <div class="txt">
-                            <h3>프리미엄 피부 케어</h3>
-                            <p>맑고 투명한 피부를 위한 특별한 관리 프로그램</p>
+                            <h3 data-editable="index-slide1-title">프리미엄 피부 케어</h3>
+                            <p data-editable="index-slide1-desc">맑고 투명한 피부를 위한 특별한 관리 프로그램</p>
                         </div>
                         <div class="price">
-                            <div class="cost">320,000원</div>
-                            <div class="sale">120,000<span>원 부터</span></div>
+                            <div class="cost" data-editable="index-slide1-cost">320,000원</div>
+                            <div class="sale" data-editable="index-slide1-sale">120,000<span>원 부터</span></div>
                         </div>
                         <!-- 더보기 링크 준비중
                         <a class="search" href="/bbs/board.php?bo_table=table41&wr_id=5">
@@ -1521,12 +1513,12 @@ table thead, th {
                     </div>
                     <div class="info">
                         <div class="txt">
-                            <h3>럭셔리 뷰티 케어</h3>
-                            <p>당신의 아름다움을 더욱 빛나게 해줄 프리미엄 케어</p>
+                            <h3 data-editable="index-slide2-title">럭셔리 뷰티 케어</h3>
+                            <p data-editable="index-slide2-desc">당신의 아름다움을 더욱 빛나게 해줄 프리미엄 케어</p>
                         </div>
                         <div class="price">
-                            <div class="cost">680,000원</div>
-                            <div class="sale">350,000<span>원 부터</span></div>
+                            <div class="cost" data-editable="index-slide2-cost">680,000원</div>
+                            <div class="sale" data-editable="index-slide2-sale">350,000<span>원 부터</span></div>
                         </div>
                         <!-- 더보기 링크 준비중
                         <a class="search" href="/bbs/board.php?bo_table=table41&wr_id=4">
@@ -1548,12 +1540,12 @@ table thead, th {
                     </div>
                     <div class="info">
                         <div class="txt">
-                            <h3>글로우 스킨 케어</h3>
-                            <p>자연스러운 광채와 건강한 피부톤을 위한 특별한 케어 프로그램</p>
+                            <h3 data-editable="index-slide3-title">글로우 스킨 케어</h3>
+                            <p data-editable="index-slide3-desc">자연스러운 광채와 건강한 피부톤을 위한 특별한 케어 프로그램</p>
                         </div>
                         <div class="price">
-                            <div class="cost">750,000원</div>
-                            <div class="sale">390,000<span>원 부터</span></div>
+                            <div class="cost" data-editable="index-slide3-cost">750,000원</div>
+                            <div class="sale" data-editable="index-slide3-sale">390,000<span>원 부터</span></div>
                         </div>
                         <!-- 더보기 링크 준비중
                         <a class="search" href="/bbs/board.php?bo_table=table41&wr_id=3">
@@ -1575,12 +1567,12 @@ table thead, th {
                     </div>
                     <div class="info">
                         <div class="txt">
-                            <h3>스킨부스터</h3>
-                            <p>히알루론산과 글리세롤로 피부 깊숙이 수분을 채우고 탄력을 강화하는 스킨부스터</p>
+                            <h3 data-editable="index-slide4-title">스킨부스터</h3>
+                            <p data-editable="index-slide4-desc">히알루론산과 글리세롤로 피부 깊숙이 수분을 채우고 탄력을 강화하는 스킨부스터</p>
                         </div>
                         <div class="price">
-                            <div class="cost">620,000원</div>
-                            <div class="sale">320,000<span>원 부터</span></div>
+                            <div class="cost" data-editable="index-slide4-cost">620,000원</div>
+                            <div class="sale" data-editable="index-slide4-sale">320,000<span>원 부터</span></div>
                         </div>
                         <!-- 더보기 링크 준비중
                         <a class="search" href="/bbs/board.php?bo_table=table41&wr_id=2">
@@ -1602,12 +1594,12 @@ table thead, th {
                     </div>
                     <div class="info">
                         <div class="txt">
-                            <h3>수분 광채 케어</h3>
-                            <p>촉촉하고 생기 있는 피부를 위한 집중 수분 공급 프로그램</p>
+                            <h3 data-editable="index-slide5-title">수분 광채 케어</h3>
+                            <p data-editable="index-slide5-desc">촉촉하고 생기 있는 피부를 위한 집중 수분 공급 프로그램</p>
                         </div>
                         <div class="price">
-                            <div class="cost">480,000원</div>
-                            <div class="sale">260,000<span>원 부터</span></div>
+                            <div class="cost" data-editable="index-slide5-cost">480,000원</div>
+                            <div class="sale" data-editable="index-slide5-sale">260,000<span>원 부터</span></div>
                         </div>
                         <!-- 더보기 링크 준비중
                         <a class="search" href="/bbs/board.php?bo_table=table41&wr_id=1">
@@ -1702,7 +1694,7 @@ table thead, th {
     -->
 
     <!-- 로컬 비디오 배경 (현재 활성화) -->
-    <video class="video_background_local" autoplay loop muted playsinline>
+    <video class="video_background_local" autoplay="" loop="" muted="" playsinline="">
         <source src="misopin-sample-video.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
@@ -1711,7 +1703,7 @@ table thead, th {
     <div class="sns_content">
         <div class="section_intro">
             <h2 class="section_title">Misopin is your happiness</h2>
-            <p class="section_desc">매일의 스트레스로 지친 피부,<br/>이제는 나를 위한 투자를 시작할 때입니다.<br/>미소핀에서 당신의 자신감을 되찾아 드립니다</p>
+            <p class="section_desc">매일의 스트레스로 지친 피부,<br>이제는 나를 위한 투자를 시작할 때입니다.<br>미소핀에서 당신의 자신감을 되찾아 드립니다</p>
         </div>
         <div class="sns_grid">
             <a href="https://www.instagram.com/misopin_clinic/" target="_blank" rel="noopener noreferrer" class="sns_card_link">
@@ -1833,7 +1825,7 @@ window.addEventListener('load', resizeSnsVideo);
                     <div class="doctor_line"></div>
                     <span class="doctor_category">MISOPIN Doctor</span>
                     <div class="doctor_logo">
-                        <img src="img/misopin-temporary-logo 1.svg" alt="미소핀 로고" />
+                        <img src="img/misopin-temporary-logo 1.svg" alt="미소핀 로고">
                     </div>
                 </div>
                 <h1 class="doctor_name">대표원장 김지식</h1>
@@ -1874,7 +1866,7 @@ window.addEventListener('load', resizeSnsVideo);
                                 <div class="sound_only">바로가기</div>
                                 <i data-feather="arrow-right"></i>
                             </a>
-                        </div class="txt_cont">
+                        </div>
                     </li>
                 			
                     <li class="swiper-slide">
@@ -1885,7 +1877,7 @@ window.addEventListener('load', resizeSnsVideo);
                                 <div class="sound_only">바로가기</div>
                                 <i data-feather="arrow-right"></i>
                             </a>
-                        </div class="txt_cont">
+                        </div>
                     </li>
                 			
                     <li class="swiper-slide">
@@ -1896,7 +1888,7 @@ window.addEventListener('load', resizeSnsVideo);
                                 <div class="sound_only">바로가기</div>
                                 <i data-feather="arrow-right"></i>
                             </a>
-                        </div class="txt_cont">
+                        </div>
                     </li>
                 			
                     <li class="swiper-slide">
@@ -1907,7 +1899,7 @@ window.addEventListener('load', resizeSnsVideo);
                                 <div class="sound_only">바로가기</div>
                                 <i data-feather="arrow-right"></i>
                             </a>
-                        </div class="txt_cont">
+                        </div>
                     </li>
                 			
                     <li class="swiper-slide">
@@ -1918,7 +1910,7 @@ window.addEventListener('load', resizeSnsVideo);
                                 <div class="sound_only">바로가기</div>
                                 <i data-feather="arrow-right"></i>
                             </a>
-                        </div class="txt_cont">
+                        </div>
                     </li>
                             </ul>
         </div>
@@ -2038,7 +2030,6 @@ window.addEventListener('load', resizeSnsVideo);
 
 <!-- } 콘텐츠 끝 -->
 
-
 <!-- CONTACT US 섹션 시작 -->
 <section id="contact_section">
     <div class="contact_wrapper">
@@ -2047,13 +2038,13 @@ window.addEventListener('load', resizeSnsVideo);
                 <h2>CONTACT US</h2>
                 <p>미소가 피어나는 곳, 미소핀의원에서 건강한 아름다움을 만나보세요.</p>
                 <form class="consult" name="fmain_form" method="post" action="/sh_img/ft/footer_update.php" autocomplete="off" onsubmit="return fmain_submit(this);">
-                    <input type="hidden" name="form_url" value="/index.php?device=pc" />
+                    <input type="hidden" name="form_url" value="/index.php?device=pc">
                     <div class="p_info">
                         <ul class="input_01">
-                            <li><label for="wr_name">이름</label><input class="sh_input" type="text" name="wr_name" id="wr_name" placeholder="이름" oninput="korean_ck(this)" required maxlength="20"></li>
+                            <li><label for="wr_name">이름</label><input class="sh_input" type="text" name="wr_name" id="wr_name" placeholder="이름" oninput="korean_ck(this)" required="" maxlength="20"></li>
                         </ul>
                         <ul class="input_02">
-                            <li><label for="sh_phone">연락처</label><input class="sh_input" type="text" name="sh_phone" id="sh_phone" oninput="Num_ck(this)" placeholder="연락처" required ></li>
+                            <li><label for="sh_phone">연락처</label><input class="sh_input" type="text" name="sh_phone" id="sh_phone" oninput="Num_ck(this)" placeholder="연락처" required=""></li>
                         </ul>
                     </div>
                     <ul class="input_03">
@@ -2081,7 +2072,7 @@ window.addEventListener('load', resizeSnsVideo);
         <div class="copy">
             <div class="top">
                 <div class="logo_area">
-                    <img class="ft_logo" src="img/misopin-temporary-logo.png" srcset="img/misopin-temporary-logo.png 2048w, img/misopin-temporary-logo.png 1024w, img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 80px, 120px" alt="미소핀의원" style="filter: brightness(0) invert(1); height: 3.125rem;" loading="lazy" />
+                    <img class="ft_logo" src="img/misopin-temporary-logo.png" srcset="img/misopin-temporary-logo.png 2048w, img/misopin-temporary-logo.png 1024w, img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 80px, 120px" alt="미소핀의원" style="filter: brightness(0) invert(1); height: 3.125rem;" loading="lazy">
                 </div>
                 <div class="phone_info">
                     <div class="number">061-277-1001</div>
@@ -2121,8 +2112,6 @@ window.addEventListener('load', resizeSnsVideo);
     </div>
 </footer>
 
-
-
 <!-- 모바일 하단 네비게이션 -->
 <div class="mobile-bottom-nav mobile-only">
     <a href="javascript:void(0);" onclick="openKakaoChat();" class="kakao">
@@ -2149,8 +2138,6 @@ window.addEventListener('load', resizeSnsVideo);
 
 <!-- 100% 배경이미지 때문에 사용 -->
 </div>
-
-
 
 <script>
 function fmain_submit(f){        
@@ -2179,9 +2166,6 @@ function korean_ck(obj) {
 }	
 </script>
 <!-- } 하단 끝 -->
-
-
-
 
 <!-- ie6,7에서 사이드뷰가 게시판 목록에서 아래 사이드뷰에 가려지는 현상 수정 -->
 <!--[if lte IE 7]>
@@ -2230,7 +2214,8 @@ if (window.location.hostname === 'misopin-renew.vercel.app' ||
 }
 </script>
 
-</body>
-<!-- 자체 분석 도구 -->
+
+
 <script src="js/analytics-setup.js"></script>
-</html>
+
+</body><!-- 자체 분석 도구 --></html>
