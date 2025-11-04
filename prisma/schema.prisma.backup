@@ -224,45 +224,26 @@ model popups {
 }
 
 model reservations {
-  id            String        @id
-  patientName   String
-  phone         String
-  email         String?
-  birthDate     DateTime
-  gender        Gender
-  treatmentType TreatmentType
-  preferredDate DateTime      @db.Date
-
-  // LEGACY FIELDS (backward compatibility)
-  preferredTime String // "09:30" format - DEPRECATED
-  service       ServiceType // DEPRECATED, use serviceId
-
-  // NEW TIME-BASED FIELDS
-  serviceId         String?
-  serviceName       String? @db.VarChar(100)
-  estimatedDuration Int?
-  period            Period?
-  timeSlotStart     String? @db.VarChar(5)
-  timeSlotEnd       String? @db.VarChar(5)
-
+  id              String            @id
+  patientName     String
+  phone           String
+  email           String?
+  birthDate       DateTime
+  gender          Gender
+  treatmentType   TreatmentType
+  preferredDate   DateTime          @db.Date
+  preferredTime   String
   status          ReservationStatus @default(PENDING)
   notes           String?
   adminNotes      String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime
+  service         ServiceType
   statusChangedAt DateTime          @default(now())
   statusChangedBy String?
 
-  // Relations
-  serviceRecord services? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-
-  // Indexes for both old and new systems
   @@index([preferredDate, service, status])
-  @@index([preferredDate, serviceId, status])
-  @@index([preferredDate, period, status])
-  @@index([preferredDate, timeSlotStart, serviceId])
   @@index([status])
-  @@index([serviceId])
 }
 
 model seo_settings {
@@ -288,49 +269,6 @@ model service_reservation_limits {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime
   dailyLimit  Int         @default(10)
-}
-
-model services {
-  id                String              @id
-  code              String              @unique @db.VarChar(50)
-  name              String              @db.VarChar(100)
-  description       String?
-  category          String?             @db.VarChar(50)
-  durationMinutes   Int
-  bufferMinutes     Int                 @default(10)
-  isActive          Boolean             @default(true)
-  displayOrder      Int                 @default(0)
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime
-  reservations      reservations[]
-  clinic_time_slots clinic_time_slots[]
-
-  @@index([code])
-  @@index([isActive])
-  @@index([displayOrder])
-  @@index([isActive, displayOrder])
-}
-
-model clinic_time_slots {
-  id             String    @id
-  serviceId      String?
-  dayOfWeek      DayOfWeek
-  period         Period
-  startTime      String    @db.VarChar(5)
-  endTime        String    @db.VarChar(5)
-  slotInterval   Int       @default(30)
-  maxConcurrent  Int       @default(1)
-  isActive       Boolean   @default(true)
-  effectiveFrom  DateTime? @db.Date
-  effectiveUntil DateTime? @db.Date
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime
-  service        services? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-
-  @@unique([dayOfWeek, period, serviceId, startTime, endTime])
-  @@index([dayOfWeek, period, isActive])
-  @@index([serviceId])
-  @@index([isActive, effectiveFrom, effectiveUntil])
 }
 
 model static_page_versions {
@@ -479,21 +417,6 @@ enum ElementType {
 enum Gender {
   MALE
   FEMALE
-}
-
-enum Period {
-  MORNING
-  AFTERNOON
-}
-
-enum DayOfWeek {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-  SUNDAY
 }
 
 enum LockStatus {
