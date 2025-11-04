@@ -16,6 +16,12 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
+<!-- Minimal Base Styles (REQUIRED) -->
+<link rel="stylesheet" href="css/minimal-base.css">
+<!-- Time Slot Dynamic Loading Styles -->
+<link rel="stylesheet" href="css/time-slot-styles.css">
+
+<!-- Legacy CSS (may not exist) -->
 <link rel="stylesheet" href="css/vendor/default.css">
 <link rel="stylesheet" href="css/components/quickmenu.css">
 <link rel="stylesheet" href="css/components/top_menu.css">
@@ -35,6 +41,7 @@
 <link rel="stylesheet" href="css/api-components.css">
 <link rel="stylesheet" href="css/reservation-check.css">
 <link rel="stylesheet" href="css/reservation-limit.css">
+<!-- Time Slot JS API Client -->
 <script src="js/api-client.js"></script>
 <style>
 @import url(//fonts.googleapis.com/earlyaccess/nanumpenscript.css);
@@ -1219,6 +1226,38 @@ if (!document.getElementById('modal-mobile-fix-style')) {
     `;
     document.head.appendChild(style);
 }
+</script>
+
+<!-- Time Slot Dynamic Loading Script -->
+<script src="js/time-slot-loader.js"></script>
+<script>
+// Initialize TimeSlotLoader after DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if we're on the reservation form page
+    const serviceSelect = document.querySelector('#sh_service');
+    const dateInput = document.querySelector('#sh_checkday');
+    const timeSelect = document.querySelector('#sh_checktime');
+
+    if (serviceSelect && dateInput && timeSelect) {
+        // Initialize TimeSlotLoader
+        const timeSlotLoader = new TimeSlotLoader({
+            serviceSelect: '#sh_service',
+            dateInput: '#sh_checkday',
+            timeSelect: '#sh_checktime',
+            apiBaseURL: window.location.origin, // Use current domain
+            debug: false // Set to true for debugging
+        });
+
+        timeSlotLoader.init();
+
+        console.log('[TimeSlotLoader] Initialized successfully');
+
+        // Make loader globally accessible for debugging
+        window.timeSlotLoader = timeSlotLoader;
+    } else {
+        console.warn('[TimeSlotLoader] Required form elements not found, skipping initialization');
+    }
+});
 </script>
 
 </body>
