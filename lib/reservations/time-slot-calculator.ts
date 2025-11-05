@@ -2,41 +2,39 @@
  * Time Slot Calculator - Production-Ready Implementation
  *
  * Performance: O(n) time complexity, 5-minute cache, single DB query
+ * Type Safety: Full TypeScript support with Prisma types
  */
 
 import { prisma } from '@/lib/prisma';
 import { Period } from '@prisma/client';
+import {
+  TimeSlot,
+  TimeSlotResult,
+  ReservationForTimeSlot,
+  ReservationErrorMetadata,
+  CachedReservationData,
+  DAY_OF_WEEK_MAP,
+} from './types';
+
+// Re-export types for external use
+export type {
+  TimeSlot,
+  TimeSlotResult,
+  ReservationForTimeSlot,
+  ReservationErrorMetadata,
+  CachedReservationData,
+} from './types';
 
 // ============================================================================
-// Types
+// Error Handling
 // ============================================================================
-
-export interface TimeSlot {
-  time: string;
-  period: Period;
-  available: boolean;
-  remaining: number;
-  total: number;
-  status: 'available' | 'limited' | 'full';
-}
-
-export interface TimeSlotResult {
-  slots: TimeSlot[];
-  metadata: {
-    date: string;
-    service: string;
-    serviceName: string;
-    totalSlots: number;
-    availableSlots: number;
-    bookedSlots: number;
-  };
-}
 
 export class ReservationError extends Error {
   constructor(
     message: string,
-    public code: string,
-    public metadata?: any
+    public readonly code: string,
+    public readonly metadata: ReservationErrorMetadata = {},
+    public readonly httpStatus: number = 500
   ) {
     super(message);
     this.name = 'ReservationError';
@@ -47,30 +45,30 @@ export class ReservationError extends Error {
 // Cache
 // ============================================================================
 
-interface CachedData {
-  reservations: any[];
-  timestamp: number;
-}
-
-const cache = new Map<string, CachedData>();
+const reservationCache = new Map<string, CachedReservationData>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-function getCachedReservations(dateString: string): any[] | null {
-  const cached = cache.get(dateString);
+function getCachedReservations(dateString: string): ReservationForTimeSlot[] | null {
+  const cached = reservationCache.get(dateString);
   if (!cached) return null;
 
-  if (Date.now() - cached.timestamp > CACHE_TTL) {
-    cache.delete(dateString);
+  if (Date.now() - cached.timestamp > cached.ttl) {
+    reservationCache.delete(dateString);
     return null;
   }
 
   return cached.reservations;
 }
 
-function setCachedReservations(dateString: string, reservations: any[]) {
-  cache.set(dateString, {
+function setCachedReservations(
+  dateString: string,
+  reservations: ReservationForTimeSlot[],
+  ttl: number = CACHE_TTL
+): void {
+  reservationCache.set(dateString, {
     reservations,
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    ttl,
   });
 }
 
@@ -83,6 +81,8 @@ export async function calculateAvailableTimeSlots(
   dateString: string,
   debug: boolean = false
 ): Promise<TimeSlotResult> {
+  if (debug) console.log('[Calculator] Step 1: Validating inputs', { serviceCode, dateString });
+
   // 1. Validate inputs
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
   if (!dateRegex.test(dateString)) {
@@ -94,10 +94,14 @@ export async function calculateAvailableTimeSlots(
     throw new ReservationError('Invalid date', 'INVALID_DATE');
   }
 
+  if (debug) console.log('[Calculator] Step 2: Getting service info for code:', serviceCode);
+
   // 2. Get service info
   const service = await prisma.services.findUnique({
     where: { code: serviceCode }
   });
+
+  if (debug) console.log('[Calculator] Service found:', service ? { id: service.id, name: service.name } : 'NOT FOUND');
 
   if (!service) {
     throw new ReservationError(
@@ -109,25 +113,29 @@ export async function calculateAvailableTimeSlots(
   const totalDuration = service.durationMinutes + service.bufferMinutes;
 
   // 3. Get clinic time slots for the day
-  const dayOfWeek = [
-    'SUNDAY',
-    'MONDAY',
-    'TUESDAY',
-    'WEDNESDAY',
-    'THURSDAY',
-    'FRIDAY',
-    'SATURDAY'
-  ][targetDate.getDay()];
+  const dayOfWeek = DAY_OF_WEEK_MAP[targetDate.getDay()];
+  if (!dayOfWeek) {
+    throw new ReservationError(
+      `Invalid day of week: ${targetDate.getDay()}`,
+      'INVALID_DAY_OF_WEEK',
+      { requestedDate: dateString },
+      400
+    );
+  }
+
+  if (debug) console.log('[Calculator] Step 3: Getting clinic slots for', { dayOfWeek, serviceId: service.id });
 
   const clinicSlots = await prisma.clinic_time_slots.findMany({
     where: {
-      dayOfWeek: dayOfWeek as any,
+      dayOfWeek: dayOfWeek,
       OR: [
         { serviceId: null },
         { serviceId: service.id }
       ]
     }
   });
+
+  if (debug) console.log('[Calculator] Clinic slots found:', clinicSlots.length);
 
   if (clinicSlots.length === 0) {
     throw new ReservationError(
@@ -164,8 +172,8 @@ export async function calculateAvailableTimeSlots(
   }
 
   // 5. Group reservations by time (O(n))
-  const reservationsByTime = new Map<string, any[]>();
-  existingReservations.forEach((r: any) => {
+  const reservationsByTime = new Map<string, ReservationForTimeSlot[]>();
+  existingReservations.forEach((r) => {
     const key = `${r.period}-${r.preferredTime || r.timeSlotStart}`;
     if (!reservationsByTime.has(key)) {
       reservationsByTime.set(key, []);
@@ -260,11 +268,27 @@ export async function validateTimeSlotAvailability(
   if (!requestedSlot) {
     throw new ReservationError(
       '요청한 시간대가 존재하지 않습니다',
-      'TIME_SLOT_NOT_FOUND'
+      'TIME_SLOT_NOT_FOUND',
+      {
+        requestedDate: dateString,
+        requestedPeriod: period,
+        serviceCode: serviceCode,
+      },
+      404
     );
   }
 
   if (!requestedSlot.available) {
+    // Get service info for required minutes
+    const service = await prisma.services.findUnique({
+      where: { code: serviceCode },
+      select: { durationMinutes: true, bufferMinutes: true }
+    });
+
+    const requiredMinutes = service
+      ? service.durationMinutes + service.bufferMinutes
+      : 30;
+
     // Find suggested times
     const suggestedTimes = result.slots
       .filter(s => s.available && s.period === period)
@@ -277,8 +301,12 @@ export async function validateTimeSlotAvailability(
       {
         suggestedTimes,
         remainingMinutes: requestedSlot.remaining,
-        requiredMinutes: 30 // TODO: get from service
-      }
+        requiredMinutes: requiredMinutes,
+        requestedDate: dateString,
+        requestedPeriod: period,
+        serviceCode: serviceCode,
+      },
+      409
     );
   }
 }
@@ -288,9 +316,9 @@ export async function validateTimeSlotAvailability(
 // ============================================================================
 
 export function clearCache() {
-  cache.clear();
+  reservationCache.clear();
 }
 
 export function invalidateDate(dateString: string) {
-  cache.delete(dateString);
+  reservationCache.delete(dateString);
 }

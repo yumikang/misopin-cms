@@ -38,6 +38,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Clock, Phone, Mail, User, FileText, Search } from "lucide-react";
+import TimeSlotGrid from "@/components/admin/TimeSlotGrid";
+import ServiceSelector from "@/components/admin/ServiceSelector";
+import CapacityIndicator from "@/components/admin/CapacityIndicator";
 
 interface Reservation {
   id: string;
@@ -62,6 +65,8 @@ interface ReservationInput {
   patient_name: string;
   patient_phone: string;
   patient_email?: string;
+  birth_date?: string;
+  gender?: 'MALE' | 'FEMALE';
   reservation_date: string;
   reservation_time: string;
   department: string;
@@ -116,6 +121,7 @@ export default function ReservationsPage() {
   const [filterDepartment, setFilterDepartment] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<any | null>(null);
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -128,6 +134,8 @@ export default function ReservationsPage() {
     patient_name: "",
     patient_phone: "",
     patient_email: "",
+    birth_date: "",
+    gender: undefined,
     reservation_date: "",
     reservation_time: "",
     department: "",
@@ -623,56 +631,79 @@ export default function ReservationsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="reservation_date">예약일 *</Label>
+                  <Label htmlFor="birth_date">생년월일</Label>
                   <Input
-                    id="reservation_date"
+                    id="birth_date"
                     type="date"
-                    value={formData.reservation_date}
-                    onChange={(e) => {
-                      setFormData({ ...formData, reservation_date: e.target.value });
-                      fetchAvailableSlots(e.target.value, formData.department);
-                    }}
-                    min={new Date().toISOString().split('T')[0]}
-                    required
+                    value={formData.birth_date || ""}
+                    onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="reservation_time">예약 시간 *</Label>
+                  <Label htmlFor="gender">성별</Label>
                   <Select
-                    value={formData.reservation_time}
-                    onValueChange={(value) => setFormData({ ...formData, reservation_time: value })}
+                    value={formData.gender}
+                    onValueChange={(value: 'MALE' | 'FEMALE') => setFormData({ ...formData, gender: value })}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="시간 선택" />
+                    <SelectTrigger id="gender">
+                      <SelectValue placeholder="성별 선택" />
                     </SelectTrigger>
                     <SelectContent>
-                      {availableSlots.map(slot => (
-                        <SelectItem key={slot} value={slot}>{slot}</SelectItem>
-                      ))}
+                      <SelectItem value="MALE">남성</SelectItem>
+                      <SelectItem value="FEMALE">여성</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
+              <div>
+                <Label htmlFor="reservation_date">예약일 *</Label>
+                <Input
+                  id="reservation_date"
+                  type="date"
+                  value={formData.reservation_date}
+                  onChange={(e) => {
+                    setFormData({ ...formData, reservation_date: e.target.value });
+                    setSelectedTimeSlot(null);
+                  }}
+                  min={new Date().toISOString().split('T')[0]}
+                  required
+                />
+              </div>
+
+              {/* Time Slot Grid */}
+              {formData.reservation_date && formData.department && (
+                <div>
+                  <Label>시간대 선택 *</Label>
+                  <TimeSlotGrid
+                    date={formData.reservation_date}
+                    service={formData.department}
+                    selectedSlot={selectedTimeSlot}
+                    onSelect={(slot) => {
+                      setSelectedTimeSlot(slot);
+                      setFormData({
+                        ...formData,
+                        reservation_time: slot.time
+                      });
+                    }}
+                    className="mt-2"
+                  />
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="department">진료과 *</Label>
-                  <Select
+                  <ServiceSelector
                     value={formData.department}
-                    onValueChange={(value) => {
+                    onChange={(value) => {
                       setFormData({ ...formData, department: value });
-                      fetchAvailableSlots(formData.reservation_date, value);
+                      setSelectedTimeSlot(null);
                     }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="진료과 선택" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {departments.map(dept => (
-                        <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    showLabel={true}
+                    label="진료 항목"
+                    required={true}
+                    showDetails={false}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="doctor_name">담당 의사</Label>

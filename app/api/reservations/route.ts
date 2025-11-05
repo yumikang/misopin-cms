@@ -1,14 +1,68 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { Prisma, Period } from '@prisma/client';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // Get reservations from database using Prisma
+    const { searchParams } = new URL(request.url);
+
+    // Build dynamic where clause based on query parameters
+    const where: Prisma.reservationsWhereInput = {};
+
+    // Date filter
+    const date = searchParams.get('date');
+    if (date) {
+      const targetDate = new Date(date);
+      where.preferredDate = {
+        gte: new Date(targetDate.setHours(0, 0, 0, 0)),
+        lt: new Date(targetDate.setHours(23, 59, 59, 999))
+      };
+    }
+
+    // Status filter
+    const status = searchParams.get('status');
+    if (status && status !== 'all') {
+      where.status = status as any;
+    }
+
+    // Department/Service filter
+    const department = searchParams.get('department');
+    if (department && department !== 'all') {
+      where.service = department as any;
+    }
+
+    // Search filter (name or phone)
+    const search = searchParams.get('search');
+    if (search) {
+      where.OR = [
+        { patientName: { contains: search, mode: 'insensitive' } },
+        { phone: { contains: search } }
+      ];
+    }
+
+    // Period filter (for time-slot based view)
+    const period = searchParams.get('period');
+    if (period && period !== 'all') {
+      where.period = period as any;
+    }
+
+    // Pagination
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const total = await prisma.reservations.count({ where });
+
+    // Get reservations from database with filters
     const reservations = await prisma.reservations.findMany({
-      orderBy: {
-        createdAt: 'desc'
-      }
+      where,
+      orderBy: [
+        { preferredDate: 'desc' },
+        { preferredTime: 'asc' }
+      ],
+      take: limit,
+      skip
     });
 
     // Transform data to match frontend expectations
@@ -25,14 +79,35 @@ export async function GET() {
       status: reservation.status,
       notes: reservation.notes,
       created_at: reservation.createdAt.toISOString(),
-      updated_at: reservation.updatedAt.toISOString()
+      updated_at: reservation.updatedAt.toISOString(),
+      // Include time slot fields for new admin UI
+      period: reservation.period,
+      time_slot_start: reservation.timeSlotStart,
+      time_slot_end: reservation.timeSlotEnd,
+      service_duration: reservation.estimatedDuration
     }));
 
-    return NextResponse.json(transformedData);
+    // Backward compatibility: if no pagination requested, return array directly
+    const returnPagination = searchParams.get('paginate') === 'true';
+
+    if (returnPagination) {
+      return NextResponse.json({
+        data: transformedData,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit)
+        }
+      });
+    } else {
+      // Legacy format: return array directly
+      return NextResponse.json(transformedData);
+    }
   } catch (error) {
     console.error('Error in reservations GET:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
@@ -188,45 +263,93 @@ const timeSlots = [
 ];
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  try {
+    const body = await request.json();
 
-  // Check for time slot availability
-  const existingReservation = mockReservations.find(
-    r => r.reservation_date === body.reservation_date &&
-        r.reservation_time === body.reservation_time &&
-        r.department === body.department &&
-        r.status !== 'CANCELLED'
-  );
+    // Validate required fields
+    if (!body.patient_name || !body.patient_phone || !body.reservation_date || !body.reservation_time || !body.department) {
+      return NextResponse.json(
+        { error: '필수 정보가 누락되었습니다.' },
+        { status: 400 }
+      );
+    }
 
-  if (existingReservation) {
+    // Check for time slot availability in real database
+    const reservationDate = new Date(body.reservation_date);
+    const existingReservations = await prisma.reservations.findMany({
+      where: {
+        preferredDate: {
+          gte: new Date(reservationDate.setHours(0, 0, 0, 0)),
+          lt: new Date(reservationDate.setHours(23, 59, 59, 999))
+        },
+        service: body.department,
+        preferredTime: body.reservation_time,
+        status: {
+          in: ['PENDING', 'CONFIRMED']
+        }
+      }
+    });
+
+    if (existingReservations.length > 0) {
+      return NextResponse.json(
+        { error: '해당 시간대는 이미 예약이 있습니다.' },
+        { status: 400 }
+      );
+    }
+
+    // Create new reservation in database
+    const { randomUUID } = await import('crypto');
+    const newReservation = await prisma.reservations.create({
+      data: {
+        id: randomUUID(),
+        patientName: body.patient_name,
+        phone: body.patient_phone,
+        email: body.patient_email || null,
+        birthDate: body.birth_date ? new Date(body.birth_date) : new Date('1990-01-01'), // Default if not provided
+        gender: body.gender || 'FEMALE', // Default gender
+        treatmentType: body.purpose === '초진' ? 'FIRST_VISIT' : 'FOLLOW_UP',
+        preferredDate: new Date(body.reservation_date),
+        preferredTime: body.reservation_time,
+        service: body.department,
+        status: 'PENDING',
+        notes: body.notes || null,
+        updatedAt: new Date(),
+        // Support both legacy and new time slot fields
+        period: body.period || null,
+        timeSlotStart: body.time_slot_start || body.reservation_time,
+        timeSlotEnd: body.time_slot_end || null,
+        estimatedDuration: body.service_duration || null
+      }
+    });
+
+    // Transform response to match frontend expectations
+    const response = {
+      id: newReservation.id,
+      patient_name: newReservation.patientName,
+      patient_phone: newReservation.phone,
+      patient_email: newReservation.email,
+      reservation_date: newReservation.preferredDate.toISOString().split('T')[0],
+      reservation_time: newReservation.preferredTime,
+      department: newReservation.service,
+      doctor_name: '',
+      purpose: newReservation.treatmentType === 'FIRST_VISIT' ? '초진' : '재진',
+      status: newReservation.status,
+      notes: newReservation.notes,
+      created_at: newReservation.createdAt.toISOString(),
+      updated_at: newReservation.updatedAt.toISOString()
+    };
+
+    return NextResponse.json({
+      reservation: response,
+      message: '예약이 접수되었습니다. 확인 후 연락드리겠습니다.'
+    }, { status: 201 });
+  } catch (error) {
+    console.error('Error in POST /api/reservations:', error);
     return NextResponse.json(
-      { error: '해당 시간대는 이미 예약이 있습니다.' },
-      { status: 400 }
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
     );
   }
-
-  const newReservation: Reservation = {
-    id: Date.now().toString(),
-    patient_name: body.patient_name,
-    patient_phone: body.patient_phone,
-    patient_email: body.patient_email,
-    reservation_date: body.reservation_date,
-    reservation_time: body.reservation_time,
-    department: body.department,
-    doctor_name: body.doctor_name,
-    purpose: body.purpose,
-    status: 'PENDING',
-    notes: body.notes,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
-
-  mockReservations.push(newReservation);
-
-  return NextResponse.json({
-    reservation: newReservation,
-    message: '예약이 접수되었습니다. 확인 후 연락드리겠습니다.'
-  }, { status: 201 });
 }
 
 export async function PUT(request: Request) {
@@ -363,36 +486,67 @@ export async function DELETE(request: Request) {
   }
 }
 
-// Get available time slots for a specific date and department
+// Get available time slots for a specific date and service using real calculator
 export async function OPTIONS(request: Request) {
   const { searchParams } = new URL(request.url);
   const date = searchParams.get('date');
-  const department = searchParams.get('department');
+  const service = searchParams.get('service') || searchParams.get('department');
 
-  if (!date || !department) {
+  if (!date || !service) {
     return NextResponse.json(
-      { error: 'Date and department are required' },
+      { error: 'Date and service are required' },
       { status: 400 }
     );
   }
 
-  // Get occupied slots
-  const occupiedSlots = mockReservations
-    .filter(r =>
-      r.reservation_date === date &&
-      r.department === department &&
-      r.status !== 'CANCELLED'
-    )
-    .map(r => r.reservation_time);
+  try {
+    console.log('[OPTIONS] Starting time slot calculation for:', { service, date });
 
-  // Return available slots
-  const availableSlots = timeSlots.filter(slot => !occupiedSlots.includes(slot));
+    // Import time slot calculator dynamically
+    const { calculateAvailableTimeSlots } = await import('@/lib/reservations/time-slot-calculator');
 
-  return NextResponse.json({
-    date,
-    department,
-    availableSlots,
-    totalSlots: timeSlots.length,
-    occupiedSlots: occupiedSlots.length
-  });
+    console.log('[OPTIONS] Calculator imported, calling function...');
+
+    // Calculate available time slots using the real calculator
+    const result = await calculateAvailableTimeSlots(service, date, false);
+
+    console.log('[OPTIONS] Calculation completed:', {
+      slotsCount: result.slots.length,
+      availableCount: result.slots.filter(s => s.available).length,
+      serviceName: result.metadata.serviceName
+    });
+
+    // Group slots by period for easier consumption
+    const slotsByPeriod = {
+      MORNING: result.slots.filter(s => s.period === Period.MORNING),
+      AFTERNOON: result.slots.filter(s => s.period === Period.AFTERNOON),
+      EVENING: result.slots.filter(s => s.period === 'EVENING' as any)
+    };
+
+    // Get total counts
+    const totalSlots = result.slots.length;
+    const availableSlots = result.slots.filter(s => s.available).length;
+    const occupiedSlots = totalSlots - availableSlots;
+
+    return NextResponse.json({
+      success: true,
+      date,
+      service,
+      serviceName: result.metadata.serviceName,
+      slots: result.slots,
+      slotsByPeriod,
+      summary: {
+        totalSlots,
+        availableSlots,
+        occupiedSlots,
+        availabilityRate: totalSlots > 0 ? (availableSlots / totalSlots * 100).toFixed(1) : 0
+      }
+    });
+  } catch (error) {
+    console.error('Error in OPTIONS /api/reservations:', error);
+    return NextResponse.json(
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
 }
