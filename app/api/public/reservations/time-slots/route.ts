@@ -67,11 +67,12 @@ import {
  * }
  */
 export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const serviceCode = searchParams.get('service');
+  const dateString = searchParams.get('date');
+  const debug = searchParams.get('debug') === 'true';
+
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const serviceCode = searchParams.get('service');
-    const dateString = searchParams.get('date');
-    const debug = searchParams.get('debug') === 'true';
 
     // Validate required parameters
     if (!serviceCode) {
