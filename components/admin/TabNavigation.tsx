@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { List, Calendar, BarChart3 } from "lucide-react";
+import { List, Calendar } from "lucide-react";
 
 interface Tab {
   label: string;
@@ -21,11 +21,6 @@ const tabs: Tab[] = [
     label: "타임라인",
     href: "/admin/reservations/timeline",
     icon: <Calendar className="h-4 w-4" />
-  },
-  {
-    label: "통계",
-    href: "/admin/reservations/stats",
-    icon: <BarChart3 className="h-4 w-4" />
   }
 ];
 
