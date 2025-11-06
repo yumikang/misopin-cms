@@ -81,8 +81,9 @@ const TimeSlotGrid = ({
 
         const data = await response.json();
 
-        if (data.success && data.slots) {
-          setSlots(data.slots);
+        if (data.success) {
+          // Empty slots array is valid (e.g., holidays, weekends)
+          setSlots(data.slots || []);
         } else {
           throw new Error(data.error || data.message || '시간대 정보를 불러오지 못했습니다');
         }
@@ -240,13 +241,17 @@ const TimeSlotGrid = ({
     );
   }
 
-  // Empty state
+  // Empty state (e.g., holidays, weekends)
   if (slots.length === 0) {
     return (
       <Alert className={className}>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          선택한 날짜와 서비스에 대한 시간대가 없습니다.
+          선택한 날짜는 예약 가능한 시간대가 없습니다.
+          <br />
+          <span className="text-xs text-muted-foreground">
+            (주말, 공휴일 또는 휴진일일 수 있습니다)
+          </span>
         </AlertDescription>
       </Alert>
     );
