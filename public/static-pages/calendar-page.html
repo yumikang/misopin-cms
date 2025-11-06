@@ -604,7 +604,7 @@ textarea:focus {
         <i class="fa fa-calendar"></i>
         예약하기
     </a>
-    <a href="tel:02-123-4567" class="phone">
+    <a href="tel:061-277-1001" class="phone">
         <i class="fa fa-phone"></i>
         전화상담
     </a>
@@ -733,19 +733,7 @@ jQuery(function($){
                 <li>
                     <label for="sh_checktime">예약 선택 시간</label>
                     <select name="sh_checktime" id="sh_checktime" required>
-                        <option value="">예약 시간을 선택해주세요.</option>
-                        <option value="09:00">오전 09:00</option>
-                        <option value="09:30">오전 09:30</option>
-                        <option value="10:00">오전 10:00</option>
-                        <option value="10:30">오전 10:30</option>
-                        <option value="11:00">오전 11:00</option>
-                        <option value="11:30">오전 11:30</option>
-                        <option value="14:00">오후 02:00</option>
-                        <option value="14:30">오후 02:30</option>
-                        <option value="15:00">오후 03:00</option>
-                        <option value="15:30">오후 03:30</option>
-                        <option value="16:00">오후 04:00</option>
-                        <option value="16:30">오후 04:30</option>
+                        <option value="">먼저 희망 진료 항목을 선택해주세요</option>
                     </select>
                 </li>
                 <li>
@@ -1049,7 +1037,7 @@ async function submitReservation(event) {
     } catch (error) {
         console.error('Reservation error:', error);
         console.error('Error details:', error.message, error.stack);
-        alert('예약 접수 중 오류가 발생했습니다.\n전화로 문의해주시기 바랍니다. (02-1234-5678)\n\n에러: ' + error.message);
+        alert('예약 접수 중 오류가 발생했습니다.\n전화로 문의해주시기 바랍니다. (061-277-1001)\n\n에러: ' + error.message);
     }
 
     return false;
@@ -1218,8 +1206,158 @@ if (!document.getElementById('modal-mobile-fix-style')) {
 }
 </script>
 
-<!-- Time Slot Dynamic Loading Script -->
-<script src="/js/time-slot-loader.js"></script>
+<!-- Time Slot Dynamic Loading Script (Inline) -->
+<script>
+/**
+ * TimeSlotLoader - 동적 시간 슬롯 로더
+ * CMS API에서 실시간 예약 가능 시간을 가져옵니다.
+ */
+class TimeSlotLoader {
+  constructor(config) {
+    this.serviceSelect = document.querySelector(config.serviceSelect);
+    this.dateInput = document.querySelector(config.dateInput);
+    this.timeSelect = document.querySelector(config.timeSelect);
+    this.apiBaseURL = config.apiBaseURL || '';
+    this.debug = config.debug || false;
+    this.isLoading = false;
+    this.lastLoadedKey = null;
+    this.cache = new Map();
+    this.cacheTTL = 5 * 60 * 1000; // 5분
+  }
+
+  init() {
+    if (!this.serviceSelect || !this.dateInput || !this.timeSelect) {
+      console.warn('TimeSlotLoader: Cannot initialize - missing elements');
+      return;
+    }
+
+    this.serviceSelect.addEventListener('change', () => this.loadTimeSlots());
+    this.dateInput.addEventListener('change', () => this.loadTimeSlots());
+    this.log('TimeSlotLoader initialized');
+
+    if (this.serviceSelect.value && this.dateInput.value) {
+      this.loadTimeSlots();
+    }
+  }
+
+  async loadTimeSlots() {
+    const date = this.dateInput.value;
+    const service = this.serviceSelect.value;
+
+    // 날짜가 없으면 빈 상태로 유지
+    if (!date) {
+      this.renderEmptyMessage('예약 날짜를 먼저 선택해주세요');
+      return;
+    }
+
+    // 시술이 선택되지 않았으면 안내 메시지 표시
+    if (!service) {
+      this.renderEmptyMessage('먼저 희망 진료 항목을 선택해주세요');
+      return;
+    }
+
+    const cacheKey = `${service}-${date}`;
+    const cached = this.getCache(cacheKey);
+    if (cached) {
+      this.log('Loading from cache:', cacheKey);
+      this.renderTimeSlots(cached.slots);
+      return;
+    }
+
+    this.setLoading(true);
+
+    try {
+      const url = `${this.apiBaseURL}/api/public/reservations/time-slots?service=${encodeURIComponent(service)}&date=${encodeURIComponent(date)}`;
+      this.log('Fetching:', url);
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to fetch time slots');
+      }
+
+      this.setCache(cacheKey, data);
+      this.lastLoadedKey = cacheKey;
+      this.renderTimeSlots(data.slots);
+      this.log('Loaded time slots:', data.slots.length);
+
+    } catch (error) {
+      console.error('Error loading time slots:', error);
+      this.renderEmptyMessage('예약 시간을 불러올 수 없습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  renderTimeSlots(slots) {
+    this.timeSelect.innerHTML = '<option value="">예약 시간을 선택해주세요.</option>';
+
+    if (!slots || slots.length === 0) {
+      this.renderStaticTimes();
+      return;
+    }
+
+    slots.forEach(slot => {
+      const option = document.createElement('option');
+      option.value = slot.time;
+      option.textContent = this.formatSlotLabel(slot);
+
+      if (!slot.available) {
+        option.disabled = true;
+        option.textContent += ' (마감)';
+      }
+
+      option.dataset.status = slot.status;
+      option.dataset.remaining = slot.remaining;
+      this.timeSelect.appendChild(option);
+    });
+  }
+
+  renderEmptyMessage(message) {
+    this.timeSelect.innerHTML = `<option value="">${message}</option>`;
+    this.log('Rendered empty message:', message);
+  }
+
+  formatSlotLabel(slot) {
+    const periodLabel = slot.period === 'MORNING' ? '오전' : '오후';
+    const [hours, minutes] = slot.time.split(':');
+    let label = `${periodLabel} ${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+
+    if (slot.status === 'available') label += ' ✓';
+    else if (slot.status === 'limited') label += ' ⚠';
+    else if (slot.status === 'full') label += ' ✕';
+
+    return label;
+  }
+
+  setLoading(loading) {
+    this.isLoading = loading;
+    this.timeSelect.disabled = loading;
+    if (loading) {
+      this.timeSelect.innerHTML = '<option value="">로딩 중...</option>';
+    }
+  }
+
+  setCache(key, data) {
+    this.cache.set(key, { data: data, timestamp: Date.now() });
+  }
+
+  getCache(key) {
+    const cached = this.cache.get(key);
+    if (!cached) return null;
+    if (Date.now() - cached.timestamp > this.cacheTTL) {
+      this.cache.delete(key);
+      return null;
+    }
+    return cached.data;
+  }
+
+  log(...args) {
+    if (this.debug) console.log('[TimeSlotLoader]', ...args);
+  }
+}
+</script>
 <script>
 // Initialize TimeSlotLoader after DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -1234,8 +1372,8 @@ document.addEventListener('DOMContentLoaded', function() {
             serviceSelect: '#sh_service',
             dateInput: '#sh_checkday',
             timeSelect: '#sh_checktime',
-            apiBaseURL: window.location.origin, // Use current domain
-            debug: false // Set to true for debugging
+            apiBaseURL: 'https://cms.one-q.xyz', // CMS API endpoint
+            debug: true // Enable debugging to see what's happening
         });
 
         timeSlotLoader.init();

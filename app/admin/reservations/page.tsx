@@ -116,7 +116,7 @@ export default function ReservationsPage() {
   const [viewingReservation, setViewingReservation] = useState<Reservation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterDepartment, setFilterDepartment] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
