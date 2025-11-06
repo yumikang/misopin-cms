@@ -78,20 +78,23 @@ export async function GET(request: Request) {
       purpose: reservation.treatmentType === 'FIRST_VISIT' ? '초진' : '재진',
       status: reservation.status,
       notes: reservation.notes,
+      admin_notes: reservation.adminNotes,
       created_at: reservation.createdAt.toISOString(),
       updated_at: reservation.updatedAt.toISOString(),
       // Include time slot fields for new admin UI
       period: reservation.period,
-      time_slot_start: reservation.timeSlotStart,
-      time_slot_end: reservation.timeSlotEnd,
-      service_duration: reservation.estimatedDuration
+      timeSlotStart: reservation.timeSlotStart,
+      timeSlotEnd: reservation.timeSlotEnd,
+      serviceName: reservation.serviceName,
+      estimatedDuration: reservation.estimatedDuration
     }));
 
-    // Backward compatibility: if no pagination requested, return array directly
+    // Return consistent response format
     const returnPagination = searchParams.get('paginate') === 'true';
 
     if (returnPagination) {
       return NextResponse.json({
+        success: true,
         data: transformedData,
         pagination: {
           total,
@@ -101,13 +104,21 @@ export async function GET(request: Request) {
         }
       });
     } else {
-      // Legacy format: return array directly
-      return NextResponse.json(transformedData);
+      // Return with success flag for timeline view
+      return NextResponse.json({
+        success: true,
+        data: transformedData,
+        total
+      });
     }
   } catch (error) {
     console.error('Error in reservations GET:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        success: false,
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
