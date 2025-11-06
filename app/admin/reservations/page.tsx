@@ -338,12 +338,6 @@ export default function ReservationsPage() {
           <p className="text-gray-600 mt-1">진료 예약을 관리합니다</p>
         </div>
         <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={() => router.push('/admin/reservations/daily-limits')}
-          >
-            📊 예약 한도 수정
-          </Button>
           <Button onClick={() => handleOpenDialog()}>
             새 예약 등록
           </Button>

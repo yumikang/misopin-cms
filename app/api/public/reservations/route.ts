@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Gender, TreatmentType, ReservationStatus, ServiceType, Period } from '@prisma/client';
-import { canCreateReservation } from '@/lib/reservations/daily-limit-counter';
 import { validateTimeSlotAvailability } from '@/lib/reservations/time-slot-calculator';
 
 export async function POST(request: NextRequest) {
@@ -92,84 +91,67 @@ export async function POST(request: NextRequest) {
           timeSlotEnd = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
         }
 
-        // Validate time slot availability (new system)
-        // Only validate if we have complete time slot information
-        if (period && timeSlotStart && serviceId) {
-          try {
-            await validateTimeSlotAvailability(
-              serviceType,
-              preferredDate.toISOString().split('T')[0],
-              timeSlotStart,
-              period
-            );
-          } catch (validationError: any) {
-            // Time-based validation failed
-            if (validationError.code === 'TIME_SLOT_FULL') {
-              return NextResponse.json(
-                {
-                  error: 'Time slot not available',
-                  message: validationError.message,
-                  code: validationError.code,
-                  suggestedTimes: validationError.metadata?.suggestedTimes || []
-                },
-                {
-                  status: 409,
-                  headers: {
-                    'Access-Control-Allow-Origin': '*',
-                  }
-                }
-              );
-            }
-            // Other validation errors - log but continue with legacy validation
-            console.warn('Time-based validation failed, falling back to legacy:', validationError);
-          }
+        // Validate time slot availability (TIME-BASED SYSTEM - MANDATORY)
+        if (!period || !timeSlotStart || !serviceId) {
+          throw new Error('SERVICE_NOT_CONFIGURED');
         }
+
+        await validateTimeSlotAvailability(
+          serviceType,
+          preferredDate.toISOString().split('T')[0],
+          timeSlotStart,
+          period
+        );
       }
-    } catch (serviceError) {
-      // Service not found - continue with legacy validation only
-      console.warn('Service not found in new system, using legacy validation only:', serviceError);
+    } catch (serviceError: any) {
+      // Service not found or validation failed
+      if (serviceError.code === 'TIME_SLOT_FULL') {
+        return NextResponse.json(
+          {
+            error: 'Time slot not available',
+            message: serviceError.message,
+            code: serviceError.code,
+            suggestedTimes: serviceError.metadata?.suggestedTimes || []
+          },
+          {
+            status: 409,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            }
+          }
+        );
+      }
+      throw serviceError;
     }
 
-    // Create reservation with limit validation using transaction
-    const reservation = await prisma.$transaction(async (tx) => {
-      // 1. Check if reservation can be created (LEGACY: uses FOR UPDATE lock)
-      const canCreate = await canCreateReservation(tx, preferredDate, serviceType);
-
-      if (!canCreate) {
-        throw new Error('RESERVATION_FULL');
+    // Create reservation (TIME-BASED SYSTEM)
+    const reservation = await prisma.reservations.create({
+      data: {
+        id: crypto.randomUUID(),
+        patientName: body.patient_name,
+        phone: body.phone,
+        email: body.email || null,
+        birthDate: birthDate,
+        gender: body.gender as Gender,
+        treatmentType: body.treatment_type as TreatmentType,
+        // LEGACY FIELDS (for backward compatibility)
+        service: serviceType,
+        preferredDate: preferredDate,
+        preferredTime: body.preferred_time,
+        // NEW TIME-BASED FIELDS
+        serviceId: serviceId,
+        serviceName: serviceName,
+        estimatedDuration: estimatedDuration,
+        period: period,
+        timeSlotStart: timeSlotStart,
+        timeSlotEnd: timeSlotEnd,
+        // STATUS FIELDS
+        status: 'PENDING' as ReservationStatus,
+        notes: body.notes || null,
+        adminNotes: null,
+        statusChangedAt: new Date(),
+        updatedAt: new Date()
       }
-
-      // 2. Create reservation (DUAL-WRITE: legacy + new fields)
-      const newReservation = await tx.reservations.create({
-        data: {
-          id: crypto.randomUUID(),
-          patientName: body.patient_name,
-          phone: body.phone,
-          email: body.email || null,
-          birthDate: birthDate,
-          gender: body.gender as Gender,
-          treatmentType: body.treatment_type as TreatmentType,
-          // LEGACY FIELDS
-          service: serviceType,
-          preferredDate: preferredDate,
-          preferredTime: body.preferred_time,
-          // NEW TIME-BASED FIELDS
-          serviceId: serviceId,
-          serviceName: serviceName,
-          estimatedDuration: estimatedDuration,
-          period: period,
-          timeSlotStart: timeSlotStart,
-          timeSlotEnd: timeSlotEnd,
-          // STATUS FIELDS
-          status: 'PENDING' as ReservationStatus,
-          notes: body.notes || null,
-          adminNotes: null,
-          statusChangedAt: new Date(),
-          updatedAt: new Date()
-        }
-      });
-
-      return newReservation;
     });
 
     // Send success response
@@ -195,15 +177,15 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Reservation error:', error);
 
-    // Handle specific error: reservation limit reached
-    if (error instanceof Error && error.message === 'RESERVATION_FULL') {
+    // Handle specific error: service not configured
+    if (error instanceof Error && error.message === 'SERVICE_NOT_CONFIGURED') {
       return NextResponse.json(
         {
-          error: 'Reservation limit reached',
-          message: '해당 날짜의 예약이 마감되었습니다. 다른 날짜를 선택해 주세요.'
+          error: 'Service configuration error',
+          message: '해당 시술이 시스템에 등록되지 않았습니다. 관리자에게 문의하세요.'
         },
         {
-          status: 409,
+          status: 500,
           headers: {
             'Access-Control-Allow-Origin': '*',
           }

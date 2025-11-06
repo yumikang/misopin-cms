@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ServiceType } from '@prisma/client';
-import { checkAvailability } from '@/lib/reservations/daily-limit-counter';
+import { calculateAvailableTimeSlots } from '@/lib/reservations/time-slot-calculator';
 
 /**
  * GET /api/public/reservations/availability
- * Check availability for a specific date and service type
+ * Check time-based availability for a specific date and service type
  *
  * Query params:
  * - date: YYYY-MM-DD format
  * - serviceType: ServiceType enum value
  *
  * Returns:
- * - available: boolean
- * - remaining: number of available slots
- * - level: 'available' | 'limited' | 'full'
+ * - available: boolean (true if ANY time slots available)
+ * - slots: array of available time slots with percentage
+ * - totalSlots: total number of time slots
+ * - availableSlots: number of available slots
  * - message: Human-readable status message
  */
 export async function GET(request: NextRequest) {
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Parse date
+    // Validate date
     const date = new Date(dateParam);
     if (isNaN(date.getTime())) {
       return NextResponse.json(
@@ -57,30 +58,50 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check availability
-    const availability = await checkAvailability(
-      date,
-      serviceTypeParam as ServiceType
+    // Calculate time-based availability
+    const result = await calculateAvailableTimeSlots(
+      serviceTypeParam,
+      dateParam
     );
+
+    const availableSlots = result.slots.filter(slot => slot.available);
+    const totalSlots = result.slots.length;
+    const availableSlotsCount = availableSlots.length;
+    const available = availableSlotsCount > 0;
 
     // Generate user-friendly message
     let message: string;
-    if (availability.level === 'full') {
+    let level: 'available' | 'limited' | 'full';
+
+    if (availableSlotsCount === 0) {
       message = '해당 날짜는 예약이 마감되었습니다.';
+      level = 'full';
+    } else if (availableSlotsCount < totalSlots * 0.3) {
+      message = `예약 가능 시간이 제한적입니다. (${availableSlotsCount}개 시간대 남음)`;
+      level = 'limited';
     } else {
-      message = `예약 가능합니다. (잔여: ${availability.remaining}명)`;
+      message = `예약 가능합니다. (${availableSlotsCount}개 시간대 가능)`;
+      level = 'available';
     }
 
-    // Return availability info
+    // Return time-based availability info
     return NextResponse.json({
       date: dateParam,
       serviceType: serviceTypeParam,
-      available: availability.available,
-      remaining: availability.remaining,
-      currentCount: availability.currentCount,
-      limit: availability.dailyLimit,
-      level: availability.level,
-      message,
+      serviceName: result.metadata.serviceName,
+      available: available,
+      availableSlots: availableSlotsCount,
+      totalSlots: totalSlots,
+      level: level,
+      message: message,
+      slots: result.slots.map(slot => ({
+        time: slot.time,
+        period: slot.period,
+        available: slot.available,
+        remaining: slot.remaining,
+        total: slot.total,
+        status: slot.status
+      }))
     });
   } catch (error) {
     console.error('Error checking availability:', error);
