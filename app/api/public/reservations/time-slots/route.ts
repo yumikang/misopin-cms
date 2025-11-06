@@ -192,6 +192,26 @@ export async function GET(request: NextRequest) {
 
     // Handle ReservationError (structured errors from calculator)
     if (error instanceof ReservationError) {
+      // NO_CLINIC_HOURS is not an error - it's a valid state (weekends, holidays)
+      if (error.code === 'NO_CLINIC_HOURS') {
+        return NextResponse.json(
+          {
+            success: true,
+            slots: [],
+            message: error.message,
+            date: dateString,
+            service: serviceCode
+          },
+          {
+            status: 200,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Cache-Control': 'public, max-age=300, s-maxage=300',
+            }
+          }
+        );
+      }
+
       return NextResponse.json(
         {
           success: false,
