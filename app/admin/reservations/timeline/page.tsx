@@ -4,9 +4,10 @@ import { useState } from "react";
 import TabNavigation from "@/components/admin/TabNavigation";
 import DateNavigation from "@/components/admin/DateNavigation";
 import TimeSlotGrid from "@/components/admin/TimeSlotGrid";
+import ReservationTimeline from "@/components/admin/ReservationTimeline";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock } from "lucide-react";
+import { Clock, List } from "lucide-react";
 
 // Service options
 const SERVICES = [
@@ -78,20 +79,18 @@ export default function TimelinePage() {
         {/* Right Column: Timeline View (3/5 width) */}
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle>예약 타임라인</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <List className="h-5 w-5" />
+              예약 타임라인
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-center text-muted-foreground py-12">
-              <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>타임라인 뷰는 Day 3에서 구현됩니다</p>
-              <p className="text-sm mt-2">선택한 날짜: {date}</p>
-              <p className="text-sm">선택한 시술: {SERVICES.find(s => s.code === selectedService)?.name}</p>
-              {selectedSlot && (
-                <p className="text-sm mt-2 text-primary">
-                  선택한 시간: {selectedSlot.time} ({selectedSlot.period})
-                </p>
-              )}
-            </div>
+            <ReservationTimeline
+              date={date}
+              service={selectedService}
+              autoRefresh={true}
+              refreshInterval={30}
+            />
           </CardContent>
         </Card>
       </div>
