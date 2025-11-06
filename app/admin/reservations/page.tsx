@@ -38,6 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Clock, Phone, Mail, User, FileText, Search } from "lucide-react";
+import TabNavigation from "@/components/admin/TabNavigation";
 import TimeSlotGrid from "@/components/admin/TimeSlotGrid";
 import ServiceSelector from "@/components/admin/ServiceSelector";
 import CapacityIndicator from "@/components/admin/CapacityIndicator";
@@ -332,7 +333,7 @@ export default function ReservationsPage() {
 
   return (
     <div className="p-6">
-      <div className="mb-8 flex justify-between items-center">
+      <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">예약 관리</h1>
           <p className="text-gray-600 mt-1">진료 예약을 관리합니다</p>
@@ -343,6 +344,9 @@ export default function ReservationsPage() {
           </Button>
         </div>
       </div>
+
+      {/* Tab Navigation */}
+      <TabNavigation />
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">

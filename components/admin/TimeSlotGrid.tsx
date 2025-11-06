@@ -72,8 +72,7 @@ const TimeSlotGrid = ({
 
       try {
         const response = await fetch(
-          `/api/reservations?date=${date}&service=${service}`,
-          { method: 'OPTIONS' }
+          `/api/public/reservations/time-slots?service=${service}&date=${date}`
         );
 
         if (!response.ok) {
@@ -85,7 +84,7 @@ const TimeSlotGrid = ({
         if (data.success && data.slots) {
           setSlots(data.slots);
         } else {
-          throw new Error(data.error || '시간대 정보를 불러오지 못했습니다');
+          throw new Error(data.error || data.message || '시간대 정보를 불러오지 못했습니다');
         }
       } catch (err) {
         console.error('Error fetching time slots:', err);
