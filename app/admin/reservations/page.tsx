@@ -156,7 +156,16 @@ export default function ReservationsPage() {
       const response = await fetch(`/api/reservations?${params}`);
       if (!response.ok) throw new Error("Failed to fetch reservations");
       const data = await response.json();
-      setReservations(data);
+
+      // Handle new API response format
+      if (data.success && data.data) {
+        setReservations(data.data);
+      } else if (Array.isArray(data)) {
+        // Fallback for old format
+        setReservations(data);
+      } else {
+        setReservations([]);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load reservations");
     } finally {
