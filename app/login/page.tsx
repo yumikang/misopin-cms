@@ -31,8 +31,15 @@ export default function LoginPage() {
         setError(data.error || "로그인에 실패했습니다.");
       } else {
         // Store token and user info
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        try {
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("accessToken", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+        } catch (storageError) {
+          console.error("LocalStorage error:", storageError);
+          setError("브라우저 설정으로 인해 로그인할 수 없습니다. 시크릿 모드가 아닌 일반 모드로 시도해주세요.");
+          return;
+        }
 
         // Redirect to admin
         router.push("/admin");

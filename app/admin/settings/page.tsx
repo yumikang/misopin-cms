@@ -23,6 +23,7 @@ import { SeoSettings } from "./components/SeoSettings";
 import { BusinessSettings } from "./components/BusinessSettings";
 import { ApiSettings } from "./components/ApiSettings";
 import { ClinicInfoSettings } from "./components/ClinicInfoSettings";
+import { ServiceLimitSettings } from "./components/ServiceLimitSettings";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Setting[]>([]);
@@ -143,6 +144,8 @@ export default function SettingsPage() {
         return <SeoSettings {...commonProps} />;
       case 'business':
         return <BusinessSettings {...commonProps} />;
+      case 'reservations':
+        return <ServiceLimitSettings />;
       case 'api':
         return <ApiSettings {...commonProps} />;
       default:
@@ -181,7 +184,7 @@ export default function SettingsPage() {
       ) : (
         <>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+            <TabsList className="grid grid-cols-6 w-full max-w-4xl">
               {Object.entries(categoryInfo).map(([key, info]) => (
                 <TabsTrigger key={key} value={key}>
                   <span className="mr-1">{info.icon}</span>

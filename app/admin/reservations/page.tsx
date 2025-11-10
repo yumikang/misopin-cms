@@ -37,7 +37,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, Phone, Mail, User, FileText, Search } from "lucide-react";
+import { Clock, Phone, Mail, User, FileText, Search, Settings, Stethoscope } from "lucide-react";
+import TabNavigation from "@/components/admin/TabNavigation";
+import TimeSlotGrid from "@/components/admin/TimeSlotGrid";
+import ServiceSelector from "@/components/admin/ServiceSelector";
+import CapacityIndicator from "@/components/admin/CapacityIndicator";
+import { ServiceLimitSettings } from "@/app/admin/settings/components/ServiceLimitSettings";
+import ServicesPage from "@/app/admin/services/page";
 
 interface Reservation {
   id: string;
@@ -62,6 +68,8 @@ interface ReservationInput {
   patient_name: string;
   patient_phone: string;
   patient_email?: string;
+  birth_date?: string;
+  gender?: 'MALE' | 'FEMALE';
   reservation_date: string;
   reservation_time: string;
   department: string;
@@ -107,15 +115,18 @@ export default function ReservationsPage() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [limitSettingsOpen, setLimitSettingsOpen] = useState(false);
+  const [serviceManagementOpen, setServiceManagementOpen] = useState(false);
   const [editingReservation, setEditingReservation] = useState<Reservation | null>(null);
   const [viewingReservation, setViewingReservation] = useState<Reservation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterDepartment, setFilterDepartment] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<any | null>(null);
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -128,6 +139,8 @@ export default function ReservationsPage() {
     patient_name: "",
     patient_phone: "",
     patient_email: "",
+    birth_date: "",
+    gender: undefined,
     reservation_date: "",
     reservation_time: "",
     department: "",
@@ -147,7 +160,17 @@ export default function ReservationsPage() {
       const response = await fetch(`/api/reservations?${params}`);
       if (!response.ok) throw new Error("Failed to fetch reservations");
       const data = await response.json();
-      setReservations(data);
+
+      // Handle new API response format with defensive checks
+      if (data.success && Array.isArray(data.data)) {
+        setReservations(data.data);
+      } else if (Array.isArray(data)) {
+        // Fallback for old format
+        setReservations(data);
+      } else {
+        console.warn('Unexpected API response format:', data);
+        setReservations([]);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load reservations");
     } finally {
@@ -324,7 +347,7 @@ export default function ReservationsPage() {
 
   return (
     <div className="p-6">
-      <div className="mb-8 flex justify-between items-center">
+      <div className="mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">예약 관리</h1>
           <p className="text-gray-600 mt-1">진료 예약을 관리합니다</p>
@@ -332,15 +355,28 @@ export default function ReservationsPage() {
         <div className="flex gap-3">
           <Button
             variant="outline"
-            onClick={() => router.push('/admin/reservations/daily-limits')}
+            onClick={() => setServiceManagementOpen(true)}
+            className="inline-flex items-center gap-2"
           >
-            📊 예약 한도 수정
+            <Stethoscope className="h-4 w-4" />
+            시술 관리
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setLimitSettingsOpen(true)}
+            className="inline-flex items-center gap-2"
+          >
+            <Settings className="h-4 w-4" />
+            서비스 한도 설정
           </Button>
           <Button onClick={() => handleOpenDialog()}>
             새 예약 등록
           </Button>
         </div>
       </div>
+
+      {/* Tab Navigation */}
+      <TabNavigation />
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
@@ -468,12 +504,22 @@ export default function ReservationsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {reservations.map((reservation) => (
+              {Array.isArray(reservations) && reservations.map((reservation) => (
                 <TableRow key={reservation.id}>
                   <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4 text-gray-400" />
-                      <span className="font-medium">{reservation.reservation_time}</span>
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4 text-gray-400" />
+                        <span className="font-medium">{reservation.reservation_time}</span>
+                      </div>
+                      <div className="text-xs text-gray-500 pl-5">
+                        {new Date(reservation.reservation_date).toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          weekday: 'short'
+                        })}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -623,56 +669,79 @@ export default function ReservationsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="reservation_date">예약일 *</Label>
+                  <Label htmlFor="birth_date">생년월일</Label>
                   <Input
-                    id="reservation_date"
+                    id="birth_date"
                     type="date"
-                    value={formData.reservation_date}
-                    onChange={(e) => {
-                      setFormData({ ...formData, reservation_date: e.target.value });
-                      fetchAvailableSlots(e.target.value, formData.department);
-                    }}
-                    min={new Date().toISOString().split('T')[0]}
-                    required
+                    value={formData.birth_date || ""}
+                    onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="reservation_time">예약 시간 *</Label>
+                  <Label htmlFor="gender">성별</Label>
                   <Select
-                    value={formData.reservation_time}
-                    onValueChange={(value) => setFormData({ ...formData, reservation_time: value })}
+                    value={formData.gender}
+                    onValueChange={(value: 'MALE' | 'FEMALE') => setFormData({ ...formData, gender: value })}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="시간 선택" />
+                    <SelectTrigger id="gender">
+                      <SelectValue placeholder="성별 선택" />
                     </SelectTrigger>
                     <SelectContent>
-                      {availableSlots.map(slot => (
-                        <SelectItem key={slot} value={slot}>{slot}</SelectItem>
-                      ))}
+                      <SelectItem value="MALE">남성</SelectItem>
+                      <SelectItem value="FEMALE">여성</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
+              <div>
+                <Label htmlFor="reservation_date">예약일 *</Label>
+                <Input
+                  id="reservation_date"
+                  type="date"
+                  value={formData.reservation_date}
+                  onChange={(e) => {
+                    setFormData({ ...formData, reservation_date: e.target.value });
+                    setSelectedTimeSlot(null);
+                  }}
+                  min={new Date().toISOString().split('T')[0]}
+                  required
+                />
+              </div>
+
+              {/* Time Slot Grid */}
+              {formData.reservation_date && formData.department && (
+                <div>
+                  <Label>시간대 선택 *</Label>
+                  <TimeSlotGrid
+                    date={formData.reservation_date}
+                    service={formData.department}
+                    selectedSlot={selectedTimeSlot}
+                    onSelect={(slot) => {
+                      setSelectedTimeSlot(slot);
+                      setFormData({
+                        ...formData,
+                        reservation_time: slot.time
+                      });
+                    }}
+                    className="mt-2"
+                  />
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="department">진료과 *</Label>
-                  <Select
+                  <ServiceSelector
                     value={formData.department}
-                    onValueChange={(value) => {
+                    onChange={(value) => {
                       setFormData({ ...formData, department: value });
-                      fetchAvailableSlots(formData.reservation_date, value);
+                      setSelectedTimeSlot(null);
                     }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="진료과 선택" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {departments.map(dept => (
-                        <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    showLabel={true}
+                    label="진료 항목"
+                    required={true}
+                    showDetails={false}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="doctor_name">담당 의사</Label>
@@ -826,6 +895,50 @@ export default function ReservationsPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
+              닫기
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Service Management Dialog */}
+      <Dialog open={serviceManagementOpen} onOpenChange={setServiceManagementOpen}>
+        <DialogContent className="max-w-7xl w-[95vw] max-h-[95vh] overflow-y-auto p-8">
+          <DialogHeader className="mb-6">
+            <DialogTitle className="text-2xl">시술 관리</DialogTitle>
+            <DialogDescription className="text-base">
+              시술을 추가, 수정, 삭제하고 시술 시간을 관리합니다
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="w-full">
+            <ServicesPage />
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setServiceManagementOpen(false)}>
+              닫기
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Service Limit Settings Dialog */}
+      <Dialog open={limitSettingsOpen} onOpenChange={setLimitSettingsOpen}>
+        <DialogContent className="max-w-7xl w-[95vw] max-h-[95vh] overflow-y-auto p-8">
+          <DialogHeader className="mb-6">
+            <DialogTitle className="text-2xl">서비스 한도 설정</DialogTitle>
+            <DialogDescription className="text-base">
+              각 서비스의 일일 예약 시간 한도를 설정합니다
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="w-full">
+            <ServiceLimitSettings />
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setLimitSettingsOpen(false)}>
               닫기
             </Button>
           </DialogFooter>

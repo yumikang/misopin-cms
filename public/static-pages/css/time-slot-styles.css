@@ -1,0 +1,311 @@
+/**
+ * Time Slot Styles
+ *
+ * 예약 시간 선택 select의 옵션에 용량 상태를 시각적으로 표시합니다.
+ *
+ * Status Classes:
+ * - .slot-available: 여유 (🟢 초록색)
+ * - .slot-limited: 제한 (🟡 주황색)
+ * - .slot-full: 마감 (🔴 빨간색)
+ */
+
+/* ================================
+   Time Slot Select Styling
+   ================================ */
+
+/* Select 요소 기본 스타일 개선 */
+select#sh_checktime {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+select#sh_checktime:hover {
+  border-color: #999;
+}
+
+select#sh_checktime:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+}
+
+select#sh_checktime:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ================================
+   Time Slot Option Status Colors
+   ================================ */
+
+/**
+ * 여유 (Available) - 초록색
+ * 남은 용량이 충분함 (> 60%)
+ */
+.slot-available {
+  color: #2e7d32; /* 진한 초록 */
+  font-weight: 500;
+}
+
+option.slot-available::before {
+  content: '✓ ';
+  color: #4CAF50;
+}
+
+/**
+ * 제한 (Limited) - 주황색
+ * 남은 용량이 제한적 (20-60%)
+ */
+.slot-limited {
+  color: #e65100; /* 진한 주황 */
+  font-weight: 500;
+}
+
+option.slot-limited::before {
+  content: '⚠ ';
+  color: #FF9800;
+}
+
+/**
+ * 마감 (Full) - 빨간색
+ * 남은 용량 없음 (< 20%)
+ */
+.slot-full {
+  color: #c62828; /* 진한 빨강 */
+  font-weight: 500;
+  font-style: italic;
+}
+
+option.slot-full::before {
+  content: '✕ ';
+  color: #f44336;
+}
+
+option.slot-full {
+  background-color: #ffebee; /* 연한 빨강 배경 */
+  text-decoration: line-through;
+}
+
+/* ================================
+   Disabled Options
+   ================================ */
+
+option:disabled {
+  color: #999;
+  font-style: italic;
+  cursor: not-allowed;
+}
+
+/* ================================
+   Loading State
+   ================================ */
+
+select#sh_checktime[disabled] option:first-child {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ================================
+   Accessibility
+   ================================ */
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .slot-available {
+    color: #1b5e20;
+    font-weight: bold;
+  }
+
+  .slot-limited {
+    color: #bf360c;
+    font-weight: bold;
+  }
+
+  .slot-full {
+    color: #b71c1c;
+    font-weight: bold;
+  }
+}
+
+/* Dark Mode Support (if needed) */
+@media (prefers-color-scheme: dark) {
+  select#sh_checktime {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border-color: #555;
+  }
+
+  .slot-available {
+    color: #81c784; /* 밝은 초록 */
+  }
+
+  .slot-limited {
+    color: #ffb74d; /* 밝은 주황 */
+  }
+
+  .slot-full {
+    color: #e57373; /* 밝은 빨강 */
+  }
+
+  option.slot-full {
+    background-color: #3d2626;
+  }
+}
+
+/* ================================
+   Tooltip (Optional Enhancement)
+   ================================ */
+
+/* 시간 슬롯에 마우스 오버 시 툴팁 표시 */
+select#sh_checktime option[data-remaining]::after {
+  /* CSS만으로는 option에 툴팁 구현 어려움 */
+  /* JavaScript로 title 속성 추가 권장 */
+}
+
+/* ================================
+   Mobile Responsiveness
+   ================================ */
+
+@media screen and (max-width: 768px) {
+  select#sh_checktime {
+    font-size: 16px; /* iOS zoom 방지 */
+    padding: 12px;
+  }
+
+  /* 모바일에서는 간소화된 표시 */
+  option.slot-available::before,
+  option.slot-limited::before,
+  option.slot-full::before {
+    content: ''; /* 이모티콘 제거 (모바일에서 깨질 수 있음) */
+  }
+}
+
+/* ================================
+   Focus Visible (Keyboard Navigation)
+   ================================ */
+
+select#sh_checktime:focus-visible {
+  outline: 2px solid #4CAF50;
+  outline-offset: 2px;
+}
+
+/* ================================
+   Print Styles
+   ================================ */
+
+@media print {
+  .slot-available,
+  .slot-limited,
+  .slot-full {
+    color: #000 !important;
+    font-weight: bold;
+  }
+
+  option.slot-full {
+    background-color: #eee !important;
+  }
+}
+
+/* ================================
+   Custom Dropdown Arrow (Optional)
+   ================================ */
+
+/* 브라우저 기본 화살표를 커스텀 화살표로 대체 */
+.time-slot-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.time-slot-wrapper select#sh_checktime {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 32px; /* 화살표 공간 */
+  background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"%3E%3Cpath fill="%23333" d="M6 8L0 0h12z"/%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 8px;
+}
+
+/* ================================
+   Animation (Optional)
+   ================================ */
+
+/* 로딩 중 애니메이션 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+select#sh_checktime[disabled] {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ================================
+   Status Legend (Optional)
+   ================================ */
+
+/* 시간 선택 위에 범례 표시 */
+.time-slot-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.time-slot-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.time-slot-legend-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.time-slot-legend-icon.available {
+  background-color: #4CAF50;
+}
+
+.time-slot-legend-icon.limited {
+  background-color: #FF9800;
+}
+
+.time-slot-legend-icon.full {
+  background-color: #f44336;
+}
+
+/* ================================
+   Error State
+   ================================ */
+
+select#sh_checktime.error {
+  border-color: #f44336;
+  box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.1);
+}
+
+/* ================================
+   Success State (After Selection)
+   ================================ */
+
+select#sh_checktime.selected:not(:focus) {
+  border-color: #4CAF50;
+  background-color: #f1f8f4;
+}

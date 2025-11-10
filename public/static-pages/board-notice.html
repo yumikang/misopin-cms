@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+<meta http-equiv="imagetoolbar" content="no">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<!-- 모바일 최적화 메타태그 -->
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-capable" content="no">
+<meta name="theme-color" content="#9F988C">
+<meta name="format-detection" content="telephone=no">
+<title>Notice - 미소핀의원</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<link rel="stylesheet" href="css/vendor/default.css">
+<link rel="stylesheet" href="css/components/quickmenu.css">
+<link rel="stylesheet" href="css/components/top_menu.css">
+<link rel="stylesheet" href="css/components/sub_main_banner.css">
+<link rel="stylesheet" href="css/components/aside.css">
+<link rel="stylesheet" href="board-assets/css/sh_style.css">
+<link rel="stylesheet" href="css/vendor/user.css">
+<link rel="stylesheet" href="css/pages/page_style.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/button-styles.css">
+<link rel="stylesheet" href="css/grid-system-1450.css">
+<link rel="stylesheet" href="css/api-components.css">
+<style>
+/* rem 기준 설정 - 16px 기준 */
+html {
+    font-size: 16px;  /* 1rem = 16px 기준 설정 */
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;  /* 모바일에서 기준 크기 조정 */
+    }
+}
+
+@import url(//fonts.googleapis.com/earlyaccess/nanumpenscript.css);
+@import url(//fonts.googleapis.com/earlyaccess/nanumbrushscript.css);
+@import url(//fonts.googleapis.com/earlyaccess/nanumgothic.css);
+@import url(//fonts.googleapis.com/earlyaccess/nanummyeongjo.css);
+@import url(//fonts.googleapis.com/earlyaccess/nanumgothiccoding.css);
+
+/* 나눔스퀘어 */
+@font-face {
+	font-family: 'NanumSquare';
+	src: url(//font.shiningcorp.com/css/font/NanumSquareR.eot);
+	src: url(//font.shiningcorp.com/css/font/NanumSquareR.eot?#iefix) format('embedded-opentype'),
+		 url(//font.shiningcorp.com/css/font/NanumSquareR.woff) format('woff'),
+		 url(//font.shiningcorp.com/css/font/NanumSquareR.ttf) format('truetype');
+}
+
+/* 본고딕 */
+@font-face {
+	font-family: 'notokr-thin';
+	src: url(//font.shiningcorp.com/css/font/notokr-thin.eot);
+	src: url(//font.shiningcorp.com/css/font/notokr-thin.eot?#iefix) format('embedded-opentype'),
+		 url(//font.shiningcorp.com/css/font/notokr-thin.woff2) format('woff2'),
+		 url(//font.shiningcorp.com/css/font/notokr-thin.woff) format('woff'),
+		 url(//font.shiningcorp.com/css/font/notokr-thin.ttf) format('truetype'),
+		 url(//font.shiningcorp.com/css/font/notokr-thin.svg#notokr-thin) format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+    font-family: 'notokr-regular';
+    src: url(//font.shiningcorp.com/css/font/notokr-regular.eot);
+    src: url(//font.shiningcorp.com/css/font/notokr-regular.eot?#iefix) format('embedded-opentype'),
+         url(//font.shiningcorp.com/css/font/notokr-regular.woff2) format('woff2'),
+         url(//font.shiningcorp.com/css/font/notokr-regular.woff) format('woff'),
+         url(//font.shiningcorp.com/css/font/notokr-regular.svg#notokr-regular) format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: 'notokr-medium';
+    src: url(//font.shiningcorp.com/css/font/notokr-medium.eot);
+    src: url(//font.shiningcorp.com/css/font/notokr-medium.eot?#iefix) format('embedded-opentype'),
+         url(//font.shiningcorp.com/css/font/notokr-medium.woff2) format('woff2'),
+         url(//font.shiningcorp.com/css/font/notokr-medium.woff) format('woff'),
+         url(//font.shiningcorp.com/css/font/notokr-medium.svg#notokr-medium) format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: 'notokr-light';
+    src: url(//font.shiningcorp.com/css/font/notokr-light.eot);
+    src: url(//font.shiningcorp.com/css/font/notokr-light.eot?#iefix) format('embedded-opentype'),
+         url(//font.shiningcorp.com/css/font/notokr-light.woff2) format('woff2'),
+         url(//font.shiningcorp.com/css/font/notokr-light.woff) format('woff'),
+         url(//font.shiningcorp.com/css/font/notokr-light.ttf) format('truetype'),
+         url(//font.shiningcorp.com/css/font/notokr-light.svg#notokr-light) format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: 'notokr-demilight';
+    src: url(//font.shiningcorp.com/css/font/notokr-demilight.eot);
+    src: url(//font.shiningcorp.com/css/font/notokr-demilight.eot?#iefix) format('embedded-opentype'),
+         url(//font.shiningcorp.com/css/font/notokr-demilight.woff2) format('woff2'),
+         url(//font.shiningcorp.com/css/font/notokr-demilight.woff) format('woff'),
+         url(//font.shiningcorp.com/css/font/notokr-demilight.ttf) format('truetype'),
+         url(//font.shiningcorp.com/css/font/notokr-demilight.svg#notokr-demilight) format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: 'notokr-bold';
+    src: url(//font.shiningcorp.com/css/font/notokr-bold.eot);
+    src: url(//font.shiningcorp.com/css/font/notokr-bold.eot?#iefix) format('embedded-opentype'),
+         url(//font.shiningcorp.com/css/font/notokr-bold.woff2) format('woff2'),
+         url(//font.shiningcorp.com/css/font/notokr-bold.woff) format('woff'),
+         url(//font.shiningcorp.com/css/font/notokr-bold.svg#notokr-bold) format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'notokr-black';
+    src: url(//font.shiningcorp.com/css/font/notokr-black.eot);
+    src: url(//font.shiningcorp.com/css/font/notokr-black.eot?#iefix) format('embedded-opentype'),
+         url(//font.shiningcorp.com/css/font/notokr-black.woff2) format('woff2'),
+         url(//font.shiningcorp.com/css/font/notokr-black.woff) format('woff'),
+         url(//font.shiningcorp.com/css/font/notokr-black.ttf) format('truetype'),
+         url(//font.shiningcorp.com/css/font/notokr-black.svg#notokr-black) format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+/* 아리따 */
+@font-face {
+	font-family: 'arita-thin';
+	src: url(//font.shiningcorp.com/css/font/arita-Thin.eot);
+	src: url(//font.shiningcorp.com/css/font/arita-Thin.eot?#iefix) format('embedded-opentype'),
+		 url(//font.shiningcorp.com/css/font/arita-Thin.woff) format('woff'),
+		 url(//font.shiningcorp.com/css/font/arita-Thin.ttf) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'arita-light';
+	src: url(//font.shiningcorp.com/css/font/arita-Light.eot);
+	src: url(//font.shiningcorp.com/css/font/arita-Light.eot?#iefix) format('embedded-opentype'),
+		 url(//font.shiningcorp.com/css/font/arita-Light.woff) format('woff'),
+		 url(//font.shiningcorp.com/css/font/arita-Light.ttf) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'arita-medium';
+	src: url(//font.shiningcorp.com/css/font/arita-Medium.eot);
+	src: url(//font.shiningcorp.com/css/font/arita-Medium.eot?#iefix) format('embedded-opentype'),
+		 url(//font.shiningcorp.com/css/font/arita-Medium.woff) format('woff'),
+		 url(//font.shiningcorp.com/css/font/arita-Medium.ttf) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'arita-semibold';
+	src: url(//font.shiningcorp.com/css/font/arita-SemiBold.eot);
+	src: url(//font.shiningcorp.com/css/font/arita-SemiBold.eot?#iefix) format('embedded-opentype'),
+		 url(//font.shiningcorp.com/css/font/arita-SemiBold.woff) format('woff'),
+		 url(//font.shiningcorp.com/css/font/arita-SemiBold.ttf) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'arita-bold';
+	src: url(//font.shiningcorp.com/css/font/arita-Bold.eot);
+	src: url(//font.shiningcorp.com/css/font/arita-Bold.eot?#iefix) format('embedded-opentype'),
+		 url(//font.shiningcorp.com/css/font/arita-Bold.woff) format('woff'),
+		 url(//font.shiningcorp.com/css/font/arita-Bold.ttf) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+</style><!--[if lte IE 8]>
+<script src="js/libs/html5.js"></script>
+<![endif]-->
+<script>
+// 자바스크립트에서 사용하는 전역변수 선언
+var g5_url       = "https://skincare1007.shiningcorp.com";
+var g5_bbs_url   = "https://skincare1007.shiningcorp.com/bbs";
+var g5_is_member = "";
+var g5_is_admin  = "";
+var g5_is_mobile = "";
+var g5_bo_table  = "table18";
+var g5_sca       = "";
+var g5_editor    = "smarteditor2";
+var g5_cookie_domain = "";
+</script>
+<script src="js/vendor/jquery-3.7.1.min.js"></script>
+<script src="js/vendor/jquery-ui.js"></script>
+<script src="js/vendor/jquery.menu.js"></script>
+<script src="js/common.js"></script>
+<script src="js/wrest.js"></script>
+<script src="js/libs/placeholders.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="js/vendor/feather.min.js"></script>
+<script src="js/components/top_menu.js"></script>
+<!-- 색상 오버라이드 - 모든 외부 CSS 로드 후 적용 -->
+<style>
+/* 외부 CSS의 --primary 변수를 브라운으로 오버라이드 */
+:root {
+    --primary: #9F988C !important;
+}
+
+/* Notice 카테고리 링크 색상을 흰색으로 변경 */
+#sh_list_tbl .cate_link span {
+    color: #fff !important;
+    background-color: #9F988C !important;
+}
+
+/* 버튼 호버 효과 브라운으로 변경 */
+.btn_type01:hover {
+    background-color: #9F988C !important;
+}
+
+#sh_bo_list .w_btn:hover {
+    background-color: #9F988C !important;
+}
+
+/* 콘텐츠 영역 1450px 최대 너비 설정 */
+#sh_container_wrapper {
+    max-width: 1450px !important;
+    margin: 0 auto !important;
+    padding: 0 30px !important;
+}
+
+#sh_content {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    #sh_container_wrapper {
+        max-width: 100% !important;
+        padding: 0 15px !important;
+    }
+}
+
+/* 태블릿 반응형 */
+@media (min-width: 769px) and (max-width: 1023px) {
+    #sh_container_wrapper {
+        padding: 0 20px !important;
+    }
+}
+</style>
+<link rel="stylesheet" href="css/index-custom.css">
+</head>
+<body>
+
+<script>
+// designkits 파라미터 추가 코드 비활성화
+// $(document).on('click', 'a', function() {
+//   var href = $(this).attr('href');
+//   href += (href.indexOf('?') == -1 ? '?' : '&') + 'designkits=1';
+//   $(this).attr('href', href);
+// });
+</script>
+
+<!-- 100% 배경이미지 때문에 사용 -->
+<div id="sh_wrapper">
+    
+<!-- 퀵메뉴 -->
+<iframe src="quickmenu.html" style="position:fixed;top:50%;right:1.5%;transform:translateY(-50%);width:140px;height:800px;border:none;z-index:8;background:transparent;" scrolling="no"></iframe>
+<!-- 퀵메뉴 끝 -->
+
+<!-- 헤더 시작 -->
+<!-- 반응형 헤더 템플릿 -->
+<!-- 데스크톱 헤더 (768px 이상) -->
+<header id="sh_hd" class="desktop-header">
+    <div id="skip_to_container"><a href="#sh_container">본문 바로가기</a></div>
+    <div id="sh_hd_wrapper">
+        <div id="top_nav_wrap">
+            <!-- 로고 -->
+            <div id="top_logo">
+                <a href="index.html"><img src="img/misopin-temporary-logo.png" srcset="img/misopin-temporary-logo.png 2048w, img/misopin-temporary-logo.png 1024w, img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 100px, 150px" alt="미소핀의원" style="height: 50px;" /></a>
+            </div>
+            <div class="right">
+                <nav id="r_menu">
+                    <!-- 상단메뉴 -->
+                    <ul id="top_nav">   
+                        <li class="list01">
+                            <a class="list" href="about.html">미소핀 소개</a>
+                            <ul class="sub_ul1">
+                                <li><a href="about.html">병원 소개</a></li>
+                                <li><a href="board-page.html">공지 및 이벤트</a></li>
+                            </ul>
+                        </li>
+                        <li class="list02">
+                            <a class="list" href="dist/botox.html">주름/보톡스</a>
+                            <ul class="sub_ul2">
+                                <li><a href="dist/botox.html">보톡스</a></li>
+                                <li><a href="dist/jeomin.html">제오민</a></li>
+                            </ul>
+                        </li>
+                        <li class="list03">
+                            <a class="list" href="dist/filler.html">볼륨/리프팅</a>
+                            <ul class="sub_ul3">
+                                <li><a href="dist/filler.html">필러</a></li>
+                                <li><a href="dist/skinbooster.html">스킨부스터</a></li>
+                                <li><a href="dist/lifting.html">리프팅</a></li>
+                            </ul>
+                        </li>
+                        <li class="list04">
+                            <a class="list" href="dist/acne.html">피부케어</a>
+                            <ul class="sub_ul4">
+                                <li><a href="dist/acne.html">여드름치료</a></li>
+                                <li><a href="dist/peeling.html">필링</a></li>
+                            </ul>
+                        </li>
+                        <li class="list05">
+                            <a class="list" href="dist/mole.html">제거시술</a>
+                            <ul class="sub_ul5">
+                                <li><a href="dist/mole.html">점</a></li>
+                                <li><a href="dist/milia.html">비립종</a></li>
+                                <li><a href="dist/tattoo.html">문신제거</a></li>
+                            </ul>
+                        </li>
+                        <li class="list06">
+                            <a class="list" href="dist/hair-removal.html">바디케어</a>
+                            <ul class="sub_ul6">
+                                <li><a href="dist/hair-removal.html">제모</a></li>
+                                <li><a href="dist/diet.html">다이어트</a></li>
+                            </ul>
+                        </li>
+                        <li class="list07">
+                            <a class="list" href="calendar-page.html">상담 예약</a>
+                            <ul class="sub_ul7">
+                                <li><a href="calendar-page.html">온라인 상담</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <a class="event" href="board-event.html">EVENT</a>
+        </div>
+    </div>
+</header>
+
+<!-- 모바일 헤더 (768px 미만) -->
+<header id="mo_hd" class="mobile-header">
+    <div id="mo_hd_wrapper">
+        <!-- 모바일 로고 -->
+        <div id="mo_logo">
+            <a href="index.html"><img src="img/misopin-temporary-logo.png" alt="미소핀의원" style="height: 3.125rem;" /></a>
+        </div>
+        
+        <!-- 햄버거 메뉴 버튼 -->
+        <button id="navBtn" type="button" aria-label="메뉴 열기">
+            <span></span>
+        </button>
+        
+        <!-- 슬라이드 네비게이션 -->
+        <div id="navWrap">
+            <div class="inner">
+                <!-- 대메뉴 리스트 -->
+                <nav class="lnb">
+                    <!-- 미소핀 소개 -->
+                    <button class="bmenu">미소핀 소개</button>
+                    <ul class="smenu">
+                        <li><a href="about.html">병원 소개</a></li>
+                        <li><a href="board-page.html">공지 및 이벤트</a></li>
+                    </ul>
+
+                    <!-- 주름/보톡스 -->
+                    <button class="bmenu">주름/보톡스</button>
+                    <ul class="smenu">
+                        <li><a href="dist/botox.html">보톡스</a></li>
+                        <li><a href="dist/jeomin.html">제오민</a></li>
+                    </ul>
+
+                    <!-- 볼륨/리프팅 -->
+                    <button class="bmenu">볼륨/리프팅</button>
+                    <ul class="smenu">
+                        <li><a href="dist/filler.html">필러</a></li>
+                        <li><a href="dist/skinbooster.html">스킨부스터</a></li>
+                        <li><a href="dist/lifting.html">리프팅</a></li>
+                    </ul>
+
+                    <!-- 피부케어 -->
+                    <button class="bmenu">피부케어</button>
+                    <ul class="smenu">
+                        <li><a href="dist/acne.html">여드름치료</a></li>
+                        <li><a href="dist/peeling.html">필링</a></li>
+                    </ul>
+
+                    <!-- 제거시술 -->
+                    <button class="bmenu">제거시술</button>
+                    <ul class="smenu">
+                        <li><a href="dist/mole.html">점</a></li>
+                        <li><a href="dist/milia.html">비립종</a></li>
+                        <li><a href="dist/tattoo.html">문신제거</a></li>
+                    </ul>
+
+                    <!-- 바디케어 -->
+                    <button class="bmenu">바디케어</button>
+                    <ul class="smenu">
+                        <li><a href="dist/hair-removal.html">제모</a></li>
+                        <li><a href="dist/diet.html">다이어트</a></li>
+                    </ul>
+
+                    <!-- 상담 예약 -->
+                    <button class="bmenu">상담 예약</button>
+                    <ul class="smenu">
+                        <li><a href="calendar-page.html">온라인 상담</a></li>
+                    </ul>
+                </nav>
+                
+                <!-- 하단 정보 -->
+                <div class="copy">
+                    © 2024 미소핀의원
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 모바일 하단 네비게이션 -->
+<div class="mobile-bottom-nav mobile-only">
+    <a href="#" onclick="openKakaoChat(); return false;" class="kakao">
+        <i class="fa fa-comment"></i>
+        카카오톡 상담
+    </a>
+    <a href="https://instagram.com/misopin_clinic" target="_blank" class="instagram">
+        <i class="fa fa-instagram"></i>
+        인스타그램
+    </a>
+    <a href="event.html" class="event">
+        <i class="fa fa-gift"></i>
+        이벤트
+    </a>
+    <a href="calendar-page.html" class="reservation">
+        <i class="fa fa-calendar"></i>
+        예약하기
+    </a>
+    <a href="tel:02-123-4567" class="phone">
+        <i class="fa fa-phone"></i>
+        전화상담
+    </a>
+</div>
+<!-- 헤더 끝 -->
+
+<script>
+    $(function(){
+        try { $('#r_menu').sh_menu(); } catch(e) { console.log('sh_menu plugin not available'); }
+    });
+</script>
+
+<!-- 콘텐츠 시작 { -->
+<main id="sh_container">
+	<div id="sh_container_wrapper">
+
+		<!-- 서브 비주얼영역 -->
+		<div id="sub_main_banner">
+			<div id="shSub" style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('images/diet/diet-06.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+				<div class="txt_area">
+					<p>공지 및 이벤트</p>
+					<div class="breadcrumb">
+						<a href="index.html">Home</a>
+						<i class="fa fa-angle-right"></i>
+						<span>커뮤니티</span>
+						<i class="fa fa-angle-right"></i>
+						<span>공지 및 이벤트</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 서브 비주얼영역 끝 -->
+
+		<!-- 서브메뉴 -->
+		<div id="sh_aside">
+			<!-- <div class="container"> -->
+				<div id="sh_aside_wrapper">
+					<div id="shSnb">
+						<ul>
+							<li class='on'>
+								<a href="/bbs/board.php?bo_table=table18">공지 및 이벤트</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			<!-- </div> -->
+		</div>
+		<!-- 콘텐츠영역 -->
+		<!-- <div class="container"> --> <!-- container 제거 테스트 -->
+			<div id="sh_content">
+
+	
+<div id="sh_bo_list">
+
+        <ul id="bo_cate_ul_line">
+        <li><a href="board-page.html">전체</a></li><li><a href="board-notice.html" id="bo_cate_on">Notice</a></li><li><a href="board-event.html">Event</a></li>    </ul>
+        
+    <div class="list_top">
+        <fieldset id="sh_bo_sch">
+            <legend>게시물 검색</legend>
+            <form name="fsearch" method="get">
+            <input type="hidden" name="bo_table" value="table18">
+            <input type="hidden" name="sca" value="Notice">
+            <input type="hidden" name="sop" value="and">
+            <label for="sfl" class="sound_only">검색대상</label>
+            <select name="sfl" id="sfl">
+                <option value="wr_subject">제목</option>
+                <option value="wr_content">내용</option>
+                <option value="wr_subject||wr_content">제목+내용</option>
+                <option value="wr_name,1">글쓴이</option>
+            </select>
+            <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
+            <input type="text" name="stx" value="" required id="stx" class="sch_input" size="25" maxlength="20">
+            <button type="submit" class="search-btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+            </form>
+        </fieldset>        
+    </div>
+
+    <form name="fboardlist" id="fboardlist" action="./board_list_update.php" onsubmit="return fboardlist_submit(this);" method="post">
+        <input type="hidden" name="bo_table" value="table18">
+        <input type="hidden" name="sfl" value="">
+        <input type="hidden" name="stx" value="">
+        <input type="hidden" name="spt" value="">
+        <input type="hidden" name="sca" value="">
+        <input type="hidden" name="sst" value="wr_num, wr_reply">
+        <input type="hidden" name="sod" value="">
+        <input type="hidden" name="page" value="1">
+        <input type="hidden" name="sw" value="">
+
+        <div id="sh_list_tbl" class="sh_tbl_common">
+            <table cellpadding="0" cellspacing="0">
+                <caption class="sound_only">공지 및 이벤트 목록</caption>
+                <thead>
+                    <tr>
+                                                <th scope="col">No</th>
+                        <th scope="col">제목</th>
+                        <th scope="col">작성자</th>
+                        <th scope="col">등록일</th>
+                    </tr>
+                </thead>
+                <tbody id="board-posts-list">
+                    <!-- 로딩 상태 표시 -->
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px;">
+                            <div style="color: #666;">게시글을 불러오는 중입니다...</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+                
+        <div class="btn_area">
+            <ul class="adm_btns">
+                                                            </ul>
+                    </div>
+
+    </form>
+
+</div>
+
+			</div><!-- sh_content -->
+		<!-- </div> --> <!-- container 닫기 태그도 주석처리 -->
+    
+   
+	</div><!-- sh_container_wrapper --> 
+</main><!-- sh_container -->
+
+<!-- } 콘텐츠 끝 -->
+
+<!-- 푸터 시작 -->
+<!-- 하단 푸터 시작 { -->
+<footer id="sh_ft">
+    <div class="footer_wrapper">
+        <div class="copy">
+            <div class="top">
+                <div class="logo_area">
+                    <img class="ft_logo" src="img/misopin-temporary-logo.png" srcset="img/misopin-temporary-logo.png 2048w, img/misopin-temporary-logo.png 1024w, img/misopin-temporary-logo.png 512w" sizes="(max-width: 768px) 80px, 120px" alt="미소핀의원" style="filter: brightness(0) invert(1); height: 3.125rem;" loading="lazy" />
+                </div>
+                <div class="phone_info">
+                    <div class="number">061-277-1001</div>
+                </div>
+                <div class="hours_title">
+                    <div class="cate">진료시간</div>
+                </div>
+                <div class="hours_info">
+                    <div class="hours_row">
+                        <span class="day">월/화/목/금</span>
+                        <span class="time">08:30 ~ 19:30</span>
+                    </div>
+                    <div class="hours_row">
+                        <span class="day">수요일</span>
+                        <span class="time">08:30 ~ 12:00</span>
+                    </div>
+                    <div class="hours_row">
+                        <span class="day">토요일</span>
+                        <span class="time">09:00 ~ 14:00</span>
+                    </div>
+                    <div class="notice">※점심시간 12:00-14:00 / 일요일, 공휴일 휴진</div>
+                </div>
+                <div class="menu_links">
+                    <a href="javascript:void(0)" onclick="window.open('privacy.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')">개인정보취급방침</a>
+                    <a href="javascript:void(0)" onclick="window.open('stipulation.html', 'window', 'width=600; height=800; left=150; top=0; scrollbars=no')">이용약관</a>
+                    <a href="javascript:void(0)" onclick="window.open('fee-schedule.html', 'window', 'width=800; height=800; left=150; top=0; scrollbars=yes')">비급여 수가표</a>
+                </div>
+            </div>
+            <div class="main_info">상호 : 미소핀의원 | 대표자 : 김지식 | 사업자등록번호 : 123-56-789 | 전화번호 : 061-277-1001 | 주소 : 전남 목포시 영산로 362 미소핀의원</div>
+            <div class="bottom">
+                <p>© MISOPIN CLINIC. ALL RIGHTS RESERVED.</p>
+                <div class="adm">
+                    <a href="/admin/admin.login.php">ADMIN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- 푸터 끝 -->
+
+<!-- 100% 배경이미지 때문에 사용 -->
+</div>
+
+<script>
+function fmain_submit(f){        
+    if (!$("#prv_check").is(":checked")) {
+        alert("개인정보취급방침의 내용에 동의하셔야 작성가능 합니다.");
+        return false;
+    }
+    return true;
+}
+feather.replace();
+function Num_ck(obj) { 
+    var val = obj.value; 
+    if(isNaN(val)) { 
+        alert("숫자만 입력해 주세요"); 
+        obj.value = val.replace(/[^0-9]/gi, ''); 
+    }  
+}
+function korean_ck(obj) {
+    var val = obj.value;
+    var korean = /^[가-힣ㄱ-ㅎㅏ-ㅣㆍ ᆢ\s]*$/;
+    if (!korean.test(val)) {
+        alert("한글만 입력해 주세요");
+        obj.value = val.replace(/[^가-힣ㄱ-ㅎㅏ-ㅣㆍ ᆢ\s]+/g, '');
+    }
+}	
+</script>
+<!-- } 하단 끝 -->
+
+<!-- ie6,7에서 사이드뷰가 게시판 목록에서 아래 사이드뷰에 가려지는 현상 수정 -->
+<!--[if lte IE 7]>
+<script>
+$(function() {
+    var $sv_use = $(".sv_use");
+    var count = $sv_use.length;
+
+    $sv_use.each(function() {
+        $(this).css("z-index", count);
+        $(this).css("position", "relative");
+        count = count - 1;
+    });
+});
+</script>
+<![endif]-->
+
+<script src="js/mobile-nav.js"></script>
+<script src="js/api-client.js"></script>
+
+<!-- 게시판 API 연동 스크립트 -->
+<script>
+// 페이지 로드 시 게시판 데이터 가져오기
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        // API 클라이언트가 로드되었는지 확인
+        if (typeof MisopinAPI === 'undefined') {
+            console.error('API client not loaded');
+            return;
+        }
+
+        const api = new MisopinAPI();
+
+        // 공지사항(NOTICE)만 가져오기
+        const response = await api.getBoardPosts('NOTICE');
+        const posts = response.posts || [];
+
+        // tbody 요소 찾기
+        const tbody = document.getElementById('board-posts-list');
+        if (!tbody) {
+            console.error('Board posts list container not found');
+            return;
+        }
+
+        // 게시글이 없는 경우
+        if (posts.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 40px;">
+                        등록된 공지사항이 없습니다.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        // 게시글 HTML 생성
+        let html = '';
+        posts.forEach((post, index) => {
+            const postNumber = posts.length - index; // 역순 번호
+            const postDate = new Date(post.created_at).toLocaleDateString('ko-KR').replace(/\. /g, '-').replace('.', '');
+
+            html += `
+                <tr class="">
+                    <td class="num">${postNumber}</td>
+                    <td class="subject" style="padding-left:0">
+                        <div>
+                            <a href="#" class="cate_link"><span>Notice</span></a>
+                            <a href="board-detail.html?id=${post.id}">
+                                ${post.is_pinned ? '<span class="icon_pin">[고정]</span> ' : ''}
+                                ${post.title}
+                            </a>
+                        </div>
+                    </td>
+                    <td class="name sv_use"><span class="sv_member">${post.author || '관리자'}</span></td>
+                    <td class="datetime">${postDate}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+
+    } catch (error) {
+        console.error('Failed to load board posts:', error);
+
+        const tbody = document.getElementById('board-posts-list');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 40px;">
+                        <div style="color: #d00;">게시글을 불러오는데 실패했습니다.</div>
+                        <div style="color: #666; font-size: 0.9em; margin-top: 10px;">잠시 후 다시 시도해주세요.</div>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+});
+</script>
+</body>
+<!-- 자체 분석 도구 -->
+<script src="js/analytics-setup.js"></script>
+</html>
+
+<!-- 사용스킨 : sh_basic -->

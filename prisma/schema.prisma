@@ -73,6 +73,28 @@ model clinic_info {
   @@index([isActive])
 }
 
+model clinic_time_slots {
+  id             String    @id
+  serviceId      String?
+  dayOfWeek      DayOfWeek
+  period         Period
+  startTime      String    @db.VarChar(5)
+  endTime        String    @db.VarChar(5)
+  slotInterval   Int       @default(30)
+  maxConcurrent  Int       @default(1)
+  isActive       Boolean   @default(true)
+  effectiveFrom  DateTime? @db.Date
+  effectiveUntil DateTime? @db.Date
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime
+  services       services? @relation(fields: [serviceId], references: [id])
+
+  @@index([dayOfWeek, period])
+  @@index([effectiveFrom, effectiveUntil])
+  @@index([isActive])
+  @@index([serviceId])
+}
+
 model content_blocks {
   id               String             @id
   name             String
@@ -109,6 +131,52 @@ model content_versions {
   @@index([changedBy])
 }
 
+model editable_elements {
+  id           String       @id
+  pageId       String
+  elementId    String       @db.VarChar(100)
+  elementType  ElementType
+  selector     String       @db.VarChar(500)
+  label        String       @db.VarChar(255)
+  currentValue String
+  sectionName  String?      @db.VarChar(100)
+  order        Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime
+  static_pages static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, elementId])
+  @@index([elementType])
+  @@index([pageId])
+  @@index([pageId, order])
+  @@index([sectionName])
+  @@index([updatedAt])
+}
+
+model element_changes {
+  id           String         @id
+  pageId       String
+  changeType   ChangeType_new
+  version      Int
+  elementId    String?        @db.VarChar(100)
+  elementType  ElementType?
+  beforeValue  String?
+  afterValue   String?
+  diffSummary  String?
+  changedBy    String?
+  changedAt    DateTime       @default(now())
+  reason       String?
+  userAgent    String?
+  ipAddress    String?        @db.VarChar(45)
+  static_pages static_pages   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([changeType])
+  @@index([changedAt])
+  @@index([changedBy])
+  @@index([elementId])
+  @@index([pageId, version])
+}
+
 model file_uploads {
   id           String   @id
   filename     String
@@ -126,6 +194,27 @@ model file_uploads {
 
   @@index([category])
   @@index([uploadedById])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model manual_time_closures {
+  id            String    @id @default(dbgenerated("(gen_random_uuid())::text"))
+  closureDate   DateTime  @map("closure_date") @db.Date
+  period        Period
+  timeSlotStart String    @map("time_slot_start") @db.VarChar(5)
+  timeSlotEnd   String?   @map("time_slot_end") @db.VarChar(5)
+  serviceId     String?   @map("service_id")
+  reason        String?
+  createdBy     String    @map("created_by") @db.VarChar(255)
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt     DateTime  @default(now()) @map("updated_at") @db.Timestamp(6)
+  service       services? @relation(fields: [serviceId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_manual_closures_service")
+
+  @@unique([closureDate, period, timeSlotStart, serviceId], map: "unique_closure")
+  @@index([closureDate, isActive], map: "idx_closures_date_active")
+  @@index([closureDate, period, isActive], map: "idx_closures_date_period_active")
+  @@index([serviceId], map: "idx_closures_service")
 }
 
 model page_blocks {
@@ -177,37 +266,36 @@ model popups {
   updatedAt   DateTime
 }
 
-model service_reservation_limits {
-  id          String      @id @default(cuid())
-  serviceType ServiceType @unique
-  dailyLimit  Int         @default(10)
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  @@map("service_reservation_limits")
-}
-
 model reservations {
-  id              String            @id
-  patientName     String
-  phone           String
-  email           String?
-  birthDate       DateTime
-  gender          Gender
-  treatmentType   TreatmentType
-  preferredDate   DateTime          @db.Date
-  preferredTime   String
-  status          ReservationStatus @default(PENDING)
-  notes           String?
-  adminNotes      String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  service         ServiceType
-  statusChangedAt DateTime          @default(now())
-  statusChangedBy String?
+  id                String            @id
+  patientName       String
+  phone             String
+  email             String?
+  birthDate         DateTime
+  gender            Gender
+  treatmentType     TreatmentType
+  preferredDate     DateTime          @db.Date
+  preferredTime     String
+  status            ReservationStatus @default(PENDING)
+  notes             String?
+  adminNotes        String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime
+  service           ServiceType
+  statusChangedAt   DateTime          @default(now())
+  statusChangedBy   String?
+  serviceId         String?
+  serviceName       String?           @db.VarChar(100)
+  estimatedDuration Int?
+  period            Period?
+  timeSlotStart     String?           @db.VarChar(5)
+  timeSlotEnd       String?           @db.VarChar(5)
+  services          services?         @relation(fields: [serviceId], references: [id])
 
+  @@index([period])
+  @@index([preferredDate, period])
   @@index([preferredDate, service, status])
+  @@index([serviceId])
   @@index([status])
 }
 
@@ -227,6 +315,45 @@ model seo_settings {
   pages           pages    @relation(fields: [pageId], references: [id], onDelete: Cascade)
 }
 
+model service_reservation_limits {
+  id                String    @id
+  serviceType       ServiceType @unique
+  serviceId         String?   @unique              // 1단계: nullable + unique로 추가
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt           // @updatedAt 추가
+  dailyLimit        Int       @default(10)         // DEPRECATED: 건수 기반 (하위 호환용)
+  dailyLimitMinutes Int?                           // NEW: 시간 기반 (분 단위)
+  reason            String?                        // 변경 사유
+  updatedBy         String?   @db.VarChar(255)     // 변경자
+
+  service           services? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([isActive])
+  @@index([dailyLimitMinutes])
+}
+
+model services {
+  id                      String                       @id
+  code                    String                       @unique @db.VarChar(50)
+  name                    String                       @db.VarChar(100)
+  description             String?
+  category                String?                      @db.VarChar(50)
+  durationMinutes         Int
+  bufferMinutes           Int                          @default(10)
+  isActive                Boolean                      @default(true)
+  displayOrder            Int                          @default(0)
+  createdAt               DateTime                     @default(now())
+  updatedAt               DateTime
+  clinic_time_slots       clinic_time_slots[]
+  manual_time_closures    manual_time_closures[]
+  reservations            reservations[]
+  service_reservation_limits service_reservation_limits?  // 추가
+
+  @@index([category])
+  @@index([isActive, displayOrder])
+}
+
 model static_page_versions {
   id           String       @id
   pageId       String
@@ -235,10 +362,20 @@ model static_page_versions {
   changedBy    String
   changeNote   String?
   createdAt    DateTime     @default(now())
+  changeType   String?      @db.VarChar(50)
+  changedData  Json?
+  changeSource String?      @db.VarChar(50)
+  ipAddress    String?      @db.VarChar(45)
+  userAgent    String?
   static_pages static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
 
   @@unique([pageId, version])
+  @@index([changeType])
+  @@index([changedBy])
+  @@index([createdAt])
+  @@index([pageId, createdAt])
   @@index([pageId])
+  @@index([pageId, version])
 }
 
 model static_pages {
@@ -249,7 +386,50 @@ model static_pages {
   sections             Json
   lastEdited           DateTime
   createdAt            DateTime               @default(now())
+  editMode             EditMode               @default(PARSER)
+  lastParsedAt         DateTime?
+  lastSyncedAt         DateTime?
+  syncStatus           SyncStatus             @default(SYNCED)
+  syncError            String?
+  syncRetryCount       Int                    @default(0)
+  fileHash             String?
+  version              Int                    @default(1)
+  lockedBy             String?
+  lockedAt             DateTime?
+  lockExpiry           DateTime?
+  createdBy            String?
+  updatedBy            String?
+  updatedAt            DateTime               @default(now())
+  lockStatus           LockStatus             @default(UNLOCKED)
+  editable_elements    editable_elements[]
+  element_changes      element_changes[]
   static_page_versions static_page_versions[]
+  sync_queue           sync_queue[]
+
+  @@index([editMode])
+  @@index([lockStatus, lockedBy])
+  @@index([slug, version])
+  @@index([syncStatus])
+  @@index([updatedAt])
+}
+
+model sync_queue {
+  id           String       @id
+  pageId       String
+  operation    String       @db.VarChar(50)
+  priority     Int          @default(5)
+  attempts     Int          @default(0)
+  maxAttempts  Int          @default(3)
+  lastError    String?
+  status       String       @default("pending")
+  scheduledAt  DateTime     @default(now())
+  processedAt  DateTime?
+  createdAt    DateTime     @default(now())
+  static_pages static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@index([pageId])
+  @@index([status])
+  @@index([status, priority, scheduledAt])
 }
 
 model system_settings {
@@ -294,9 +474,53 @@ enum BoardType {
   EVENT
 }
 
+enum ChangeType_new {
+  CREATED
+  UPDATED
+  DELETED
+  PUBLISHED
+  UNPUBLISHED
+  RESTORED
+  BULK_UPDATE
+  REPARSE
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum EditMode {
+  PARSER
+  ATTRIBUTE
+}
+
+enum ElementType {
+  TEXT
+  HTML
+  IMAGE
+  BACKGROUND
+}
+
 enum Gender {
   MALE
   FEMALE
+}
+
+enum LockStatus {
+  UNLOCKED
+  LOCKED
+  EXPIRED
+}
+
+enum Period {
+  MORNING
+  AFTERNOON
 }
 
 enum PopupType {
@@ -321,6 +545,15 @@ enum ServiceType {
   REMOVAL_PROCEDURE
   BODY_CARE
   OTHER_CONSULTATION
+}
+
+enum SyncStatus {
+  SYNCED
+  PENDING
+  CONFLICT
+  ERROR
+  IN_PROGRESS
+  FAILED
 }
 
 enum TemplateCategory {

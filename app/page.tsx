@@ -32,7 +32,7 @@ export default function Home() {
                 </div>
               </Link>
 
-              <a href="https://misopin.com" target="_blank" rel="noopener noreferrer" className="group">
+              <a href="https://misopin.one-q.xyz/" target="_blank" rel="noopener noreferrer" className="group">
                 <div className="bg-green-50 dark:bg-gray-700 rounded-lg p-6 transition-all duration-300 hover:scale-105">
                   <div className="text-3xl mb-3">🌐</div>
                   <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">

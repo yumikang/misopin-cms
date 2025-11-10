@@ -1,0 +1,68 @@
+[
+  {
+    "id": "limit_WRINKLE_BOTOX",
+    "serviceType": "WRINKLE_BOTOX",
+    "isActive": true,
+    "createdAt": "2025-10-22T15:37:56.335Z",
+    "updatedAt": "2025-10-23T01:34:05.414Z",
+    "dailyLimit": 3,
+    "serviceId": null,
+    "reason": null,
+    "updatedBy": null
+  },
+  {
+    "id": "limit_VOLUME_LIFTING",
+    "serviceType": "VOLUME_LIFTING",
+    "isActive": true,
+    "createdAt": "2025-10-22T15:37:56.335Z",
+    "updatedAt": "2025-10-23T01:34:11.842Z",
+    "dailyLimit": 3,
+    "serviceId": null,
+    "reason": null,
+    "updatedBy": null
+  },
+  {
+    "id": "limit_SKIN_CARE",
+    "serviceType": "SKIN_CARE",
+    "isActive": true,
+    "createdAt": "2025-10-22T15:37:56.335Z",
+    "updatedAt": "2025-10-23T01:34:15.651Z",
+    "dailyLimit": 5,
+    "serviceId": null,
+    "reason": null,
+    "updatedBy": null
+  },
+  {
+    "id": "limit_REMOVAL_PROCEDURE",
+    "serviceType": "REMOVAL_PROCEDURE",
+    "isActive": true,
+    "createdAt": "2025-10-22T15:37:56.335Z",
+    "updatedAt": "2025-10-23T01:34:25.366Z",
+    "dailyLimit": 3,
+    "serviceId": null,
+    "reason": null,
+    "updatedBy": null
+  },
+  {
+    "id": "limit_BODY_CARE",
+    "serviceType": "BODY_CARE",
+    "isActive": true,
+    "createdAt": "2025-10-22T15:37:56.335Z",
+    "updatedAt": "2025-10-23T01:34:29.442Z",
+    "dailyLimit": 5,
+    "serviceId": null,
+    "reason": null,
+    "updatedBy": null
+  },
+  {
+    "id": "limit_OTHER_CONSULTATION",
+    "serviceType": "OTHER_CONSULTATION",
+    "isActive": true,
+    "createdAt": "2025-10-22T15:37:56.335Z",
+    "updatedAt": "2025-10-23T01:34:33.251Z",
+    "dailyLimit": 5,
+    "serviceId": null,
+    "reason": null,
+    "updatedBy": null
+  }
+]

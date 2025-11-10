@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Gender, TreatmentType, ReservationStatus, ServiceType } from '@prisma/client';
-import { canCreateReservation } from '@/lib/reservations/daily-limit-counter';
+import { Gender, TreatmentType, ReservationStatus, ServiceType, Period } from '@prisma/client';
+import { validateTimeSlotAvailability } from '@/lib/reservations/time-slot-calculator';
+import { checkServiceDailyLimit } from '@/lib/reservations/service-limits';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,6 +25,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Missing required fields',
+          message: '필수 입력 항목을 모두 입력해주세요.',
+          code: 'MISSING_FIELDS',
           fields: missingFields
         },
         { status: 400 }
@@ -39,6 +42,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid date format',
+          message: '날짜 형식이 올바르지 않습니다.',
+          code: 'INVALID_DATE_FORMAT',
           details: 'birth_date and preferred_date must be valid date strings'
         },
         { status: 400 }
@@ -47,38 +52,177 @@ export async function POST(request: NextRequest) {
 
     // Service type
     const serviceType = body.service as ServiceType;
+    const preferredTime = body.preferred_time; // "09:00" format
 
-    // Create reservation with limit validation using transaction
-    const reservation = await prisma.$transaction(async (tx) => {
-      // 1. Check if reservation can be created (uses FOR UPDATE lock)
-      const canCreate = await canCreateReservation(tx, preferredDate, serviceType);
+    // Determine period from preferred time
+    let period: Period | null = null;
+    let timeSlotStart: string | null = null;
+    let timeSlotEnd: string | null = null;
+    let serviceId: string | null = null;
+    let serviceName: string | null = null;
+    let estimatedDuration: number | null = null;
 
-      if (!canCreate) {
-        throw new Error('RESERVATION_FULL');
-      }
+    // Parse time to determine period
+    const timeMatch = preferredTime.match(/^(\d{2}):(\d{2})$/);
+    if (timeMatch) {
+      const hour = parseInt(timeMatch[1], 10);
+      period = hour < 12 ? Period.MORNING : Period.AFTERNOON;
+      timeSlotStart = preferredTime;
+    }
 
-      // 2. Create reservation
-      const newReservation = await tx.reservations.create({
-        data: {
-          id: crypto.randomUUID(),
-          patientName: body.patient_name,
-          phone: body.phone,
-          email: body.email || null,
-          birthDate: birthDate,
-          gender: body.gender as Gender,
-          treatmentType: body.treatment_type as TreatmentType,
-          service: serviceType,
-          preferredDate: preferredDate,
-          preferredTime: body.preferred_time,
-          status: 'PENDING' as ReservationStatus,
-          notes: body.notes || null,
-          adminNotes: null,
-          statusChangedAt: new Date(),
-          updatedAt: new Date()
+    // Try to fetch service info for new time-based system
+    try {
+      const service = await prisma.services.findUnique({
+        where: { code: serviceType },
+        select: {
+          id: true,
+          name: true,
+          durationMinutes: true,
+          bufferMinutes: true
         }
       });
 
-      return newReservation;
+      if (service) {
+        serviceId = service.id;
+        serviceName = service.name;
+        estimatedDuration = service.durationMinutes;
+
+        // Calculate timeSlotEnd (including buffer time)
+        if (timeSlotStart) {
+          const [hours, minutes] = timeSlotStart.split(':').map(Number);
+          const totalMinutes = hours * 60 + minutes + service.durationMinutes + service.bufferMinutes;
+          const endHours = Math.floor(totalMinutes / 60);
+          const endMinutes = totalMinutes % 60;
+          timeSlotEnd = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
+        }
+
+        // Validate time slot availability (TIME-BASED SYSTEM - MANDATORY)
+        if (!period || !timeSlotStart || !serviceId) {
+          throw new Error('SERVICE_NOT_CONFIGURED');
+        }
+
+        await validateTimeSlotAvailability(
+          serviceType,
+          preferredDate.toISOString().split('T')[0],
+          timeSlotStart,
+          period
+        );
+
+        // ✅ CHECK SERVICE DAILY LIMIT (시간 기반)
+        // estimatedDuration을 전달하여 남은 시간 부족 체크
+        const limitCheck = await checkServiceDailyLimit(
+          serviceId,
+          preferredDate,
+          estimatedDuration || undefined
+        );
+
+        if (!limitCheck.available) {
+          return NextResponse.json(
+            {
+              error: 'Daily limit exceeded',
+              message: limitCheck.message,
+              code: 'DAILY_LIMIT_EXCEEDED',
+              details: {
+                dailyLimitMinutes: limitCheck.dailyLimitMinutes,
+                consumedMinutes: limitCheck.consumedMinutes,
+                remainingMinutes: limitCheck.remainingMinutes,
+                requestedDuration: limitCheck.requestedDuration,
+                date: preferredDate.toISOString().split('T')[0]
+              }
+            },
+            {
+              status: 409,
+              headers: {
+                'Access-Control-Allow-Origin': '*',
+              }
+            }
+          );
+        }
+      }
+    } catch (serviceError: any) {
+      // Service not found or validation failed
+      if (serviceError.code === 'TIME_SLOT_FULL') {
+        return NextResponse.json(
+          {
+            error: 'Time slot not available',
+            message: serviceError.message,
+            code: serviceError.code,
+            suggestedTimes: serviceError.metadata?.suggestedTimes || []
+          },
+          {
+            status: 409,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            }
+          }
+        );
+      }
+      throw serviceError;
+    }
+
+    // DOUBLE VALIDATION: Check manual closures one more time with transaction
+    // This prevents race conditions between validation and creation
+    if (period && timeSlotStart) {
+      const manualClosure = await prisma.manual_time_closures.findFirst({
+        where: {
+          closureDate: preferredDate,
+          period: period,
+          timeSlotStart: timeSlotStart,
+          isActive: true,
+          OR: [
+            { serviceId: null },      // Applies to all services
+            { serviceId: serviceId }  // Applies to specific service
+          ]
+        }
+      });
+
+      if (manualClosure) {
+        return NextResponse.json(
+          {
+            error: 'Time slot manually closed',
+            message: '해당 시간대는 관리자에 의해 마감되었습니다.',
+            code: 'TIME_SLOT_MANUALLY_CLOSED',
+            isManualClosed: true,
+            closureReason: manualClosure.reason
+          },
+          {
+            status: 409,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            }
+          }
+        );
+      }
+    }
+
+    // Create reservation (TIME-BASED SYSTEM)
+    const reservation = await prisma.reservations.create({
+      data: {
+        id: crypto.randomUUID(),
+        patientName: body.patient_name,
+        phone: body.phone,
+        email: body.email || null,
+        birthDate: birthDate,
+        gender: body.gender as Gender,
+        treatmentType: body.treatment_type as TreatmentType,
+        // LEGACY FIELDS (for backward compatibility)
+        service: serviceType,
+        preferredDate: preferredDate,
+        preferredTime: body.preferred_time,
+        // NEW TIME-BASED FIELDS
+        serviceId: serviceId,
+        serviceName: serviceName,
+        estimatedDuration: estimatedDuration,
+        period: period,
+        timeSlotStart: timeSlotStart,
+        timeSlotEnd: timeSlotEnd,
+        // STATUS FIELDS
+        status: 'PENDING' as ReservationStatus,
+        notes: body.notes || null,
+        adminNotes: null,
+        statusChangedAt: new Date(),
+        updatedAt: new Date()
+      }
     });
 
     // Send success response
@@ -104,15 +248,15 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Reservation error:', error);
 
-    // Handle specific error: reservation limit reached
-    if (error instanceof Error && error.message === 'RESERVATION_FULL') {
+    // Handle specific error: service not configured
+    if (error instanceof Error && error.message === 'SERVICE_NOT_CONFIGURED') {
       return NextResponse.json(
         {
-          error: 'Reservation limit reached',
-          message: '해당 날짜의 예약이 마감되었습니다. 다른 날짜를 선택해 주세요.'
+          error: 'Service configuration error',
+          message: '해당 시술이 시스템에 등록되지 않았습니다. 관리자에게 문의하세요.'
         },
         {
-          status: 409,
+          status: 500,
           headers: {
             'Access-Control-Allow-Origin': '*',
           }

@@ -1,0 +1,406 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model block_templates {
+  id           String           @id
+  name         String
+  description  String?
+  category     TemplateCategory
+  thumbnailUrl String?
+  isPublic     Boolean          @default(false)
+  createdBy    String
+  templateData Json
+  tags         String[]
+  usageCount   Int              @default(0)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime
+  users        users            @relation(fields: [createdBy], references: [id])
+
+  @@index([category])
+  @@index([createdBy])
+  @@index([isPublic])
+}
+
+model board_posts {
+  id          String    @id
+  boardType   BoardType
+  title       String
+  content     String
+  excerpt     String?
+  author      String
+  isPublished Boolean   @default(false)
+  isPinned    Boolean   @default(false)
+  viewCount   Int       @default(0)
+  tags        String[]
+  imageUrl    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  publishedAt DateTime?
+}
+
+model clinic_info {
+  id                   String   @id
+  phonePrimary         String
+  phoneSecondary       String?
+  addressFull          String
+  addressFloor         String?
+  hoursWeekday         String
+  hoursSaturday        String
+  hoursSunday          String
+  hoursLunch           String?
+  hoursSpecialNote     String?
+  snsInstagram         String?
+  snsKakao             String?
+  snsNaverBlog         String?
+  snsFacebook          String?
+  snsYoutube           String?
+  businessRegistration String
+  representativeName   String
+  medicalLicense       String?
+  isActive             Boolean  @default(true)
+  version              Int      @default(1)
+  lastUpdatedBy        String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime
+
+  @@index([isActive])
+}
+
+model content_blocks {
+  id               String             @id
+  name             String
+  type             BlockType
+  content          Json
+  styles           Json?
+  settings         Json?
+  isActive         Boolean            @default(true)
+  isGlobal         Boolean            @default(false)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  content_versions content_versions[]
+  page_blocks      page_blocks[]
+
+  @@index([isGlobal])
+  @@index([type])
+}
+
+model content_versions {
+  id             String         @id
+  blockId        String
+  version        Int
+  content        Json
+  styles         Json?
+  settings       Json?
+  changedBy      String
+  changeNote     String?
+  createdAt      DateTime       @default(now())
+  content_blocks content_blocks @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  users          users          @relation(fields: [changedBy], references: [id])
+
+  @@unique([blockId, version])
+  @@index([blockId])
+  @@index([changedBy])
+}
+
+model file_uploads {
+  id           String   @id
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  path         String
+  url          String
+  category     String   @default("general")
+  description  String?
+  uploadedById String
+  uploadedAt   DateTime @default(now())
+  updatedAt    DateTime
+  users        users    @relation(fields: [uploadedById], references: [id])
+
+  @@index([category])
+  @@index([uploadedById])
+}
+
+model page_blocks {
+  id             String         @id
+  pageId         String
+  blockId        String
+  sectionName    String
+  order          Int
+  isVisible      Boolean        @default(true)
+  customStyles   Json?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime
+  content_blocks content_blocks @relation(fields: [blockId], references: [id])
+  pages          pages          @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, sectionName, order])
+  @@index([blockId])
+  @@index([pageId])
+}
+
+model pages {
+  id           String        @id
+  slug         String        @unique
+  title        String
+  content      Json
+  metadata     Json?
+  isPublished  Boolean       @default(false)
+  version      Int           @default(1)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime
+  page_blocks  page_blocks[]
+  seo_settings seo_settings?
+}
+
+model popups {
+  id          String    @id
+  title       String
+  content     String
+  imageUrl    String?
+  linkUrl     String?
+  isActive    Boolean   @default(false)
+  startDate   DateTime
+  endDate     DateTime
+  position    String    @default("CENTER")
+  showOnPages String[]
+  displayType PopupType @default(MODAL)
+  priority    Int       @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+}
+
+model service_reservation_limits {
+  id          String      @id @default(cuid())
+  serviceType ServiceType @unique
+  dailyLimit  Int         @default(10)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("service_reservation_limits")
+}
+
+model reservations {
+  id              String            @id
+  patientName     String
+  phone           String
+  email           String?
+  birthDate       DateTime
+  gender          Gender
+  treatmentType   TreatmentType
+  preferredDate   DateTime          @db.Date
+  preferredTime   String
+  status          ReservationStatus @default(PENDING)
+  notes           String?
+  adminNotes      String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  service         ServiceType
+  statusChangedAt DateTime          @default(now())
+  statusChangedBy String?
+
+  @@index([preferredDate, service, status])
+  @@index([status])
+}
+
+model seo_settings {
+  id              String   @id
+  pageId          String   @unique
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String[]
+  ogTitle         String?
+  ogDescription   String?
+  ogImage         String?
+  canonicalUrl    String?
+  structuredData  Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+  pages           pages    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model static_page_versions {
+  id           String       @id
+  pageId       String
+  version      Int
+  sections     Json
+
+  // 🆕 요소별 변경 추적
+  changeType   String?      @db.VarChar(50)  // 'element_update', 'bulk_update', 'reparse'
+  changedData  Json?        // { elementId, oldValue, newValue, elementType }
+
+  changedBy    String
+  changeNote   String?      @db.Text
+  createdAt    DateTime     @default(now())
+  static_pages static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, version])
+  @@index([pageId])
+  @@index([changeType])
+  @@index([createdAt])
+}
+
+model static_pages {
+  id                   String                 @id
+  slug                 String                 @unique
+  title                String
+  filePath             String
+  sections             Json
+
+  // 🆕 TipTap 편집 시스템 필드
+  editMode             EditMode               @default(PARSER)
+  lastParsedAt         DateTime?
+  syncStatus           SyncStatus             @default(SYNCED)
+  lastSyncedAt         DateTime?
+
+  lastEdited           DateTime
+  createdAt            DateTime               @default(now())
+  static_page_versions static_page_versions[]
+  editable_elements    editable_elements[]    // 🆕 추가
+
+  @@index([editMode])
+  @@index([syncStatus])
+}
+
+model editable_elements {
+  id           String       @id @default(cuid())
+  pageId       String
+  elementId    String       @db.VarChar(100)
+  elementType  ElementType
+  selector     String       @db.VarChar(500)
+  label        String       @db.VarChar(255)
+  currentValue String       @db.Text
+  sectionName  String?      @db.VarChar(100)
+  order        Int          @default(0)
+
+  page         static_pages @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([pageId, elementId])
+  @@index([pageId])
+  @@index([sectionName])
+  @@index([pageId, order])
+}
+
+model system_settings {
+  id        String   @id
+  key       String   @unique
+  value     Json
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model users {
+  id               String             @id
+  email            String             @unique
+  name             String
+  password         String
+  role             UserRole           @default(EDITOR)
+  isActive         Boolean            @default(true)
+  lastLogin        DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  block_templates  block_templates[]
+  content_versions content_versions[]
+  file_uploads     file_uploads[]
+}
+
+enum BlockType {
+  TEXT
+  IMAGE
+  VIDEO
+  CAROUSEL
+  GRID
+  BUTTON
+  FORM
+  MAP
+  HTML
+  COMPONENT
+}
+
+enum BoardType {
+  NOTICE
+  EVENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum PopupType {
+  MODAL
+  BANNER
+  SLIDE_IN
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+  REJECTED
+}
+
+enum ServiceType {
+  WRINKLE_BOTOX
+  VOLUME_LIFTING
+  SKIN_CARE
+  REMOVAL_PROCEDURE
+  BODY_CARE
+  OTHER_CONSULTATION
+}
+
+enum TemplateCategory {
+  UI
+  LAYOUT
+  CONTENT
+  FORM
+  MEDIA
+  NAVIGATION
+  MARKETING
+  SOCIAL
+  OTHER
+}
+
+enum TreatmentType {
+  FIRST_VISIT
+  FOLLOW_UP
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+}
+
+enum EditMode {
+  PARSER      // 기존 HTML 파싱 방식
+  ATTRIBUTE   // data-editable 속성 방식 (TipTap)
+}
+
+enum ElementType {
+  TEXT           // 순수 텍스트
+  HTML           // HTML 포함 텍스트 (TipTap 사용)
+  IMAGE          // 이미지 src
+  BACKGROUND     // 배경 이미지
+}
+
+enum SyncStatus {
+  SYNCED         // DB와 파일이 동기화됨
+  PENDING        // 파일 업데이트 대기 중
+  CONFLICT       // 충돌 발생
+  ERROR          // 동기화 오류
+}

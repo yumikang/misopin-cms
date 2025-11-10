@@ -1,6 +1,6 @@
 export interface Setting {
   id: string;
-  category: 'general' | 'contact' | 'seo' | 'business' | 'api';
+  category: 'general' | 'contact' | 'seo' | 'business' | 'reservations' | 'api';
   key: string;
   value: string;
   label: string;
@@ -30,6 +30,11 @@ export const categoryInfo = {
     icon: "🏢",
     title: "사업자 정보",
     description: "의료기관 및 사업자 정보"
+  },
+  reservations: {
+    icon: "📅",
+    title: "예약 관리",
+    description: "예약 시간 한도 및 설정"
   },
   api: {
     icon: "🔌",
