@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -43,7 +44,6 @@ import TimeSlotGrid from "@/components/admin/TimeSlotGrid";
 import ServiceSelector from "@/components/admin/ServiceSelector";
 import CapacityIndicator from "@/components/admin/CapacityIndicator";
 import { ServiceLimitSettings } from "@/app/admin/settings/components/ServiceLimitSettings";
-import ServicesPage from "@/app/admin/services/page";
 
 interface Reservation {
   id: string;
@@ -116,7 +116,6 @@ export default function ReservationsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [limitSettingsOpen, setLimitSettingsOpen] = useState(false);
-  const [serviceManagementOpen, setServiceManagementOpen] = useState(false);
   const [editingReservation, setEditingReservation] = useState<Reservation | null>(null);
   const [viewingReservation, setViewingReservation] = useState<Reservation | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -353,14 +352,15 @@ export default function ReservationsPage() {
           <p className="text-gray-600 mt-1">진료 예약을 관리합니다</p>
         </div>
         <div className="flex gap-3">
-          <Button
-            variant="outline"
-            onClick={() => setServiceManagementOpen(true)}
-            className="inline-flex items-center gap-2"
-          >
-            <Stethoscope className="h-4 w-4" />
-            시술 관리
-          </Button>
+          <Link href="/admin/reservations/settings">
+            <Button
+              variant="outline"
+              className="inline-flex items-center gap-2"
+            >
+              <Stethoscope className="h-4 w-4" />
+              시술 관리
+            </Button>
+          </Link>
           <Button
             variant="outline"
             onClick={() => setLimitSettingsOpen(true)}
@@ -901,27 +901,6 @@ export default function ReservationsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Service Management Dialog */}
-      <Dialog open={serviceManagementOpen} onOpenChange={setServiceManagementOpen}>
-        <DialogContent className="max-w-7xl w-[95vw] max-h-[95vh] overflow-y-auto p-8">
-          <DialogHeader className="mb-6">
-            <DialogTitle className="text-2xl">시술 관리</DialogTitle>
-            <DialogDescription className="text-base">
-              시술을 추가, 수정, 삭제하고 시술 시간을 관리합니다
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="w-full">
-            <ServicesPage />
-          </div>
-
-          <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setServiceManagementOpen(false)}>
-              닫기
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Service Limit Settings Dialog */}
       <Dialog open={limitSettingsOpen} onOpenChange={setLimitSettingsOpen}>
