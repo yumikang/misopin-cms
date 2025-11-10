@@ -802,10 +802,32 @@ export default function ReservationsPage() {
                     <Label className="text-xs text-gray-500">전화번호</Label>
                     <p className="text-sm font-medium">{viewingReservation.patient_phone}</p>
                   </div>
+                  {viewingReservation.patient_birth_date && (
+                    <div>
+                      <Label className="text-xs text-gray-500">생년월일</Label>
+                      <p className="text-sm font-medium">{viewingReservation.patient_birth_date}</p>
+                    </div>
+                  )}
+                  {viewingReservation.patient_gender && (
+                    <div>
+                      <Label className="text-xs text-gray-500">성별</Label>
+                      <p className="text-sm font-medium">
+                        {viewingReservation.patient_gender === 'MALE' ? '남성' :
+                         viewingReservation.patient_gender === 'FEMALE' ? '여성' :
+                         viewingReservation.patient_gender}
+                      </p>
+                    </div>
+                  )}
                   {viewingReservation.patient_email && (
                     <div className="col-span-2">
                       <Label className="text-xs text-gray-500">이메일</Label>
                       <p className="text-sm font-medium">{viewingReservation.patient_email}</p>
+                    </div>
+                  )}
+                  {viewingReservation.memo && (
+                    <div className="col-span-2">
+                      <Label className="text-xs text-gray-500">메모</Label>
+                      <p className="text-sm font-medium whitespace-pre-wrap">{viewingReservation.memo}</p>
                     </div>
                   )}
                 </div>

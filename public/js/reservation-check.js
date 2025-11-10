@@ -160,6 +160,12 @@
    * 예약 조회 핸들러
    */
   async function handleReservationCheck(event) {
+    // event가 없으면 early return
+    if (!event) {
+      console.error('Event is undefined');
+      return;
+    }
+
     event.preventDefault();
 
     const form = event.target;
