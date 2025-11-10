@@ -131,6 +131,22 @@ class MisopinAPI {
   }
 
   /**
+   * Check reservations by phone number only
+   * @param {string} phone - Phone number (with or without hyphens)
+   */
+  async checkReservationsByPhone(phone) {
+    // Normalize phone number (remove hyphens, spaces, parentheses)
+    const normalizedPhone = phone.replace(/[-\s()]/g, '');
+
+    const params = new URLSearchParams({
+      phone: normalizedPhone,
+      t: Date.now().toString() // Cache buster
+    });
+
+    return this.fetchAPI(`/public/reservations/check?${params}`);
+  }
+
+  /**
    * Cancel reservation
    * @param {string} reservationId - Reservation ID
    * @param {Object} verifyData - Verification data (phone, birth_date)
