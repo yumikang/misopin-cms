@@ -49,6 +49,8 @@ interface Reservation {
   patient_name: string;
   patient_phone: string;
   patient_email?: string;
+  patient_birth_date?: string;
+  patient_gender?: 'MALE' | 'FEMALE';
   reservation_date: string;
   reservation_time: string;
   department: string;
@@ -56,6 +58,7 @@ interface Reservation {
   purpose: string;
   status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
   notes?: string;
+  memo?: string;
   created_at: string;
   updated_at: string;
   confirmed_at?: string;
