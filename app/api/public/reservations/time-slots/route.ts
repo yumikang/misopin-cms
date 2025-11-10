@@ -147,10 +147,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check if date is in the past
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (date < today) {
+    // Check if date is in the past (using UTC to avoid timezone issues)
+    const todayUTC = new Date(new Date().toISOString().split('T')[0] + 'T00:00:00.000Z');
+    if (date < todayUTC) {
       return NextResponse.json(
         {
           success: false,

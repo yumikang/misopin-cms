@@ -73,6 +73,91 @@ function setCachedReservations(
 }
 
 // ============================================================================
+// Phase 4: Time Overlap Detection Utilities
+// ============================================================================
+
+/**
+ * Converts time string (HH:mm) to minutes since midnight
+ * @param time - Time in "HH:mm" format (e.g., "10:30")
+ * @returns Minutes since midnight (e.g., 630 for "10:30")
+ * @example
+ * timeToMinutes("10:30") // returns 630
+ * timeToMinutes("14:00") // returns 840
+ */
+function timeToMinutes(time: string): number {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+/**
+ * Counts how many existing reservations overlap with a given timeslot
+ *
+ * Uses interval intersection formula: [A.start < B.end] AND [B.start < A.end]
+ *
+ * Phase 4 Core Logic:
+ * - Filters reservations by serviceId (same service only)
+ * - Filters reservations by period (MORNING/AFTERNOON)
+ * - Checks if each reservation's time range overlaps with the target slot
+ * - Returns count of overlapping reservations for maxConcurrent comparison
+ *
+ * @param slotStart - Slot start time (HH:mm)
+ * @param slotDuration - Slot duration in minutes
+ * @param reservations - All reservations for the day
+ * @param period - Time period (MORNING/AFTERNOON)
+ * @param serviceId - Service ID to filter reservations
+ * @returns Number of reservations that overlap with this timeslot
+ */
+function countOverlappingReservations(
+  slotStart: string,
+  slotDuration: number,
+  reservations: ReservationForTimeSlot[],
+  period: Period,
+  serviceId: string
+): number {
+  const slotStartMinutes = timeToMinutes(slotStart);
+  const slotEndMinutes = slotStartMinutes + slotDuration;
+
+  let overlappingCount = 0;
+
+  for (const reservation of reservations) {
+    // Only check reservations for the same service
+    if (reservation.serviceId !== serviceId) {
+      continue;
+    }
+
+    // Only check reservations in the same period
+    if (reservation.period !== period) {
+      continue;
+    }
+
+    // Get reservation time range
+    const resStartTime = reservation.timeSlotStart;
+    if (!resStartTime) {
+      continue; // Skip if no specific time slot
+    }
+
+    const resStartMinutes = timeToMinutes(resStartTime);
+
+    // Use timeSlotEnd if available, otherwise calculate from estimatedDuration
+    let resEndMinutes: number;
+    if (reservation.timeSlotEnd) {
+      resEndMinutes = timeToMinutes(reservation.timeSlotEnd);
+    } else {
+      resEndMinutes = resStartMinutes + (reservation.estimatedDuration || 0);
+    }
+
+    // Interval intersection check: [A.start < B.end] AND [B.start < A.end]
+    const overlaps = (slotStartMinutes < resEndMinutes) && (resStartMinutes < slotEndMinutes);
+
+    if (overlaps) {
+      overlappingCount++;
+    }
+  }
+
+  return overlappingCount;
+}
+
+// ============================================================================
 // Main Function
 // ============================================================================
 
@@ -135,7 +220,15 @@ export async function calculateAvailableTimeSlots(
     }
   });
 
-  if (debug) console.log('[Calculator] Clinic slots found:', clinicSlots.length);
+  if (debug) {
+    console.log('[Calculator] Clinic slots found:', clinicSlots.length);
+    console.log('[Calculator] Phase 4: Capacity info:', clinicSlots.map(cs => ({
+      period: cs.period,
+      maxConcurrent: cs.maxConcurrent || 1,
+      startTime: cs.startTime,
+      endTime: cs.endTime
+    })));
+  }
 
   if (clinicSlots.length === 0) {
     throw new ReservationError(
@@ -148,11 +241,15 @@ export async function calculateAvailableTimeSlots(
   let existingReservations = getCachedReservations(dateString);
 
   if (!existingReservations) {
+    // Use UTC dates to avoid timezone issues
+    const startOfDay = new Date(dateString + 'T00:00:00.000Z');
+    const endOfDay = new Date(dateString + 'T23:59:59.999Z');
+
     existingReservations = await prisma.reservations.findMany({
       where: {
         preferredDate: {
-          gte: new Date(dateString + 'T00:00:00'),
-          lt: new Date(dateString + 'T23:59:59')
+          gte: startOfDay,
+          lte: endOfDay
         },
         status: {
           in: ['PENDING', 'CONFIRMED']
@@ -160,6 +257,7 @@ export async function calculateAvailableTimeSlots(
       },
       select: {
         id: true,
+        serviceId: true,
         period: true,
         preferredTime: true,
         timeSlotStart: true,
@@ -171,17 +269,37 @@ export async function calculateAvailableTimeSlots(
     setCachedReservations(dateString, existingReservations);
   }
 
-  // 5. Group reservations by time (O(n))
-  const reservationsByTime = new Map<string, ReservationForTimeSlot[]>();
-  existingReservations.forEach((r) => {
-    const key = `${r.period}-${r.preferredTime || r.timeSlotStart}`;
-    if (!reservationsByTime.has(key)) {
-      reservationsByTime.set(key, []);
+  // 4.5 Get manual time closures (NOT cached - always fresh)
+  if (debug) console.log('[Calculator] Step 4.5: Getting manual closures for', dateString);
+
+  const manualClosures = await prisma.manual_time_closures.findMany({
+    where: {
+      closureDate: new Date(dateString),
+      isActive: true,
+      OR: [
+        { serviceId: null },      // Closure applies to all services
+        { serviceId: service.id } // Closure applies to specific service
+      ]
+    },
+    select: {
+      period: true,
+      timeSlotStart: true,
+      timeSlotEnd: true,
+      reason: true
     }
-    reservationsByTime.get(key)!.push(r);
   });
 
-  // 6. Generate time slots
+  if (debug) console.log('[Calculator] Manual closures found:', manualClosures.length);
+
+  // Create lookup map for O(1) closure checking
+  const closureMap = new Map<string, { reason: string | null }>();
+  manualClosures.forEach(closure => {
+    const key = `${closure.period}-${closure.timeSlotStart}`;
+    closureMap.set(key, { reason: closure.reason });
+  });
+
+  // 5. Generate time slots (Phase 4: Using overlap detection instead of grouping)
+  // Note: reservationsByTime map removed - now using countOverlappingReservations()
   const slots: TimeSlot[] = [];
 
   clinicSlots.forEach(clinicSlot => {
@@ -194,40 +312,87 @@ export async function calculateAvailableTimeSlots(
     const totalPeriodMinutes = endMinutes - startMinutes;
 
     // Generate 30-minute intervals
-    for (let minutes = startMinutes; minutes <= endMinutes - totalDuration; minutes += 30) {
+    // IMPORTANT: Generate all slots up to period end time (not totalDuration-dependent)
+    // because we support concurrent bookings at each slot
+    const SLOT_INTERVAL_MINUTES = 30;
+    for (let minutes = startMinutes; minutes <= endMinutes - SLOT_INTERVAL_MINUTES; minutes += SLOT_INTERVAL_MINUTES) {
       const hours = Math.floor(minutes / 60);
       const mins = minutes % 60;
       const timeString = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
 
       const key = `${period}-${timeString}`;
-      const reservationsAtTime = reservationsByTime.get(key) || [];
 
-      // Calculate consumed minutes
-      const consumedMinutes = reservationsAtTime.reduce((sum, r) => {
-        return sum + (r.estimatedDuration || 30);
-      }, 0);
+      // Check if manually closed
+      const closure = closureMap.get(key);
+      const isManualClosed = !!closure;
 
-      const remainingMinutes = totalPeriodMinutes - consumedMinutes;
-      const available = remainingMinutes >= totalDuration;
+      // ============================================================================
+      // Phase 4: Timeslot-level Overlap Detection
+      // ============================================================================
+      // Count how many reservations overlap with this specific timeslot
+      // IMPORTANT: Use 30-minute slot duration, NOT totalDuration (which includes buffer)
+      const SLOT_DURATION_MINUTES = 30;
+      const overlappingCount = countOverlappingReservations(
+        timeString,
+        SLOT_DURATION_MINUTES,
+        existingReservations,
+        period,
+        service.id
+      );
+
+      // Get maxConcurrent capacity for this clinic slot (default: 1)
+      const maxCapacity = clinicSlot.maxConcurrent || 1;
+
+      // Calculate remaining booking capacity
+      const remainingCapacity = Math.max(0, maxCapacity - overlappingCount);
+
+      // Available only if NOT manually closed AND has remaining concurrent capacity
+      const available = !isManualClosed && (overlappingCount < maxCapacity);
 
       let status: 'available' | 'limited' | 'full';
-      const capacityPercent = (remainingMinutes / totalPeriodMinutes) * 100;
 
-      if (capacityPercent > 60) {
-        status = 'available';
-      } else if (capacityPercent > 20) {
-        status = 'limited';
+      if (isManualClosed) {
+        status = 'full'; // Manually closed slots are always "full"
       } else {
-        status = 'full';
+        // Status based on booking count, not minutes
+        const capacityPercent = maxCapacity > 0
+          ? ((maxCapacity - overlappingCount) / maxCapacity) * 100
+          : 0;
+
+        if (capacityPercent > 60) {
+          status = 'available';
+        } else if (capacityPercent > 0) {
+          status = 'limited';
+        } else {
+          status = 'full';
+        }
       }
 
+      // Phase 4: Debug logging for overlap detection
+      if (debug && (overlappingCount > 0 || isManualClosed)) {
+        console.log(`[Phase 4] ${period} ${timeString}:`, {
+          overlappingCount,
+          maxCapacity,
+          available,
+          status,
+          isManualClosed
+        });
+      }
+
+      // Phase 4: New TimeSlot structure with booking counts
       slots.push({
         time: timeString,
         period,
         available,
-        remaining: Math.max(0, remainingMinutes),
-        total: totalPeriodMinutes,
-        status
+        remaining: remainingCapacity, // Now: booking count, not minutes
+        total: maxCapacity, // Now: maxConcurrent, not period minutes
+        status,
+        currentBookings: overlappingCount, // NEW: current reservation count
+        maxCapacity: maxCapacity, // NEW: max concurrent capacity
+        ...(isManualClosed && {
+          closureReason: closure.reason,
+          isManualClosed: true
+        })
       });
     }
   });
@@ -279,16 +444,6 @@ export async function validateTimeSlotAvailability(
   }
 
   if (!requestedSlot.available) {
-    // Get service info for required minutes
-    const service = await prisma.services.findUnique({
-      where: { code: serviceCode },
-      select: { durationMinutes: true, bufferMinutes: true }
-    });
-
-    const requiredMinutes = service
-      ? service.durationMinutes + service.bufferMinutes
-      : 30;
-
     // Find suggested times
     const suggestedTimes = result.slots
       .filter(s => s.available && s.period === period)
@@ -300,8 +455,8 @@ export async function validateTimeSlotAvailability(
       'TIME_SLOT_FULL',
       {
         suggestedTimes,
-        remainingMinutes: requestedSlot.remaining,
-        requiredMinutes: requiredMinutes,
+        currentBookings: requestedSlot.currentBookings,
+        maxCapacity: requestedSlot.maxCapacity,
         requestedDate: dateString,
         requestedPeriod: period,
         serviceCode: serviceCode,

@@ -5,9 +5,11 @@ import TabNavigation from "@/components/admin/TabNavigation";
 import DateNavigation from "@/components/admin/DateNavigation";
 import TimeSlotGrid from "@/components/admin/TimeSlotGrid";
 import ReservationTimeline from "@/components/admin/ReservationTimeline";
+import ManualCloseForm from "@/components/admin/ManualCloseForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, List, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, List, Loader2, XCircle } from "lucide-react";
 
 interface Service {
   id: string;
@@ -23,6 +25,8 @@ export default function TimelinePage() {
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showManualClose, setShowManualClose] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Fetch services from API
   useEffect(() => {
@@ -77,19 +81,28 @@ export default function TimelinePage() {
               ))}
             </SelectContent>
           </Select>
+
+          <Button
+            variant={showManualClose ? "default" : "outline"}
+            onClick={() => setShowManualClose(!showManualClose)}
+            className="ml-2"
+          >
+            <XCircle className="h-4 w-4 mr-2" />
+            {showManualClose ? "마감 관리 숨기기" : "수동 마감 관리"}
+          </Button>
         </div>
       </div>
 
-      {/* Main Content: 2-Column Layout */}
+      {/* Main Content: 2-Column or 3-Column Layout */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           <span className="ml-2 text-muted-foreground">서비스 정보를 불러오는 중...</span>
         </div>
       ) : selectedService ? (
-        <div className="grid grid-cols-5 gap-6">
-          {/* Left Column: Time Slot Grid (2/5 width) */}
-          <Card className="col-span-2">
+        <div className={`grid ${showManualClose ? 'grid-cols-7' : 'grid-cols-5'} gap-6`}>
+          {/* Left Column: Time Slot Grid */}
+          <Card className={showManualClose ? 'col-span-2' : 'col-span-2'}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
@@ -98,6 +111,7 @@ export default function TimelinePage() {
             </CardHeader>
             <CardContent>
               <TimeSlotGrid
+                key={refreshKey}
                 date={date}
                 service={selectedService}
                 selectedSlot={selectedSlot}
@@ -106,8 +120,8 @@ export default function TimelinePage() {
             </CardContent>
           </Card>
 
-          {/* Right Column: Timeline View (3/5 width) */}
-          <Card className="col-span-3">
+          {/* Middle Column: Timeline View */}
+          <Card className={showManualClose ? 'col-span-3' : 'col-span-3'}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <List className="h-5 w-5" />
@@ -116,6 +130,7 @@ export default function TimelinePage() {
             </CardHeader>
             <CardContent>
               <ReservationTimeline
+                key={refreshKey}
                 date={date}
                 service={selectedService}
                 autoRefresh={true}
@@ -123,6 +138,20 @@ export default function TimelinePage() {
               />
             </CardContent>
           </Card>
+
+          {/* Right Column: Manual Close Form (conditional) */}
+          {showManualClose && (
+            <div className="col-span-2">
+              <ManualCloseForm
+                date={date}
+                serviceCode={selectedService}
+                onUpdate={() => {
+                  // Refresh the time slot grid and timeline
+                  setRefreshKey(prev => prev + 1);
+                }}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex items-center justify-center py-12 text-muted-foreground">

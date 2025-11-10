@@ -16,27 +16,26 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 
-<link rel="stylesheet" href="/css/vendor/default.css">
-<link rel="stylesheet" href="/css/components/quickmenu.css">
-<link rel="stylesheet" href="/css/components/top_menu.css">
-<link rel="stylesheet" href="/css/components/sub_main_banner.css">
-<link rel="stylesheet" href="/css/components/aside.css">
+<link rel="stylesheet" href="css/vendor/default.css">
+<link rel="stylesheet" href="css/components/quickmenu.css">
+<link rel="stylesheet" href="css/components/top_menu.css">
+<link rel="stylesheet" href="css/components/sub_main_banner.css">
+<link rel="stylesheet" href="css/components/aside.css">
 <!-- 외부 CSS 제거하고 로컬 CSS 사용 -->
-<link rel="stylesheet" href="/calendar-assets/css/hos_calendar_style.css">
+<link rel="stylesheet" href="calendar-assets/css/hos_calendar_style.css">
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css"  />
 <!-- jQuery UI 스타일 제거 (충돌 가능성) -->
-<link rel="stylesheet" href="/css/vendor/user.css">
-<link rel="stylesheet" href="/css/pages/page_style.css">
-<link rel="stylesheet" href="/css/responsive.css">
-<link rel="stylesheet" href="/css/button-styles.css">
+<link rel="stylesheet" href="css/vendor/user.css">
+<link rel="stylesheet" href="css/pages/page_style.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/button-styles.css">
 <!-- 1450px Grid System CSS 추가 -->
-<link rel="stylesheet" href="/css/grid-system-1450.css">
+<link rel="stylesheet" href="css/grid-system-1450.css">
 <!-- API Integration -->
-<link rel="stylesheet" href="/css/api-components.css">
-<link rel="stylesheet" href="/css/reservation-check.css">
-<link rel="stylesheet" href="/css/reservation-limit.css">
-<!-- Time Slot JS API Client -->
-<script src="/js/api-client.js"></script>
+<link rel="stylesheet" href="css/api-components.css">
+<link rel="stylesheet" href="css/reservation-check.css">
+<link rel="stylesheet" href="css/reservation-limit.css">
+<script src="js/api-client.js?v=1.3.0"></script>
 <style>
 @import url(//fonts.googleapis.com/earlyaccess/nanumpenscript.css);
 @import url(//fonts.googleapis.com/earlyaccess/nanumbrushscript.css);
@@ -182,7 +181,7 @@
 	font-style: normal;
 }
 </style><!--[if lte IE 8]>
-<script src="/js/libs/html5.js"></script>
+<script src="js/libs/html5.js"></script>
 <![endif]-->
 <script>
 // 자바스크립트에서 사용하는 전역변수 선언
@@ -196,15 +195,17 @@ var g5_sca       = "";
 var g5_editor    = "smarteditor2";
 var g5_cookie_domain = "";
 </script>
-<script src="/js/vendor/jquery-3.7.1.min.js"></script>
-<script src="/js/vendor/jquery-ui.js"></script>
-<script src="/js/vendor/jquery.menu.js"></script>
-<script src="/js/common.js"></script>
-<script src="/js/wrest.js"></script>
-<script src="/js/libs/placeholders.min.js"></script>
-<script src="/calendar-assets/js/calendar_script.js"></script>
-<script src="/js/calendar-integration.js"></script>
-<script src="/js/calendar-dynamic.js"></script>
+<script src="js/vendor/jquery-3.7.1.min.js"></script>
+<script src="js/vendor/jquery-ui.js"></script>
+<script src="js/vendor/jquery.menu.js"></script>
+<script src="js/common.js"></script>
+<script src="js/wrest.js"></script>
+<script src="js/libs/placeholders.min.js"></script>
+<!-- 진료시간 기반 시간 슬롯 생성 (외부 API 의존성 제거) -->
+<script src="js/clinic-hours.js"></script>
+<script src="calendar-assets/js/calendar_script.js"></script>
+<script src="js/calendar-integration.js"></script>
+<script src="js/calendar-dynamic.js"></script>
 <script>
 // 캘린더 네비게이션 함수 재정의 (스크립트 로드 후)
 $(document).ready(function() {
@@ -228,9 +229,10 @@ $(document).ready(function() {
 });
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="/js/vendor/feather.min.js"></script>
-<script src="/js/components/top_menu.js"></script>
-<script src="https://skincare1007.shiningcorp.com/skin/board/hos_calendar/script.js?ver=171222"></script>
+<script src="js/vendor/feather.min.js"></script>
+<script src="js/components/top_menu.js"></script>
+<!-- 외부 스크립트 제거 - 로컬 스크립트로 대체 -->
+<!-- <script src="https://skincare1007.shiningcorp.com/skin/board/hos_calendar/script.js?ver=171222"></script> -->
 <!-- 색상 오버라이드 - 모든 외부 CSS 로드 후 적용 -->
 <style>
 /* 외부 CSS의 --primary 변수를 브라운으로 오버라이드 */
@@ -383,9 +385,7 @@ textarea:focus {
     }
 }
 </style>
-<link rel="stylesheet" href="/css/index-custom.css">
-<!-- Time Slot Dynamic Loading Styles - 마지막에 로드하여 기존 스타일 유지 -->
-<link rel="stylesheet" href="/css/time-slot-styles.css">
+<link rel="stylesheet" href="css/index-custom.css">
 </head>
 <body>
 <style>
@@ -604,7 +604,7 @@ textarea:focus {
         <i class="fa fa-calendar"></i>
         예약하기
     </a>
-    <a href="tel:061-277-1001" class="phone">
+    <a href="tel:02-123-4567" class="phone">
         <i class="fa fa-phone"></i>
         전화상담
     </a>
@@ -733,7 +733,7 @@ jQuery(function($){
                 <li>
                     <label for="sh_checktime">예약 선택 시간</label>
                     <select name="sh_checktime" id="sh_checktime" required>
-                        <option value="">먼저 희망 진료 항목을 선택해주세요</option>
+                        <option value="" disabled selected>먼저 진료 항목을 선택해주세요</option>
                     </select>
                 </li>
                 <li>
@@ -965,7 +965,7 @@ $(function() {
 </script>
 <![endif]-->
 
-<script src="/js/mobile-nav.js"></script>
+<script src="js/mobile-nav.js"></script>
 
 <!-- 예약 폼 API 연동 스크립트 -->
 <script>
@@ -1031,13 +1031,34 @@ async function submitReservation(event) {
             form.reset();
             // 모달 닫기
             calendar_inqClose();
-        } else {
-            alert('예약 접수 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.');
         }
+        // result.success가 false인 경우는 catch 블록에서 처리됨
     } catch (error) {
-        console.error('Reservation error:', error);
-        console.error('Error details:', error.message, error.stack);
-        alert('예약 접수 중 오류가 발생했습니다.\n전화로 문의해주시기 바랍니다. (061-277-1001)\n\n에러: ' + error.message);
+        // 예약 실패는 정상적인 비즈니스 로직 (한도 초과, 마감 등)이므로 console.log 사용
+        console.log('예약 처리 결과:', error);
+        console.log('상세 정보:', error.message, error.code, error.details);
+
+        // ✅ API에서 받은 에러 메시지가 있으면 그대로 표시
+        if (error.message && !error.message.includes('Failed to fetch') && !error.message.includes('ERR_CONNECTION_REFUSED')) {
+            // API가 반환한 한국어 메시지 표시
+            let errorMsg = error.message;
+
+            // 추가 정보가 있으면 표시
+            if (error.details) {
+                if (error.details.remainingMinutes !== undefined) {
+                    const hours = Math.floor(error.details.remainingMinutes / 60);
+                    const minutes = error.details.remainingMinutes % 60;
+                    const timeStr = hours > 0 ? `${hours}시간 ${minutes}분` : `${minutes}분`;
+                    errorMsg += `\n\n남은 예약 가능 시간: ${timeStr}`;
+                }
+            }
+
+            alert(errorMsg);
+        }
+        // CMS API 연결 실패 시 친절한 메시지
+        else if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_REFUSED')) {
+            alert('예약 시스템에 일시적으로 연결할 수 없습니다.\n\n직접 전화로 예약해주시기 바랍니다.\n📞 전화: 061-277-1001\n\n운영시간:\n월/화/목/금: 08:30-19:30\n수요일: 08:30-12:00\n토요일: 09:00-14:00\n※ 점심시간 12:00-14:00');
+        }
     }
 
     return false;
@@ -1048,6 +1069,12 @@ function view_submit(f) {
     return false; // 기존 제출 방지
 }
 </script>
+
+<!-- 예약 확인 기능 스크립트 (외부 스크립트 이후 로드) -->
+<script src="js/reservation-check.js"></script>
+
+<!-- 예약 한도 체크 스크립트 - CMS API 필요, 로컬 테스트 시 비활성화 -->
+<!-- <script src="js/reservation-limit-check.js"></script> -->
 
 <!-- 모달 제어 개선 스크립트 -->
 <script>
@@ -1206,191 +1233,9 @@ if (!document.getElementById('modal-mobile-fix-style')) {
 }
 </script>
 
-<!-- Time Slot Dynamic Loading Script (Inline) -->
-<script>
-/**
- * TimeSlotLoader - 동적 시간 슬롯 로더
- * CMS API에서 실시간 예약 가능 시간을 가져옵니다.
- */
-class TimeSlotLoader {
-  constructor(config) {
-    this.serviceSelect = document.querySelector(config.serviceSelect);
-    this.dateInput = document.querySelector(config.dateInput);
-    this.timeSelect = document.querySelector(config.timeSelect);
-    this.apiBaseURL = config.apiBaseURL || '';
-    this.debug = config.debug || false;
-    this.isLoading = false;
-    this.lastLoadedKey = null;
-    this.cache = new Map();
-    this.cacheTTL = 5 * 60 * 1000; // 5분
-  }
-
-  init() {
-    if (!this.serviceSelect || !this.dateInput || !this.timeSelect) {
-      console.warn('TimeSlotLoader: Cannot initialize - missing elements');
-      return;
-    }
-
-    this.serviceSelect.addEventListener('change', () => this.loadTimeSlots());
-    this.dateInput.addEventListener('change', () => this.loadTimeSlots());
-    this.log('TimeSlotLoader initialized');
-
-    if (this.serviceSelect.value && this.dateInput.value) {
-      this.loadTimeSlots();
-    }
-  }
-
-  async loadTimeSlots() {
-    const date = this.dateInput.value;
-    const service = this.serviceSelect.value;
-
-    // 날짜가 없으면 빈 상태로 유지
-    if (!date) {
-      this.renderEmptyMessage('예약 날짜를 먼저 선택해주세요');
-      return;
-    }
-
-    // 시술이 선택되지 않았으면 안내 메시지 표시
-    if (!service) {
-      this.renderEmptyMessage('먼저 희망 진료 항목을 선택해주세요');
-      return;
-    }
-
-    const cacheKey = `${service}-${date}`;
-    const cached = this.getCache(cacheKey);
-    if (cached) {
-      this.log('Loading from cache:', cacheKey);
-      this.renderTimeSlots(cached.slots);
-      return;
-    }
-
-    this.setLoading(true);
-
-    try {
-      const url = `${this.apiBaseURL}/api/public/reservations/time-slots?service=${encodeURIComponent(service)}&date=${encodeURIComponent(date)}`;
-      this.log('Fetching:', url);
-
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Failed to fetch time slots');
-      }
-
-      this.setCache(cacheKey, data);
-      this.lastLoadedKey = cacheKey;
-      this.renderTimeSlots(data.slots);
-      this.log('Loaded time slots:', data.slots.length);
-
-    } catch (error) {
-      console.error('Error loading time slots:', error);
-      this.renderEmptyMessage('예약 시간을 불러올 수 없습니다. 잠시 후 다시 시도해주세요.');
-    } finally {
-      this.setLoading(false);
-    }
-  }
-
-  renderTimeSlots(slots) {
-    this.timeSelect.innerHTML = '<option value="">예약 시간을 선택해주세요.</option>';
-
-    if (!slots || slots.length === 0) {
-      this.renderStaticTimes();
-      return;
-    }
-
-    slots.forEach(slot => {
-      const option = document.createElement('option');
-      option.value = slot.time;
-      option.textContent = this.formatSlotLabel(slot);
-
-      if (!slot.available) {
-        option.disabled = true;
-        option.textContent += ' (마감)';
-      }
-
-      option.dataset.status = slot.status;
-      option.dataset.remaining = slot.remaining;
-      this.timeSelect.appendChild(option);
-    });
-  }
-
-  renderEmptyMessage(message) {
-    this.timeSelect.innerHTML = `<option value="">${message}</option>`;
-    this.log('Rendered empty message:', message);
-  }
-
-  formatSlotLabel(slot) {
-    const periodLabel = slot.period === 'MORNING' ? '오전' : '오후';
-    const [hours, minutes] = slot.time.split(':');
-    let label = `${periodLabel} ${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
-
-    if (slot.status === 'available') label += ' ✓';
-    else if (slot.status === 'limited') label += ' ⚠';
-    else if (slot.status === 'full') label += ' ✕';
-
-    return label;
-  }
-
-  setLoading(loading) {
-    this.isLoading = loading;
-    this.timeSelect.disabled = loading;
-    if (loading) {
-      this.timeSelect.innerHTML = '<option value="">로딩 중...</option>';
-    }
-  }
-
-  setCache(key, data) {
-    this.cache.set(key, { data: data, timestamp: Date.now() });
-  }
-
-  getCache(key) {
-    const cached = this.cache.get(key);
-    if (!cached) return null;
-    if (Date.now() - cached.timestamp > this.cacheTTL) {
-      this.cache.delete(key);
-      return null;
-    }
-    return cached.data;
-  }
-
-  log(...args) {
-    if (this.debug) console.log('[TimeSlotLoader]', ...args);
-  }
-}
-</script>
-<script>
-// Initialize TimeSlotLoader after DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if we're on the reservation form page
-    const serviceSelect = document.querySelector('#sh_service');
-    const dateInput = document.querySelector('#sh_checkday');
-    const timeSelect = document.querySelector('#sh_checktime');
-
-    if (serviceSelect && dateInput && timeSelect) {
-        // Initialize TimeSlotLoader
-        const timeSlotLoader = new TimeSlotLoader({
-            serviceSelect: '#sh_service',
-            dateInput: '#sh_checkday',
-            timeSelect: '#sh_checktime',
-            apiBaseURL: 'https://cms.one-q.xyz', // CMS API endpoint
-            debug: true // Enable debugging to see what's happening
-        });
-
-        timeSlotLoader.init();
-
-        console.log('[TimeSlotLoader] Initialized successfully');
-
-        // Make loader globally accessible for debugging
-        window.timeSlotLoader = timeSlotLoader;
-    } else {
-        console.warn('[TimeSlotLoader] Required form elements not found, skipping initialization');
-    }
-});
-</script>
-
 </body>
 <!-- 자체 분석 도구 -->
-<script src="/js/analytics-setup.js"></script>
+<script src="js/analytics-setup.js"></script>
 </html>
 
 <!-- 사용스킨 : hos_calendar -->

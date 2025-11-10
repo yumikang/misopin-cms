@@ -5,15 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Clock, AlertCircle } from "lucide-react";
-
-interface TimeSlot {
-  time: string;
-  period: 'MORNING' | 'AFTERNOON' | 'EVENING';
-  available: boolean;
-  remaining: number;
-  total: number;
-  status: 'available' | 'limited' | 'full';
-}
+import { TimeSlot } from "@/lib/reservations/types";
 
 interface TimeSlotGridProps {
   /**
@@ -58,6 +50,7 @@ const TimeSlotGrid = ({
   const [slots, setSlots] = useState<TimeSlot[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   // Fetch available time slots
   useEffect(() => {
@@ -69,6 +62,7 @@ const TimeSlotGrid = ({
     const fetchSlots = async () => {
       setLoading(true);
       setError(null);
+      setMessage(null);
 
       try {
         const response = await fetch(
@@ -84,6 +78,11 @@ const TimeSlotGrid = ({
         if (data.success) {
           // Empty slots array is valid (e.g., holidays, weekends)
           setSlots(data.slots || []);
+
+          // Show message if no slots available (e.g., "해당 요일은 진료하지 않습니다")
+          if (data.message && (!data.slots || data.slots.length === 0)) {
+            setMessage(data.message);
+          }
         } else {
           throw new Error(data.error || data.message || '시간대 정보를 불러오지 못했습니다');
         }
@@ -103,8 +102,7 @@ const TimeSlotGrid = ({
   const groupedSlots = useMemo(() => {
     return {
       MORNING: slots.filter(s => s.period === 'MORNING'),
-      AFTERNOON: slots.filter(s => s.period === 'AFTERNOON'),
-      EVENING: slots.filter(s => s.period === 'EVENING')
+      AFTERNOON: slots.filter(s => s.period === 'AFTERNOON')
     };
   }, [slots]);
 
@@ -129,15 +127,13 @@ const TimeSlotGrid = ({
         return '오전';
       case 'AFTERNOON':
         return '오후';
-      case 'EVENING':
-        return '저녁';
       default:
         return period;
     }
   };
 
   // Render period section
-  const renderPeriodSlots = (period: 'MORNING' | 'AFTERNOON' | 'EVENING') => {
+  const renderPeriodSlots = (period: 'MORNING' | 'AFTERNOON') => {
     const periodSlots = groupedSlots[period];
 
     if (periodSlots.length === 0) {
@@ -180,7 +176,7 @@ const TimeSlotGrid = ({
                 </div>
 
                 <div className="text-xs opacity-80">
-                  {Math.round((slot.remaining / slot.total) * 100)}%
+                  {slot.currentBookings}/{slot.maxCapacity}
                 </div>
 
                 {slot.status === 'limited' && (
@@ -247,7 +243,7 @@ const TimeSlotGrid = ({
       <Alert className={className}>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          선택한 날짜는 예약 가능한 시간대가 없습니다.
+          {message || '선택한 날짜는 예약 가능한 시간대가 없습니다.'}
           <br />
           <span className="text-xs text-muted-foreground">
             (주말, 공휴일 또는 휴진일일 수 있습니다)
@@ -279,7 +275,6 @@ const TimeSlotGrid = ({
       {/* Time slot grids by period */}
       {renderPeriodSlots('MORNING')}
       {renderPeriodSlots('AFTERNOON')}
-      {renderPeriodSlots('EVENING')}
 
       {/* Selected slot info */}
       {selectedSlot && (
@@ -287,7 +282,7 @@ const TimeSlotGrid = ({
           <Clock className="h-4 w-4" />
           <AlertDescription>
             <strong>선택한 시간:</strong> {getPeriodLabel(selectedSlot.period)} {selectedSlot.time}
-            {' '}(남은 용량: {Math.round((selectedSlot.remaining / selectedSlot.total) * 100)}%)
+            {' '}(예약: {selectedSlot.currentBookings}/{selectedSlot.maxCapacity})
           </AlertDescription>
         </Alert>
       )}

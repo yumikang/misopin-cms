@@ -2,10 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import ReservationCard from "./ReservationCard";
+import ClosureIndicator from "./ClosureIndicator";
+import SlotContextMenu from "./SlotContextMenu";
+import QuickCloseDialog from "./QuickCloseDialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, AlertCircle, RefreshCw, Calendar } from "lucide-react";
+import { Toaster, toast } from "sonner";
+import { useConflictCheck } from "@/hooks/useConflictCheck";
 
 interface Reservation {
   id: string;
@@ -26,6 +31,36 @@ interface Reservation {
   estimatedDuration?: number | null;
 }
 
+interface ManualClosure {
+  id: string;
+  closureDate: string;
+  period: "MORNING" | "AFTERNOON" | "EVENING";
+  timeSlotStart: string;
+  timeSlotEnd?: string | null;
+  serviceId?: string | null;
+  reason?: string | null;
+  createdBy: string;
+  isActive: boolean;
+  service?: {
+    id: string;
+    code: string;
+    name: string;
+  } | null;
+}
+
+interface SlotInfo {
+  date: string;
+  period: "MORNING" | "AFTERNOON" | "EVENING";
+  timeSlotStart: string;
+  timeSlotEnd?: string | null;
+  serviceId?: string | null;
+  serviceName?: string | null;
+}
+
+interface QuickCloseData {
+  reason?: string;
+}
+
 interface ReservationTimelineProps {
   date: string; // YYYY-MM-DD
   service?: string;
@@ -42,16 +77,22 @@ export default function ReservationTimeline({
   onReservationClick
 }: ReservationTimelineProps) {
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [closures, setClosures] = useState<ManualClosure[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingClosures, setLoadingClosures] = useState(false);
+  const [removingClosureId, setRemovingClosureId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
+  // Phase 2: Quick Close states
+  const [quickCloseDialogOpen, setQuickCloseDialogOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<SlotInfo | null>(null);
+  const [isQuickClosing, setIsQuickClosing] = useState(false);
+  const { checkConflict } = useConflictCheck();
+
   // Fetch reservations
   const fetchReservations = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
     try {
       const params = new URLSearchParams({
         date,
@@ -78,19 +119,81 @@ export default function ReservationTimeline({
           return timeA.localeCompare(timeB);
         });
 
-        setReservations(sorted);
-        setLastUpdated(new Date());
+        return sorted;
       } else {
         throw new Error(data.error || '예약 정보를 불러오지 못했습니다');
       }
     } catch (err) {
       console.error('Error fetching reservations:', err);
+      throw err;
+    }
+  }, [date, service]);
+
+  // Fetch closures
+  const fetchClosures = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        console.warn("No access token found, skipping closures fetch");
+        return [];
+      }
+
+      const params = new URLSearchParams({ date });
+      if (service && service !== 'ALL') {
+        params.append('serviceId', service);
+      }
+
+      const response = await fetch(`/api/admin/manual-close?${params.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.warn("Unauthorized, skipping closures fetch");
+          return [];
+        }
+        throw new Error('마감 정보를 불러오지 못했습니다');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        return data.closures || [];
+      } else {
+        throw new Error(data.error || '마감 정보를 불러오지 못했습니다');
+      }
+    } catch (err) {
+      console.error('Error fetching closures:', err);
+      // Don't throw - closures are optional
+      return [];
+    }
+  }, [date, service]);
+
+  // Fetch all data in parallel
+  const fetchAllData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Parallel fetch
+      const [reservationsData, closuresData] = await Promise.all([
+        fetchReservations(),
+        fetchClosures(),
+      ]);
+
+      setReservations(reservationsData);
+      setClosures(closuresData);
+      setLastUpdated(new Date());
+    } catch (err) {
+      console.error('Error fetching data:', err);
       setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다');
       setReservations([]);
+      setClosures([]);
     } finally {
       setLoading(false);
     }
-  }, [date, service]);
+  }, [fetchReservations, fetchClosures]);
 
   // Handle status change
   const handleStatusChange = async (id: string, newStatus: string) => {
@@ -113,8 +216,8 @@ export default function ReservationTimeline({
       // Clear message after 3 seconds
       setTimeout(() => setStatusMessage(null), 3000);
 
-      // Refresh reservations
-      await fetchReservations();
+      // Refresh all data
+      await fetchAllData();
     } catch (err) {
       console.error('Error changing status:', err);
       setStatusMessage({
@@ -127,21 +230,123 @@ export default function ReservationTimeline({
     }
   };
 
+  // Handle closure removal
+  const handleRemoveClosure = async (closureId: string) => {
+    setRemovingClosureId(closureId);
+
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        throw new Error("인증 토큰이 없습니다");
+      }
+
+      const response = await fetch(`/api/admin/manual-close?id=${closureId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "마감 해제에 실패했습니다");
+      }
+
+      // Optimistic UI update
+      setClosures((prev) => prev.filter((c) => c.id !== closureId));
+
+      setStatusMessage({
+        type: "success",
+        message: "마감이 해제되었습니다. 예약이 가능합니다.",
+      });
+
+      // Clear message after 3 seconds
+      setTimeout(() => setStatusMessage(null), 3000);
+
+      // Refresh data to confirm
+      await fetchAllData();
+    } catch (err) {
+      console.error("Error removing closure:", err);
+      setStatusMessage({
+        type: "error",
+        message: err instanceof Error ? err.message : "마감 해제에 실패했습니다",
+      });
+
+      // Clear message after 5 seconds
+      setTimeout(() => setStatusMessage(null), 5000);
+
+      // Revert optimistic update on error
+      await fetchClosures().then((data) => setClosures(data));
+    } finally {
+      setRemovingClosureId(null);
+    }
+  };
+
+  // Phase 2: Handle quick close
+  const handleQuickClose = async (data: QuickCloseData) => {
+    if (!selectedSlot) return;
+
+    setIsQuickClosing(true);
+
+    try {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        throw new Error("인증 토큰이 없습니다");
+      }
+
+      const response = await fetch("/api/admin/manual-close", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          closureDate: selectedSlot.date,
+          period: selectedSlot.period,
+          timeSlotStart: selectedSlot.timeSlotStart,
+          timeSlotEnd: selectedSlot.timeSlotEnd,
+          serviceId: selectedSlot.serviceId,
+          reason: data.reason || "빠른 마감",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "마감 생성에 실패했습니다");
+      }
+
+      // Success
+      toast.success("시간대가 즉시 마감되었습니다");
+
+      // Close dialog
+      setQuickCloseDialogOpen(false);
+      setSelectedSlot(null);
+
+      // Refresh timeline
+      await fetchAllData();
+    } catch (err) {
+      console.error("Error creating quick closure:", err);
+      toast.error(err instanceof Error ? err.message : "마감 생성에 실패했습니다");
+    } finally {
+      setIsQuickClosing(false);
+    }
+  };
+
   // Initial fetch
   useEffect(() => {
-    fetchReservations();
-  }, [fetchReservations]);
+    fetchAllData();
+  }, [fetchAllData]);
 
   // Auto-refresh
   useEffect(() => {
     if (!autoRefresh) return;
 
     const interval = setInterval(() => {
-      fetchReservations();
+      fetchAllData();
     }, refreshInterval * 1000);
 
     return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval, fetchReservations]);
+  }, [autoRefresh, refreshInterval, fetchAllData]);
 
   // Group reservations by period
   const groupedReservations = {
@@ -171,11 +376,14 @@ export default function ReservationTimeline({
   // Render period section
   const renderPeriodSection = (period: 'MORNING' | 'AFTERNOON' | 'EVENING') => {
     const periodReservations = groupedReservations[period];
+    const periodClosures = closures.filter(c => c.period === period);
 
-    if (periodReservations.length === 0) return null;
+    // Skip if no data
+    if (periodReservations.length === 0 && periodClosures.length === 0) return null;
 
     const pendingCount = periodReservations.filter(r => r.status === 'PENDING').length;
     const confirmedCount = periodReservations.filter(r => r.status === 'CONFIRMED').length;
+    const closuresCount = periodClosures.length;
 
     return (
       <div key={period} className="mb-6">
@@ -196,16 +404,53 @@ export default function ReservationTimeline({
               확정 {confirmedCount}
             </Badge>
           )}
+          {closuresCount > 0 && (
+            <Badge variant="destructive" className="text-xs">
+              마감 {closuresCount}
+            </Badge>
+          )}
         </div>
 
         <div className="space-y-3">
+          {/* Closures */}
+          {periodClosures.length > 0 && (
+            <div className="space-y-2">
+              {periodClosures.map((closure) => (
+                <ClosureIndicator
+                  key={closure.id}
+                  closure={closure}
+                  onRemove={handleRemoveClosure}
+                  isRemoving={removingClosureId === closure.id}
+                  size="md"
+                  showRemoveButton={true}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Reservations */}
           {periodReservations.map((reservation) => (
-            <ReservationCard
+            <SlotContextMenu
               key={reservation.id}
-              reservation={reservation}
-              onStatusChange={handleStatusChange}
-              onView={onReservationClick}
-            />
+              slotInfo={{
+                date: reservation.reservation_date,
+                period: (reservation.period || period) as "MORNING" | "AFTERNOON" | "EVENING",
+                timeSlotStart: reservation.timeSlotStart || reservation.reservation_time,
+                timeSlotEnd: reservation.timeSlotEnd,
+                serviceId: reservation.department,
+                serviceName: reservation.serviceName,
+              }}
+              onQuickClose={(slotInfo) => {
+                setSelectedSlot(slotInfo);
+                setQuickCloseDialogOpen(true);
+              }}
+            >
+              <ReservationCard
+                reservation={reservation}
+                onStatusChange={handleStatusChange}
+                onView={onReservationClick}
+              />
+            </SlotContextMenu>
           ))}
         </div>
       </div>
@@ -213,13 +458,29 @@ export default function ReservationTimeline({
   };
 
   return (
-    <div className="space-y-4">
-      {/* Status Message */}
-      {statusMessage && (
-        <Alert variant={statusMessage.type === 'error' ? 'destructive' : 'default'}>
-          <AlertDescription>{statusMessage.message}</AlertDescription>
-        </Alert>
+    <>
+      {/* Toaster for notifications */}
+      <Toaster />
+
+      {/* Quick Close Dialog */}
+      {selectedSlot && (
+        <QuickCloseDialog
+          open={quickCloseDialogOpen}
+          onOpenChange={setQuickCloseDialogOpen}
+          slotInfo={selectedSlot}
+          onConfirm={handleQuickClose}
+          onCheckConflict={checkConflict}
+          isLoading={isQuickClosing}
+        />
       )}
+
+      <div className="space-y-4">
+        {/* Status Message */}
+        {statusMessage && (
+          <Alert variant={statusMessage.type === 'error' ? 'destructive' : 'default'}>
+            <AlertDescription>{statusMessage.message}</AlertDescription>
+          </Alert>
+        )}
 
       {/* Header with last updated and refresh */}
       <div className="flex items-center justify-between">
@@ -283,6 +544,7 @@ export default function ReservationTimeline({
           {renderPeriodSection('EVENING')}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

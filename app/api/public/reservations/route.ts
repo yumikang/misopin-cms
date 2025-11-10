@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Gender, TreatmentType, ReservationStatus, ServiceType, Period } from '@prisma/client';
 import { validateTimeSlotAvailability } from '@/lib/reservations/time-slot-calculator';
+import { checkServiceDailyLimit } from '@/lib/reservations/service-limits';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,6 +25,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Missing required fields',
+          message: '필수 입력 항목을 모두 입력해주세요.',
+          code: 'MISSING_FIELDS',
           fields: missingFields
         },
         { status: 400 }
@@ -39,6 +42,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Invalid date format',
+          message: '날짜 형식이 올바르지 않습니다.',
+          code: 'INVALID_DATE_FORMAT',
           details: 'birth_date and preferred_date must be valid date strings'
         },
         { status: 400 }
@@ -82,10 +87,10 @@ export async function POST(request: NextRequest) {
         serviceName = service.name;
         estimatedDuration = service.durationMinutes;
 
-        // Calculate timeSlotEnd
+        // Calculate timeSlotEnd (including buffer time)
         if (timeSlotStart) {
           const [hours, minutes] = timeSlotStart.split(':').map(Number);
-          const totalMinutes = hours * 60 + minutes + service.durationMinutes;
+          const totalMinutes = hours * 60 + minutes + service.durationMinutes + service.bufferMinutes;
           const endHours = Math.floor(totalMinutes / 60);
           const endMinutes = totalMinutes % 60;
           timeSlotEnd = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
@@ -102,6 +107,37 @@ export async function POST(request: NextRequest) {
           timeSlotStart,
           period
         );
+
+        // ✅ CHECK SERVICE DAILY LIMIT (시간 기반)
+        // estimatedDuration을 전달하여 남은 시간 부족 체크
+        const limitCheck = await checkServiceDailyLimit(
+          serviceId,
+          preferredDate,
+          estimatedDuration || undefined
+        );
+
+        if (!limitCheck.available) {
+          return NextResponse.json(
+            {
+              error: 'Daily limit exceeded',
+              message: limitCheck.message,
+              code: 'DAILY_LIMIT_EXCEEDED',
+              details: {
+                dailyLimitMinutes: limitCheck.dailyLimitMinutes,
+                consumedMinutes: limitCheck.consumedMinutes,
+                remainingMinutes: limitCheck.remainingMinutes,
+                requestedDuration: limitCheck.requestedDuration,
+                date: preferredDate.toISOString().split('T')[0]
+              }
+            },
+            {
+              status: 409,
+              headers: {
+                'Access-Control-Allow-Origin': '*',
+              }
+            }
+          );
+        }
       }
     } catch (serviceError: any) {
       // Service not found or validation failed
@@ -122,6 +158,41 @@ export async function POST(request: NextRequest) {
         );
       }
       throw serviceError;
+    }
+
+    // DOUBLE VALIDATION: Check manual closures one more time with transaction
+    // This prevents race conditions between validation and creation
+    if (period && timeSlotStart) {
+      const manualClosure = await prisma.manual_time_closures.findFirst({
+        where: {
+          closureDate: preferredDate,
+          period: period,
+          timeSlotStart: timeSlotStart,
+          isActive: true,
+          OR: [
+            { serviceId: null },      // Applies to all services
+            { serviceId: serviceId }  // Applies to specific service
+          ]
+        }
+      });
+
+      if (manualClosure) {
+        return NextResponse.json(
+          {
+            error: 'Time slot manually closed',
+            message: '해당 시간대는 관리자에 의해 마감되었습니다.',
+            code: 'TIME_SLOT_MANUALLY_CLOSED',
+            isManualClosed: true,
+            closureReason: manualClosure.reason
+          },
+          {
+            status: 409,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+            }
+          }
+        );
+      }
     }
 
     // Create reservation (TIME-BASED SYSTEM)

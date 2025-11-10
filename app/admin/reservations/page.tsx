@@ -37,11 +37,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, Phone, Mail, User, FileText, Search } from "lucide-react";
+import { Clock, Phone, Mail, User, FileText, Search, Settings, Stethoscope } from "lucide-react";
 import TabNavigation from "@/components/admin/TabNavigation";
 import TimeSlotGrid from "@/components/admin/TimeSlotGrid";
 import ServiceSelector from "@/components/admin/ServiceSelector";
 import CapacityIndicator from "@/components/admin/CapacityIndicator";
+import { ServiceLimitSettings } from "@/app/admin/settings/components/ServiceLimitSettings";
+import ServicesPage from "@/app/admin/services/page";
 
 interface Reservation {
   id: string;
@@ -113,6 +115,8 @@ export default function ReservationsPage() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [limitSettingsOpen, setLimitSettingsOpen] = useState(false);
+  const [serviceManagementOpen, setServiceManagementOpen] = useState(false);
   const [editingReservation, setEditingReservation] = useState<Reservation | null>(null);
   const [viewingReservation, setViewingReservation] = useState<Reservation | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -157,13 +161,14 @@ export default function ReservationsPage() {
       if (!response.ok) throw new Error("Failed to fetch reservations");
       const data = await response.json();
 
-      // Handle new API response format
-      if (data.success && data.data) {
+      // Handle new API response format with defensive checks
+      if (data.success && Array.isArray(data.data)) {
         setReservations(data.data);
       } else if (Array.isArray(data)) {
         // Fallback for old format
         setReservations(data);
       } else {
+        console.warn('Unexpected API response format:', data);
         setReservations([]);
       }
     } catch (err) {
@@ -348,6 +353,22 @@ export default function ReservationsPage() {
           <p className="text-gray-600 mt-1">진료 예약을 관리합니다</p>
         </div>
         <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setServiceManagementOpen(true)}
+            className="inline-flex items-center gap-2"
+          >
+            <Stethoscope className="h-4 w-4" />
+            시술 관리
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setLimitSettingsOpen(true)}
+            className="inline-flex items-center gap-2"
+          >
+            <Settings className="h-4 w-4" />
+            서비스 한도 설정
+          </Button>
           <Button onClick={() => handleOpenDialog()}>
             새 예약 등록
           </Button>
@@ -483,12 +504,22 @@ export default function ReservationsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {reservations.map((reservation) => (
+              {Array.isArray(reservations) && reservations.map((reservation) => (
                 <TableRow key={reservation.id}>
                   <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4 text-gray-400" />
-                      <span className="font-medium">{reservation.reservation_time}</span>
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4 text-gray-400" />
+                        <span className="font-medium">{reservation.reservation_time}</span>
+                      </div>
+                      <div className="text-xs text-gray-500 pl-5">
+                        {new Date(reservation.reservation_date).toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          weekday: 'short'
+                        })}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -864,6 +895,50 @@ export default function ReservationsPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
+              닫기
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Service Management Dialog */}
+      <Dialog open={serviceManagementOpen} onOpenChange={setServiceManagementOpen}>
+        <DialogContent className="max-w-7xl w-[95vw] max-h-[95vh] overflow-y-auto p-8">
+          <DialogHeader className="mb-6">
+            <DialogTitle className="text-2xl">시술 관리</DialogTitle>
+            <DialogDescription className="text-base">
+              시술을 추가, 수정, 삭제하고 시술 시간을 관리합니다
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="w-full">
+            <ServicesPage />
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setServiceManagementOpen(false)}>
+              닫기
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Service Limit Settings Dialog */}
+      <Dialog open={limitSettingsOpen} onOpenChange={setLimitSettingsOpen}>
+        <DialogContent className="max-w-7xl w-[95vw] max-h-[95vh] overflow-y-auto p-8">
+          <DialogHeader className="mb-6">
+            <DialogTitle className="text-2xl">서비스 한도 설정</DialogTitle>
+            <DialogDescription className="text-base">
+              각 서비스의 일일 예약 시간 한도를 설정합니다
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="w-full">
+            <ServiceLimitSettings />
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setLimitSettingsOpen(false)}>
               닫기
             </Button>
           </DialogFooter>

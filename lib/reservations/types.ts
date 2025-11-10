@@ -14,6 +14,7 @@ import { Prisma, Period, DayOfWeek, ReservationStatus } from '@prisma/client';
 export type ReservationForTimeSlot = Prisma.reservationsGetPayload<{
   select: {
     id: true;
+    serviceId: true;
     period: true;
     preferredTime: true;
     timeSlotStart: true;
@@ -24,6 +25,11 @@ export type ReservationForTimeSlot = Prisma.reservationsGetPayload<{
 
 /**
  * 타임슬롯 정보
+ *
+ * Phase 4: Concurrent Capacity Management
+ * - remaining/total: 예약 건수 (동시 진행 용량 기반)
+ * - currentBookings: 현재 예약된 건수
+ * - maxCapacity: 최대 동시 진행 가능 건수
  */
 export interface TimeSlot {
   /** 시간 (HH:mm 형식) */
@@ -32,12 +38,20 @@ export interface TimeSlot {
   period: Period;
   /** 예약 가능 여부 */
   available: boolean;
-  /** 남은 예약 가능 수 */
+  /** 남은 예약 가능 건수 (maxCapacity - currentBookings) */
   remaining: number;
-  /** 전체 수용 가능 수 */
+  /** 최대 동시 진행 가능 건수 (= maxConcurrent from clinic_time_slots) */
   total: number;
   /** 상태 (available/limited/full) */
   status: 'available' | 'limited' | 'full';
+  /** 현재 이 시간대에 예약된 건수 (시간 겹침 체크) */
+  currentBookings: number;
+  /** 최대 동시 진행 가능 건수 (= maxConcurrent from clinic_time_slots) */
+  maxCapacity: number;
+  /** 수동 마감 여부 (optional) */
+  isManualClosed?: boolean;
+  /** 마감 사유 (optional) */
+  closureReason?: string | null;
 }
 
 /**

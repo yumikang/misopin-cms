@@ -12,10 +12,12 @@ export async function GET(request: Request) {
     // Date filter
     const date = searchParams.get('date');
     if (date) {
-      const targetDate = new Date(date);
+      // Use UTC dates to avoid timezone issues
+      const startOfDay = new Date(date + 'T00:00:00.000Z');
+      const endOfDay = new Date(date + 'T23:59:59.999Z');
       where.preferredDate = {
-        gte: new Date(targetDate.setHours(0, 0, 0, 0)),
-        lt: new Date(targetDate.setHours(23, 59, 59, 999))
+        gte: startOfDay,
+        lte: endOfDay
       };
     }
 
