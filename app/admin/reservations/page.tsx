@@ -38,12 +38,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, Phone, Mail, User, FileText, Search, Settings, Stethoscope } from "lucide-react";
+import { Clock, Phone, Mail, User, FileText, Search, Stethoscope } from "lucide-react";
 import TabNavigation from "@/components/admin/TabNavigation";
 import TimeSlotGrid from "@/components/admin/TimeSlotGrid";
 import ServiceSelector from "@/components/admin/ServiceSelector";
 import CapacityIndicator from "@/components/admin/CapacityIndicator";
-import { ServiceLimitSettings } from "@/app/admin/settings/components/ServiceLimitSettings";
 
 interface Reservation {
   id: string;
@@ -115,7 +114,6 @@ export default function ReservationsPage() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [limitSettingsOpen, setLimitSettingsOpen] = useState(false);
   const [editingReservation, setEditingReservation] = useState<Reservation | null>(null);
   const [viewingReservation, setViewingReservation] = useState<Reservation | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -361,14 +359,6 @@ export default function ReservationsPage() {
               시술 관리
             </Button>
           </Link>
-          <Button
-            variant="outline"
-            onClick={() => setLimitSettingsOpen(true)}
-            className="inline-flex items-center gap-2"
-          >
-            <Settings className="h-4 w-4" />
-            서비스 한도 설정
-          </Button>
           <Button onClick={() => handleOpenDialog()}>
             새 예약 등록
           </Button>
@@ -895,29 +885,6 @@ export default function ReservationsPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
-              닫기
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-
-      {/* Service Limit Settings Dialog */}
-      <Dialog open={limitSettingsOpen} onOpenChange={setLimitSettingsOpen}>
-        <DialogContent className="max-w-7xl w-[95vw] max-h-[95vh] overflow-y-auto p-8">
-          <DialogHeader className="mb-6">
-            <DialogTitle className="text-2xl">서비스 한도 설정</DialogTitle>
-            <DialogDescription className="text-base">
-              각 서비스의 일일 예약 시간 한도를 설정합니다
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="w-full">
-            <ServiceLimitSettings />
-          </div>
-
-          <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setLimitSettingsOpen(false)}>
               닫기
             </Button>
           </DialogFooter>
