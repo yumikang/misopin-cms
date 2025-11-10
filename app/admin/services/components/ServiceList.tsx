@@ -70,13 +70,12 @@ export function ServiceList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[22%]">시술명</TableHead>
-              <TableHead className="w-[12%]">코드</TableHead>
-              <TableHead className="w-[14%]">시술시간</TableHead>
-              <TableHead className="w-[14%]">일일한도</TableHead>
-              <TableHead className="w-[12%]">예약수</TableHead>
-              <TableHead className="w-[10%] text-center">상태</TableHead>
-              <TableHead className="w-[16%] text-center">작업</TableHead>
+              <TableHead className="w-[25%]">시술명</TableHead>
+              <TableHead className="w-[15%]">코드</TableHead>
+              <TableHead className="w-[15%]">시술시간</TableHead>
+              <TableHead className="w-[15%]">일일한도</TableHead>
+              <TableHead className="w-[12%] text-center">상태</TableHead>
+              <TableHead className="w-[18%] text-center">작업</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -142,19 +141,6 @@ export function ServiceList({
                     ) : (
                       <span className="text-gray-400">-</span>
                     )}
-                  </TableCell>
-
-                  {/* Reservation Count */}
-                  <TableCell>
-                    <span
-                      className={
-                        hasReservations
-                          ? "text-blue-600 font-medium"
-                          : "text-gray-400"
-                      }
-                    >
-                      {service._count?.reservations || 0}건
-                    </span>
                   </TableCell>
 
                   {/* Status */}
